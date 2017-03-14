@@ -1,0 +1,16 @@
+﻿@{
+    ViewBag.Title = "Sign Up";
+}
+<h2>@ViewBag.Title.</h2>
+
+<div class="row">
+    <form id="UserForm" action="/" method="post">
+        <fieldset>
+            <div><label for="First Name"><pre>First Name:</pre></label> <input type="text" id="FirstName" name="FirstName"></div>
+            <div><label for="Last Name"><pre>Last Name:</pre></label> <input type="text" id="LastName" name="LastName"></div>
+            <div><label for="E-Mail Address"><pre>E-Mail Address:</pre></label> <input type="text" id="EmailAddress" name="EmailAddress"></div>
+            <div><label for="Department"><pre>Department:</pre></label> <input type="text" id="Department" name="Department"></div>
+            <button type="submit" id="userSignUp" name="submitButton" value="userSignUp">Sign Up</button>
+        </fieldset>
+    </form>
+</div>
