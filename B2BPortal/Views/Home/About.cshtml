@@ -1,12 +1,52 @@
-﻿@{
-    ViewBag.Title = "Approve Requests";
+﻿@using Microsoft.Azure;
+@using Microsoft.WindowsAzure.Storage;
+@using Microsoft.WindowsAzure.Storage.Table;
+@using B2BPortal.Models;
+
+@{
+    // only users authenticated to this tenant can view and approve
+    string tenantName = CloudConfigurationManager.GetSetting("ida:Tenant");
+    if(User.Identity.IsAuthenticated)
+    {
+        ViewBag.Title = "Approve Requests";
+    }
+    else
+    {
+        ViewBag.Title = "Must be logged into " + tenantName + " to view requests";
+    }
 }
+
 <h2>@ViewBag.Title.</h2>
 
-<table>
-    <tr><th>Timestamp</th><th>DisplayName</th><th>Email Address</th><th>Department</th><th>Status</th></tr>
-    <tr><td>3/14/2017 8:00</td><td>John Smith</td><td>jsmith@contoso.com</td><td>Finance</td><td>Pending</td></tr>
-    <tr><td>3/14/2017 8:15</td><td>Jane Doe</td><td>jdoe@fabrikam.com</td><td>Sales</td><td>Pending</td></tr>
-    <tr><td>3/14/2017 8:30</td><td>David Jones</td><td>djones@tailwind.com</td><td>Marketing</td><td>Pending</td></tr>
-    <tr><td>3/14/2017 8:45</td><td>Mary Jane</td><td>mjane@woodgrove.com</td><td>Engineering</td><td>Pending</td></tr>
+<table border="1">
+@{
+    if(User.Identity.IsAuthenticated)
+    {
+        const string TABLENAME = "TableRequests";
+        CloudStorageAccount storageAccount = CloudStorageAccount.Parse(CloudConfigurationManager.GetSetting("StorageConnectionString"));
+        CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
+        CloudTable requestTable = tableClient.GetTableReference(TABLENAME);
+        requestTable.CreateIfNotExists();
+        var entities = requestTable.ExecuteQuery(new TableQuery<RequestEntity>()).ToList();
+
+        <tr><th>DisplayName</th><th>Email Address</th><th>Department</th><th>Status</th></tr>
+
+        foreach (RequestEntity entity in entities)
+        {
+            <tr><td>@entity.RowKey</td><td>@entity.Email</td><td>@entity.PartitionKey</td><td>@entity.Status</td></tr>
+        }
+    }
+}
 </table>
+
+@{
+    if(User.Identity.IsAuthenticated)
+    {
+        <form id="RequestForm" action="/Home/About" method="post">
+            <fieldset>
+                <button type="submit" id="requestApprove" name="submitButton" value="requestApprove">Approve</button>
+                <button type="submit" id="requestReject" name="submitButton" value="requestReject">Reject</button>
+            </fieldset>
+        </form>
+     }
+}

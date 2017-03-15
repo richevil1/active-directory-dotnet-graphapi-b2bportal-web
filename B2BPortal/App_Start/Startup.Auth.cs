@@ -43,6 +43,8 @@ namespace B2BPortal
                     Authority = authority,
                     PostLogoutRedirectUri = postLogoutRedirectUri,
                     RedirectUri = postLogoutRedirectUri,
+                    //"id_token token" ACCESS TOKENS NOT SUPPORTED HERE, REQUIRES S2S FLOW
+                    //ResponseType = "id_token",
                     Notifications = new OpenIdConnectAuthenticationNotifications
                     {
                         AuthenticationFailed = context =>
@@ -51,6 +53,22 @@ namespace B2BPortal
                             context.Response.Redirect("/Error?message=" + context.Exception.Message);
                             return Task.FromResult(0);
                         }
+/*                      THESE CALLBACKS HELPED CONVINCE ME THAT ACCESS TOKENS WOULD REQUIRE A SEPARATE AUTH PATH
+                        SecurityTokenValidated = context =>
+                        {
+                            string accessToken = context.ProtocolMessage.AccessToken;
+                            string IdToken = context.ProtocolMessage.IdToken;
+                            string Code = context.ProtocolMessage.Code;
+                            return Task.FromResult(0);
+                        },
+                        SecurityTokenReceived = context =>
+                        {
+                            string accessToken = context.ProtocolMessage.AccessToken;
+                            string IdToken = context.ProtocolMessage.IdToken;
+                            string Code = context.ProtocolMessage.Code;
+                            return Task.FromResult(0);
+                        }
+*/
                     }
                 });
         }
