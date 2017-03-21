@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using B2BPortal.Infrastructure
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -6,6 +7,8 @@
     <title>@ViewBag.Title - My ASP.NET Application</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
+    @RenderSection("styles", required: false)
+
 </head>
 <body>
     <div class="navbar navbar-inverse navbar-fixed-top">
@@ -16,13 +19,25 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                @Html.ActionLink("B2B Portal", "Index", "Home", null, new { @class = "navbar-brand" })
+                @Html.ActionLink("B2B Portal", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li>@Html.ActionLink("Sign Up", "Index", "Home")</li>
-                    <li>@Html.ActionLink("Approve Requests", "About", "Home")</li>
-                    <li>@Html.ActionLink("Edit Profile", "Contact", "Home")</li>
+                    <li>@Html.ActionLink("Sign Up", "Index", "Home", new { area = "" }, new { })</li>
+                    <li>@Html.ActionLink("About", "About", "Home", new { area = "" }, new { })</li>
+                    <li>@Html.ActionLink("Contact", "Contact", "Home", new { area = "" }, new { })</li>
+                    @if (User.Identity.IsInAnyRole(Settings.InviterRoleNames))
+                    {
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Admin <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li>@Html.ActionLink("Approve Requests", "Index", "Home", new { area = "Admin" }, new { })</li>
+                            <li>@Html.ActionLink("Manage Preauths", "Index", "PreApproval", new { area = "Admin" }, new { })</li>
+                            <li class="divider"></li>
+                            <li>@Html.ActionLink("Error Logs", "Index", "ErrorLog", new { area = "Admin" }, new { })</li>
+                        </ul>
+                    </li>
+                    }
                 </ul>
                 @Html.Partial("_LoginPartial")
             </div>
@@ -31,7 +46,7 @@
     <div class="container body-content">
         @RenderBody()
         <hr />
-        <footer>
+        <footer style="position:absolute;bottom:30px;">
             <p>&copy; @DateTime.Now.Year - B2B Portal</p>
         </footer>
     </div>

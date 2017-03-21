@@ -1,47 +1,70 @@
-﻿//----------------------------------------------------------------------------------------------
-//    Copyright 2014 Microsoft Corporation
-//
-//    Licensed under the Apache License, Version 2.0 (the "License");
-//    you may not use this file except in compliance with the License.
-//    You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-//    Unless required by applicable law or agreed to in writing, software
-//    distributed under the License is distributed on an "AS IS" BASIS,
-//    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-//    See the License for the specific language governing permissions and
-//    limitations under the License.
-//----------------------------------------------------------------------------------------------
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-
-// The following using statements were added for this sample.
 using Microsoft.Owin.Security.Cookies;
-using Microsoft.Owin.Security.OpenIdConnect;
 using Microsoft.Owin.Security;
+using B2BPortal.Infrastructure;
+using System.Security.Claims;
 
 namespace B2BPortal.Controllers
 {
     public class AccountController : Controller
     {
+        public void SignInWorkMulti()
+        {
+            if (Request.IsAuthenticated)
+            {
+                EndSession();
+            }
+
+            HttpContext.GetOwinContext().Authentication.Challenge(
+                new AuthenticationProperties
+                {
+                    RedirectUri = "/",
+                },
+                AuthTypes.B2EMulti);
+        }
+
         public void SignIn()
         {
-            // Send an OpenID Connect sign-in request.
             if (!Request.IsAuthenticated)
             {
-                HttpContext.GetOwinContext().Authentication.Challenge(new AuthenticationProperties { RedirectUri = "/" }, OpenIdConnectAuthenticationDefaults.AuthenticationType);
+                HttpContext.GetOwinContext().Authentication.Challenge(
+                    new AuthenticationProperties
+                    {
+                        RedirectUri = "/",
+                    },
+                    AuthTypes.Local);
             }
         }
+
         public void SignOut()
         {
-            // Send an OpenID Connect sign-out request.
-            HttpContext.GetOwinContext().Authentication.SignOut(
-                OpenIdConnectAuthenticationDefaults.AuthenticationType, CookieAuthenticationDefaults.AuthenticationType);
+            //// Send an OpenID Connect sign-out request.
+            //HttpContext.GetOwinContext().Authentication.SignOut(
+            //    OpenIdConnectAuthenticationDefaults.AuthenticationType, CookieAuthenticationDefaults.AuthenticationType);
+
+            if (ClaimsPrincipal.Current.FindFirst(Startup.AcrClaimType) != null)
+            {
+                // To sign out the user, you should issue an OpenIDConnect sign out request
+                if (Request.IsAuthenticated)
+                {
+                    IEnumerable<AuthenticationDescription> authTypes = HttpContext.GetOwinContext().Authentication.GetAuthenticationTypes();
+                    HttpContext.GetOwinContext().Authentication.SignOut(authTypes.Select(t => t.AuthenticationType).ToArray());
+                    Request.GetOwinContext().Authentication.GetAuthenticationTypes();
+                }
+            }
+            else
+            {
+                Dictionary<string, string> dict = new Dictionary<string, string>();
+                HttpContext.GetOwinContext().Authentication.SignOut(
+                    new AuthenticationProperties(dict),
+                    AuthTypes.Local,
+                    CookieAuthenticationDefaults.AuthenticationType);
+            }
+
         }
 
         public void EndSession()

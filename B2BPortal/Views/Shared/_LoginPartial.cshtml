@@ -2,11 +2,11 @@
 {
     <text>
         <ul class="nav navbar-nav navbar-right">
-            <li class="navbar-text">
-                Hello, @User.Identity.Name!
+            <li>
+                @Html.ActionLink("Hello, " + User.Identity.Name + "!", "Claims", "Home", new { area = "" }, new { })
             </li>
             <li>
-                @Html.ActionLink("Sign out", "SignOut", "Account")
+                @Html.ActionLink("Sign out", "SignOut", "Account", new { area = "" }, new { })
             </li>
         </ul>
     </text>

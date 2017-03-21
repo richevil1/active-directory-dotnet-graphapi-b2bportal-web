@@ -1,16 +1,76 @@
-﻿@{
-    ViewBag.Title = "Sign Up";
+﻿@using B2BPortal.Infrastructure
+@using System.Security.Claims
+@{ 
+    string Email="", FirstName="", LastName="";
+    bool PreAuthed = false;
+    //pick up the form pre-fills - if the user has PreAuthed via the multi-tenant app
+    if (User.Identity.IsAuthenticated && (Utils.GetClaim(CustomClaimTypes.TenantId) != Settings.TenantID))
+    {
+        Email = (Utils.GetClaim(ClaimTypes.Email)) == null ? Utils.GetClaim(ClaimTypes.Name) : Utils.GetClaim(ClaimTypes.Email);
+        FirstName = Utils.GetClaim(ClaimTypes.GivenName);
+        LastName = Utils.GetClaim(ClaimTypes.Surname);
+        PreAuthed = true;
+    }
 }
-<h2>@ViewBag.Title.</h2>
+<h2>@ViewBag.Title</h2>
 
-<div class="row">
-    <form id="UserForm" action="/" method="post">
-        <fieldset>
-            <div><label for="First Name"><pre>First Name:</pre></label> <input type="text" id="FirstName" name="FirstName"></div>
-            <div><label for="Last Name"><pre>Last Name:</pre></label> <input type="text" id="LastName" name="LastName"></div>
-            <div><label for="E-Mail Address"><pre>E-Mail Address:</pre></label> <input type="text" id="EmailAddress" name="EmailAddress"></div>
-            <div><label for="Department"><pre>Department:</pre></label> <input type="text" id="Department" name="Department"></div>
-            <button type="submit" id="userSignUp" name="submitButton" value="userSignUp">Sign Up</button>
-        </fieldset>
-    </form>
-</div>
+@using (Html.BeginForm("SignUp", "Profile", FormMethod.Post))
+{
+    <input type="hidden" name="PreAuthed" value="@PreAuthed.ToString().ToLower()" />
+
+    <div class="form-group">
+        <label for="EmailAddress">
+            Email Address
+        </label>
+        <input class="form-control" type="text" value="@Email" id="EmailAddress" name="EmailAddress" placeholder="Email">
+    </div>
+    <div class="form-group">
+        <label for="FirstName">
+            First Name
+        </label>
+        <input class="form-control" value="@FirstName" type="text" id="FirstName" name="FirstName" placeholder="First Name">
+    </div>
+    <div class="form-group">
+        <label for="LastName">
+            Last Name
+        </label>
+        <input class="form-control" value="@LastName" type="text" id="LastName" name="LastName" placeholder="Last Name">
+    </div>
+    if (PreAuthed)
+    {
+        <div class="form-group">
+            <label for="PreAuthed">
+                Pre-Authenticated
+            </label>
+            <img src="~/Content/images/CheckYes.png" />
+        </div>
+    }
+    <div class="form-group buttons">
+        <button class="btn btn-primary btn-default" type="submit">Request Access</button>
+        @if (!PreAuthed)
+        {
+        <button class="btn btn-default" id="btnPreAuth" type="button">Pre-Auth *</button>
+        <p>
+            *Pre-Auth: Click this button to login with your existing work credentials.
+        </p>
+        }
+    </div>
+}
+@section styles {
+    <style type="text/css">
+        div.buttons button {
+            width:150px;
+            margin:10px;
+        }
+    </style>    
+}
+@section scripts {
+<script type="text/javascript">
+    $(function () {
+        $("#btnPreAuth").on("click", function () {
+            location.href='/Account/SignInWorkMulti';
+            return false;
+        });
+    });
+</script>
+}

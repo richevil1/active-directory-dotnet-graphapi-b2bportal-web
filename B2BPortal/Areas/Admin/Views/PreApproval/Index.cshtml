@@ -1,0 +1,56 @@
+﻿@model IEnumerable<B2BPortal.Models.PreAuthDomain>
+
+@{
+    ViewBag.Title = "Pre-Approval Config";
+    bool hasRecords = (Model.Count() > 0);
+}
+
+<h2>@ViewBag.Title</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Domain)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Groups)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.AuthUser)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CreateDate)
+        </th>
+        <th></th>
+    </tr>
+
+    @if (!hasRecords){
+        <tr><td colspan="4">No preauth domains configured</td></tr>
+    }
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Domain)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Groups)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AuthUser)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreateDate)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+            </td>
+        </tr>
+    }
+
+</table>

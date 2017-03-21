@@ -1,4 +1,5 @@
-﻿using System.Web;
+﻿using B2BPortal.Infrastructure.Filters;
+using System.Web;
 using System.Web.Mvc;
 
 namespace B2BPortal
@@ -8,6 +9,7 @@ namespace B2BPortal
         public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {
             filters.Add(new HandleErrorAttribute());
+            filters.Add(new CheckVisitorAttribute());
         }
     }
 }

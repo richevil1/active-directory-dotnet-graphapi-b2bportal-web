@@ -1,0 +1,111 @@
+﻿@using B2BPortal.Models;
+@model IEnumerable<GuestRequest>
+@{ 
+    var pendingColor = "#fbffc9";
+    ViewBag.Title = "Pending Guest Requests";
+    bool hasRecords = (Model.Count() > 0);
+    var disableButton = (hasRecords) ? "" : "disabled";
+}
+<h2>@ViewBag.Title</h2>
+
+@using (Html.BeginForm("Approve", "Admin", FormMethod.Post))
+{
+<table border="1" style="table-layout">
+    <tr>
+        <th>
+            <select class="form-control" id="GlobalApproval">
+                <option value="0">Approve all</option>
+                <option value="2">Deny all</option>
+                <option value="3">Leave pending</option>
+            </select>
+            <button type="button" id="btnApplyGlobal" class="btn btn-default"><span class="glyphicon glyphicon-ok-sign"></span></button>
+        </th>
+        <th>RequestID</th>
+        <th>Email Address</th>
+        <th>Request Comment</th>
+        <th>Status</th>
+        <th>Notes</th>
+    </tr>
+    @if (!hasRecords)
+    {
+        <tr><td colspan="6">No pending requests</td></tr>
+    }
+
+    @foreach (var request in Model)
+    {
+        <tr style="background-color:@pendingColor">
+            <td>
+                <div class="btn-group" data-toggle="buttons">
+                    <label class="btn btn-primary">
+                        <input type="radio" name="Disposition" value="0" autocomplete="off"> Approve
+                    </label>
+                    <label class="btn btn-primary">
+                        <input type="radio" name="Disposition" value="2" autocomplete="off"> Deny
+                    </label>
+                    <label class="btn btn-primary active">
+                        <input type="radio" name="Disposition" value="3" autocomplete="off" checked> Pending
+                    </label>
+                </div>
+            </td>
+            <td>
+                @request.Id
+                <input type="hidden" name="Id" value="@request.Id" />
+                <input type="hidden" name="InternalComment" value="@request.InternalComment" />
+            </td>
+            <td>@request.EmailAddress</td>
+            <td>@request.Comment</td>
+            <td>@request.Status</td>
+            <td><textarea name="InternalComment" style="width:200px;" rows="2">@request.InternalComment</textarea></td>
+        </tr>
+    }
+</table>
+<p>
+    <button class="btn btn-primary" type="submit" @disableButton style="margin-top:10px;">Save Changes</button>
+</p>
+
+}
+@section styles {
+    <style type="text/css">
+        table td, table th {
+            padding:7px;
+        }
+        #GlobalApproval {
+            width:160px;
+            display:inline-block;
+        }
+    </style>
+}
+
+@section scripts {
+    <script type="text/javascript">
+        $(function () {
+            $("#btnApplyGlobal").on("click", function () {
+                var globalValue = $("#GlobalApproval").val();
+                $("input:radio").each(function (i, o) {
+                    if (o.value == globalValue) {
+                        $(o).click();
+                    }
+                });
+            });
+            $("input:radio").parent("label").on("click", function () {
+                var o = $(this);
+                var val = o.children("input").val();
+                o.parentsUntil("tr").last().parent().css("background-color", getColor(val));
+            });
+
+            function getColor(d) {
+                switch (d) {
+                    case "0":
+                        return "#d2ffc9";
+                        break;
+                    case "2":
+                        return "#ffd8c9";
+                        break;
+                    case "3":
+                        return "@pendingColor";
+                        break;
+                }
+            }
+        });
+    </script>
+}

@@ -1,0 +1,13 @@
+﻿@using B2BPortal.Infrastructure
+@{
+    ViewBag.Title = "PreAuthError";
+}
+
+<h2>Invalid Credentials</h2>
+<p>
+    Sorry, you still appear to be authenticated using the "Pre-Auth" credentials from your home tenant.
+</p>
+<p>
+    To manage your guest profile in the @Settings.InvitingOrganization organization,
+    please @Html.ActionLink("logout", "Signout", "Account") to continue.
+</p>

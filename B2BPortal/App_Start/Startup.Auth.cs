@@ -1,4 +1,118 @@
-﻿using System;
+﻿using Owin;
+using Microsoft.Owin.Security;
+using Microsoft.Owin.Security.Cookies;
+using Microsoft.Owin.Security.OpenIdConnect;
+using System.Threading.Tasks;
+using Microsoft.Owin.Security.Notifications;
+using Microsoft.IdentityModel.Protocols;
+using System.Configuration;
+using System.IdentityModel.Tokens;
+using B2BPortal.Infrastructure;
+
+namespace B2BPortal
+{
+    public partial class Startup
+    {
+        private const string discoverySuffix = "/.well-known/openid-configuration";
+        public const string AcrClaimType = "http://schemas.microsoft.com/claims/authnclassreference";
+
+        // App config settings
+        private static string clientId_admin = ConfigurationManager.AppSettings["ida:ClientId_Admin"];
+        private static string clientId_preAuth = ConfigurationManager.AppSettings["ida:ClientId_PreAuth"];
+
+        private static string tenant = ConfigurationManager.AppSettings["ida:Tenant"];
+        private static string aadInstanceMulti = ConfigurationManager.AppSettings["ida:AadInstanceMulti"];
+        private static string aadInstanceLocal = ConfigurationManager.AppSettings["ida:AadInstanceLocal"];
+
+        public void ConfigureAuth(IAppBuilder app)
+        {
+            app.SetDefaultSignInAsAuthenticationType(CookieAuthenticationDefaults.AuthenticationType);
+
+            var authProvider = new CookieAuthenticationProvider
+            {
+                OnResponseSignIn = ctx =>
+                {
+                    ctx.Identity = StartupAuth.InitAuthAsync(ctx).Result;
+                }
+            };
+            var cookieOptions = new CookieAuthenticationOptions
+            {
+                Provider = authProvider
+            };
+
+            app.UseCookieAuthentication(cookieOptions);
+
+            // Required for AAD Multitenant (Pre-auth access to home tenant during sign-up)
+            OpenIdConnectAuthenticationOptions multiOptions = new OpenIdConnectAuthenticationOptions
+            {
+                Authority = aadInstanceMulti,
+                ClientId = clientId_preAuth,
+                Notifications = new OpenIdConnectAuthenticationNotifications
+                {
+                    AuthenticationFailed = AuthenticationFailed,
+                    RedirectToIdentityProvider = (context) =>
+                    {
+                        string appBaseUrl = context.Request.Scheme + "://" + context.Request.Host + context.Request.PathBase;
+                        context.ProtocolMessage.RedirectUri = appBaseUrl + "/";
+                        context.ProtocolMessage.PostLogoutRedirectUri = appBaseUrl;
+                        return Task.FromResult(0);
+                    },
+                },
+                TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = false,
+                },
+                AuthenticationType = AuthTypes.B2EMulti,
+            };
+            app.UseOpenIdConnectAuthentication(multiOptions);
+
+            // Required for AAD B2B
+            OpenIdConnectAuthenticationOptions b2bOptions = new OpenIdConnectAuthenticationOptions
+            {
+                Authority = string.Format(aadInstanceLocal, tenant),
+                ClientId = clientId_admin,
+                Notifications = new OpenIdConnectAuthenticationNotifications
+                {
+                    AuthenticationFailed = AuthenticationFailed,
+                    RedirectToIdentityProvider = (context) =>
+                    {
+                        string appBaseUrl = context.Request.Scheme + "://" + context.Request.Host + context.Request.PathBase;
+                        context.ProtocolMessage.RedirectUri = appBaseUrl + "/";
+                        context.ProtocolMessage.PostLogoutRedirectUri = appBaseUrl;
+                        return Task.FromResult(0);
+                    },
+                },
+                TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = false,
+                },
+                AuthenticationType = AuthTypes.Local,
+            };
+            app.UseOpenIdConnectAuthentication(b2bOptions);
+        }
+
+        // Used for avoiding yellow-screen-of-death
+        private Task AuthenticationFailed(AuthenticationFailedNotification<OpenIdConnectMessage, OpenIdConnectAuthenticationOptions> notification)
+        {
+            notification.HandleResponse();
+            if (notification.Exception.Message == "access_denied")
+            {
+                notification.Response.Redirect("/");
+            }
+            else
+            {
+                notification.Response.Redirect("/Home/Error?message=" + notification.Exception.Message);
+            }
+
+            return Task.FromResult(0);
+        }
+    }
+}
+
+
+
+/*
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -53,24 +167,9 @@ namespace B2BPortal
                             context.Response.Redirect("/Error?message=" + context.Exception.Message);
                             return Task.FromResult(0);
                         }
-/*                      THESE CALLBACKS HELPED CONVINCE ME THAT ACCESS TOKENS WOULD REQUIRE A SEPARATE AUTH PATH
-                        SecurityTokenValidated = context =>
-                        {
-                            string accessToken = context.ProtocolMessage.AccessToken;
-                            string IdToken = context.ProtocolMessage.IdToken;
-                            string Code = context.ProtocolMessage.Code;
-                            return Task.FromResult(0);
-                        },
-                        SecurityTokenReceived = context =>
-                        {
-                            string accessToken = context.ProtocolMessage.AccessToken;
-                            string IdToken = context.ProtocolMessage.IdToken;
-                            string Code = context.ProtocolMessage.Code;
-                            return Task.FromResult(0);
-                        }
-*/
                     }
                 });
         }
     }
 }
+*/

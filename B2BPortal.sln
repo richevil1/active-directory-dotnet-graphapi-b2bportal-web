@@ -5,6 +5,8 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "B2BPortal", "B2BPortal\B2BPortal.csproj", "{A5D901A4-0743-4328-BD6A-1F3FAEBCA56E}"
 EndProject
+Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "B2BPortalDeploy", "B2BPortalDeploy\B2BPortalDeploy.deployproj", "{53264DEB-08A6-4EC3-80CD-6B2F54EBED60}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{A5D901A4-0743-4328-BD6A-1F3FAEBCA56E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A5D901A4-0743-4328-BD6A-1F3FAEBCA56E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A5D901A4-0743-4328-BD6A-1F3FAEBCA56E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{53264DEB-08A6-4EC3-80CD-6B2F54EBED60}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{53264DEB-08A6-4EC3-80CD-6B2F54EBED60}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{53264DEB-08A6-4EC3-80CD-6B2F54EBED60}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{53264DEB-08A6-4EC3-80CD-6B2F54EBED60}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
