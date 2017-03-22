@@ -23,13 +23,13 @@ __Details__
       * Read and write directory data
   * Optional - custom DNS name and SSL cert
 
-  __Operation__
+__Operation__
 
-  * Guest users access the home page and may enter their login email to request access to the host tenant/company. Optionally, they may click to "Pre-Auth" - this will allow them to login to the guest's home tenant, authenticate, then return with the form pre-filled AND with the request authenticated and validated.
-  * Once the request is submitted, the request will be queued in a DocumentDB repo.
-  * A user in the home company with the "Guest Submitter" role granted ( can then access the portal, log in, and browse the pending requests, either approving, denying, or leaving in a pending state for others to review. Additionally, internal comments can be attached to the request records.
-  * Optionally, an admin may login and add a "Pre-Auth" domain record. This will allow all Pre-Authed users with a matching domain suffix, to be automatically approved for B2B guest access in the tenant. 
-  * Whether a user is automatically approved, or manually approved, once an approval occurs, a welcome email is generated to the requester with a link that allows for redemption of the request. 
+* Guest users access the home page and may enter their login email to request access to the host tenant/company. Optionally, they may click to "Pre-Auth" - this will allow them to login to the guest's home tenant, authenticate, then return with the form pre-filled AND with the request authenticated and validated.
+* Once the request is submitted, the request will be queued in a DocumentDB repo.
+* A user in the home company with the "Guest Submitter" role granted ( can then access the portal, log in, and browse the pending requests, either approving, denying, or leaving in a pending state for others to review. Additionally, internal comments can be attached to the request records.
+* Optionally, an admin may login and add a "Pre-Auth" domain record. This will allow all Pre-Authed users with a matching domain suffix, to be automatically approved for B2B guest access in the tenant. 
+* Whether a user is automatically approved, or manually approved, once an approval occurs, a welcome email is generated to the requester with a link that allows for redemption of the request. 
 
 # Contributing
 
