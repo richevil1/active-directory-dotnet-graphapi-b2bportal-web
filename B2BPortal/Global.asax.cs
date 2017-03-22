@@ -1,4 +1,5 @@
-﻿using B2BPortal.Data;
+﻿using B2BPortal.B2B;
+using B2BPortal.Data;
 using B2BPortal.Infrastructure;
 using B2BPortal.Models;
 using System;
@@ -62,6 +63,13 @@ namespace B2BPortal
             DocDBRepo<GuestRequest>.Initialize();
             DocDBRepo<PreAuthDomain>.Initialize();
 
+            /*
+             * TODO: Prefetching the app token here because initializing this library during admin
+             * authentication is timing out/failing.
+             * don't know if this is due to the api call or spinning up this code
+             * see AdalUtil.CallGraph...
+            */
+            AdalUtil.Authenticate();
         }
     }
 }

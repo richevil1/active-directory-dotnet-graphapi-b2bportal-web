@@ -1,0 +1,59 @@
+﻿@model B2BPortal.Models.PreAuthDomain
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Pre-Auth Domain</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Domain)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Domain)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.InvitationTemplate)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.InvitationTemplate)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.RedirectLink)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.RedirectLink)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.GroupsList)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.GroupsList)
+        </dd>
+        <hr />
+        <dt>
+            @Html.DisplayNameFor(model => model.AuthUser)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.AuthUser)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CreateDate)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.CreateDate)
+        </dd>
+</dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

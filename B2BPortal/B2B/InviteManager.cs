@@ -12,7 +12,7 @@ namespace B2BPortal.B2B
 {
     public static class InviteManager
     {
-        public static async Task<string> SendInvitation(GuestRequest request)
+        public static async Task<string> SendInvitation(GuestRequest request, string inviteRedirectUrl=null)
         {
             var displayName = string.Format("{0} {1}", request.FirstName, request.LastName);
 
@@ -24,12 +24,12 @@ namespace B2BPortal.B2B
                 GraphInvitation invitation = new GraphInvitation();
                 invitation.InvitedUserDisplayName = displayName;
                 invitation.InvitedUserEmailAddress = request.EmailAddress;
-                invitation.InviteRedirectUrl = Settings.InviteRedirectUrl;
+                invitation.InviteRedirectUrl = (!string.IsNullOrEmpty(inviteRedirectUrl)) ? inviteRedirectUrl : Settings.InviteRedirectUrl;
                 invitation.SendInvitationMessage = false;
 
                 // Invite user. Your app needs to have User.ReadWrite.All or Directory.ReadWrite.All to invite
                 string InviterUserPrincipalName = Settings.InviterUPN;
-                serverResponse = await AdalUtil.CallGraph(inviteEndPoint, invitation);
+                serverResponse = AdalUtil.CallGraph(inviteEndPoint, invitation);
                 var responseData = JsonConvert.DeserializeObject<InviteResponse>(serverResponse);
                 if (responseData.id == null)
                 {
@@ -89,13 +89,13 @@ namespace B2BPortal.B2B
         {
             MailSender.SendMessage(email, subject, mailBody);
         }
-        public static async Task<IEnumerable<GraphMemberRole>> GetDirectoryRolesAsync(string upn)
+        public static IEnumerable<GraphMemberRole> GetDirectoryRoles(string upn)
         {
             string serverResponse = "";
             try
             {
                 var rolesUri = string.Format("{0}/{1}/users/{2}/memberOf", Settings.GraphResource, Settings.GraphApiVersion, upn);
-                serverResponse = await AdalUtil.CallGraph(rolesUri);
+                serverResponse = AdalUtil.CallGraph(rolesUri);
 
                 JObject res = JObject.Parse(serverResponse);
                 IList<JToken> roles = res["value"].ToList();

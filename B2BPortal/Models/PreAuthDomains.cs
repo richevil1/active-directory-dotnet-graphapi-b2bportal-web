@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace B2BPortal.Models
 {
@@ -14,6 +15,7 @@ namespace B2BPortal.Models
         /// The UPN of the user creating this PreAuth record
         /// </summary>
         [DisplayName("Auth User")]
+        [ScaffoldColumn(false)]
         [JsonProperty(PropertyName = "authUser")]
         public string AuthUser { get; set; }
 
@@ -21,6 +23,7 @@ namespace B2BPortal.Models
         /// Date this PreAuth record was created
         /// </summary>
         [DisplayName("Create Date")]
+        [ScaffoldColumn(false)]
         [JsonProperty(PropertyName = "createDate")]
         public DateTime CreateDate { get; set; }
 
@@ -30,6 +33,7 @@ namespace B2BPortal.Models
         /// in the Groups array, the new Guest user will be added to those Groups.
         /// </summary>
         [DisplayName("Domain name")]
+        [Required(ErrorMessage = "Domain name (example.com) is required")]
         [JsonProperty(PropertyName = "domain")]
         public string Domain { get; set; }
 
@@ -42,7 +46,15 @@ namespace B2BPortal.Models
         public string InvitationTemplate { get; set; }
 
         /// <summary>
-        /// Users matching the domain name will be automatically added to each group in this list
+        /// Optional link for guests approved via this tenant. After the email redemption link is clicked by the guest, and after
+        /// the redemption is complete, the user's browser will be automatically redirected to this link.
+        /// </summary>
+        [DisplayName("Redirect Link")]
+        [JsonProperty(PropertyName = "redirectLink")]
+        public string RedirectLink { get; set; }
+
+        /// <summary>
+        /// Optional - Users matching the domain name will be automatically added to each group in this list
         /// </summary>
         [JsonProperty(PropertyName = "groups")]
         [DisplayName("Auto-Assign Groups")]
@@ -50,6 +62,7 @@ namespace B2BPortal.Models
 
         [DisplayName("Groups List")]
         [JsonIgnore]
+        [ScaffoldColumn(false)]
         public string GroupsList { get; set; }
 
         public void Init()

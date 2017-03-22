@@ -8,11 +8,19 @@
 }
 <h2>@ViewBag.Title</h2>
 
-@using (Html.BeginForm("Approve", "Admin", FormMethod.Post))
+@if (ViewBag.Message != null)
 {
-<table border="1" style="table-layout">
+    <div class="alert alert-success alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        @ViewBag.Message
+    </div>
+}
+
+@using (Html.BeginForm("Approve", "Home", new { area = "Admin" }, FormMethod.Post))
+{
+<table id="tblPendingRequests" border="1" style="table-layout">
     <tr>
-        <th>
+        <th style="white-space:nowrap">
             <select class="form-control" id="GlobalApproval">
                 <option value="0">Approve all</option>
                 <option value="2">Deny all</option>
@@ -34,28 +42,28 @@
     @foreach (var request in Model)
     {
         <tr style="background-color:@pendingColor">
-            <td>
+            <td align="center">
                 <div class="btn-group" data-toggle="buttons">
                     <label class="btn btn-primary">
-                        <input type="radio" name="Disposition" value="0" autocomplete="off"> Approve
+                        <input type="radio" name="Disposition.@request.Id" value="0" autocomplete="off"> Approve
                     </label>
                     <label class="btn btn-primary">
-                        <input type="radio" name="Disposition" value="2" autocomplete="off"> Deny
+                        <input type="radio" name="Disposition.@request.Id" value="2" autocomplete="off"> Deny
                     </label>
                     <label class="btn btn-primary active">
-                        <input type="radio" name="Disposition" value="3" autocomplete="off" checked> Pending
+                        <input type="radio" name="Disposition.@request.Id" value="3" autocomplete="off" checked> Pending
                     </label>
                 </div>
             </td>
             <td>
                 @request.Id
                 <input type="hidden" name="Id" value="@request.Id" />
-                <input type="hidden" name="InternalComment" value="@request.InternalComment" />
+                <input type="hidden" name="EmailAddress.@request.Id" value="@request.EmailAddress" />
             </td>
             <td>@request.EmailAddress</td>
             <td>@request.Comment</td>
-            <td>@request.Status</td>
-            <td><textarea name="InternalComment" style="width:200px;" rows="2">@request.InternalComment</textarea></td>
+            <td style="font-size:.8em;">@request.Status</td>
+            <td><textarea name="InternalComment.@request.Id" style="width:200px;" rows="2">@request.InternalComment</textarea></td>
         </tr>
     }
 </table>
@@ -70,8 +78,32 @@
             padding:7px;
         }
         #GlobalApproval {
-            width:160px;
+            width:170px;
             display:inline-block;
+        }
+        @@media all and (max-width:1199px) {
+            #tblPendingRequests div.btn-group label.btn {
+                width:62px;
+                font-size:.85em;
+            }
+            #tblPendingRequests td, #tblPendingRequests th {
+                font-size:.8em;
+                padding:3px;
+            }
+        }
+        @@media all and (max-width:991px) {
+            #tblPendingRequests div.btn-group label.btn {
+                width:54px;
+                font-size:.8em;
+            }
+            #tblPendingRequests td, #tblPendingRequests th {
+                font-size:.8em;
+                padding:3px;
+            }
+            #GlobalApproval {
+                font-size:.95em;
+                width:120px!important;
+            }
         }
     </style>
 }

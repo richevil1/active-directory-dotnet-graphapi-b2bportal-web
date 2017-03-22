@@ -18,33 +18,22 @@ namespace B2BPortal.Rules
                 var domain = request.EmailAddress.Split('@')[1];
 
                 //check to see if this domain has been approved for pre-authentication
-                var approvedDomainSettings = (await DocDBRepo<PreAuthDomain>.GetItemsAsync(d => d.Domain == domain && d.DocType==DocTypes.PreAuthDomains)).SingleOrDefault();
+                var approvedDomainSettings = (await DocDBRepo<PreAuthDomain>.GetItemsAsync(d => d.Domain == domain && d.DocType == DocTypes.PreAuthDomains)).SingleOrDefault();
                 if (approvedDomainSettings != null)
                 {
-                    //perform the guest invite, then update the record
-                    //todo: wrap in a tx?
-
-                    //INVITE
-                    request.Status = await InviteManager.SendInvitation(request);
-
-                    //UPDATE
-                    request.AuthUser = approvedDomainSettings.AuthUser;
-                    request.Disposition = Disposition.AutoApproved;
+                    request = await ExecuteDispositionAsync(request, approvedDomainSettings.AuthUser);
                 }
             }
 
-            await DocDBRepo<GuestRequest>.UpdateItemAsync(request.Id, request);
             return request;
         }
-        public static async Task<GuestRequest> ExecuteDispositionAsync(GuestRequest request, string approver)
-        {
-            request.Init();
-            var doc = await DocDBRepo<GuestRequest>.CreateItemAsync(request);
 
-            if (request.Disposition==Disposition.Approved)
+        public static async Task<GuestRequest> ExecuteDispositionAsync(GuestRequest request, string approver, string redirectLink=null)
+        {
+            if (request.Disposition == Disposition.Approved || request.Disposition == Disposition.AutoApproved)
             {
                 //INVITE
-                request.Status = await InviteManager.SendInvitation(request);
+                request.Status = await InviteManager.SendInvitation(request, redirectLink);
 
                 //UPDATE
                 request.AuthUser = approver;

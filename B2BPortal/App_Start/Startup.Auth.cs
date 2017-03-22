@@ -8,6 +8,7 @@ using Microsoft.IdentityModel.Protocols;
 using System.Configuration;
 using System.IdentityModel.Tokens;
 using B2BPortal.Infrastructure;
+using System;
 
 namespace B2BPortal
 {
@@ -28,13 +29,20 @@ namespace B2BPortal
         {
             app.SetDefaultSignInAsAuthenticationType(CookieAuthenticationDefaults.AuthenticationType);
 
+            //Func<CookieResponseSignInContext, Task> initAuthAsync = async ctx =>
+            //{
+            //    ctx.Identity = await StartupAuth.InitAuthAsync(ctx);
+            //};
+
             var authProvider = new CookieAuthenticationProvider
             {
                 OnResponseSignIn = ctx =>
                 {
-                    ctx.Identity = StartupAuth.InitAuthAsync(ctx).Result;
+                    //initAuthAsync(ctx).Wait(8000);
+                    StartupAuth.InitAuth(ctx);
                 }
             };
+
             var cookieOptions = new CookieAuthenticationOptions
             {
                 Provider = authProvider

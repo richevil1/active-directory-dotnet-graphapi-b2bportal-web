@@ -43,6 +43,12 @@ namespace B2BPortal.Areas.Admin.Controllers
             ViewBag.Operation = "Edit";
             return View(domain);
         }
+        public async Task<ActionResult> Details(string id)
+        {
+            PreAuthDomain domain = await DocDBRepo<PreAuthDomain>.GetItemAsync(id);
+            ViewBag.Operation = "Details";
+            return View(domain);
+        }
 
         [HttpPost]
         public async Task<ActionResult> Edit(PreAuthDomain domain)

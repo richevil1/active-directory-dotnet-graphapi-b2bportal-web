@@ -49,6 +49,14 @@
         </div>
 
         <div class="form-group">
+            @Html.LabelFor(model => model.RedirectLink, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.RedirectLink, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.RedirectLink, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
             @Html.LabelFor(model => model.GroupsList, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 @Html.EditorFor(model => model.GroupsList, new { htmlAttributes = new { @class = "form-control tokenfield" } })
@@ -66,12 +74,18 @@
 
 <div>
     @Html.ActionLink("Back to List", "Index")
+    @if (Model != null)
+    {
+    <span>|</span>
+    @Html.ActionLink("Delete", "Delete", new { id = Model.Id })
+    }
 </div>
 
 @section scripts {
-<script type="text/javascript">
-    $(function () {
-        $('.tokenfield').tokenfield();
-    });
-</script>    
+    <script type="text/javascript">
+        $(function () {
+            $('.tokenfield').tokenfield();
+
+        });
+    </script>
 }

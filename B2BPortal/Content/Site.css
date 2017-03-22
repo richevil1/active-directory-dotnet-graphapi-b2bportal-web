@@ -24,6 +24,10 @@ textarea {
   max-width: 280px;
   vertical-align: middle;
 }
+div.tokenfield.form-control {
+  max-width: 280px!important;
+  vertical-align: middle;
+}
 
 td,tr {
     padding-top: 5px;
@@ -31,4 +35,3 @@ td,tr {
     padding-left: 5px;
     padding-right: 5px;
 }
-

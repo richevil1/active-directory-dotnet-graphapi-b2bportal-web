@@ -295,8 +295,8 @@
     <Content Include="Areas\Admin\Views\_ViewStart.cshtml" />
     <Content Include="Areas\Admin\Views\Shared\_Layout.cshtml" />
     <Content Include="Areas\Admin\Views\PreApproval\Index.cshtml" />
-    <Content Include="Areas\Admin\Views\PreApproval\Create.cshtml" />
     <Content Include="Areas\Admin\Views\PreApproval\Edit.cshtml" />
+    <Content Include="Areas\Admin\Views\PreApproval\Details.cshtml" />
     <None Include="Properties\PublishProfiles\B2BPortal20170316124654 - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-3.1.1.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
@@ -335,7 +335,6 @@
     <Content Include="settings.config">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="settingsOrg.config" />
     <Content Include="Areas\Admin\Views\Home\Index.cshtml" />
     <Content Include="Views\Profile\Index.cshtml" />
     <Content Include="Views\Home\SignUp.cshtml" />

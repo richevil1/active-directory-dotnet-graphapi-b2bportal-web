@@ -142,6 +142,10 @@ namespace B2BPortal.Infrastructure
             g = g.Replace("-", "");
             return g;
         }
+        public static string Pluralize(int count, string word)
+        {
+            return (count == 1) ? word : string.Format("{0}s", word); 
+        }
 
         public static string GetHtmlMessageWrapper(string title, string body)
         {

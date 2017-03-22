@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Security.Claims;
 using System.Web;
-using Microsoft.Ajax.Utilities;
-using Microsoft.Owin;
 using Microsoft.Owin.Security.Cookies;
-using System.Web.Mvc;
-using Newtonsoft.Json;
 using B2BPortal.Infrastructure;
 using B2BPortal.B2B;
 using System.Threading.Tasks;
@@ -17,17 +12,18 @@ namespace B2BPortal
 {
     public static class StartupAuth
     {
-        public static async Task<ClaimsIdentity> InitAuthAsync(CookieResponseSignInContext ctx)
+        public static ClaimsIdentity InitAuth(CookieResponseSignInContext ctx)
         {
             var ident = ctx.Identity;
             var hctx =
                 (HttpContextWrapper)
                     ctx.Request.Environment.Single(e => e.Key == "System.Web.HttpContextBase").Value;
 
-            return await InitAuthAsync(ident, hctx);
+            var initResults = InitAuth(ident, hctx);
+            return initResults;
         }
 
-        private static async Task<ClaimsIdentity> InitAuthAsync(ClaimsIdentity ident, HttpContextBase hctx)
+        private static ClaimsIdentity InitAuth(ClaimsIdentity ident, HttpContextBase hctx)
         {
             try
             {
@@ -38,7 +34,7 @@ namespace B2BPortal
                     return ident;
                 }
 
-                ident = await TransformClaimsAsync(ident);
+                ident = TransformClaims(ident);
 
                 return ident;
             }
@@ -50,13 +46,13 @@ namespace B2BPortal
                 throw;
             }
         }
-        private static async Task<ClaimsIdentity> TransformClaimsAsync(ClaimsIdentity ident)
+        private static ClaimsIdentity TransformClaims(ClaimsIdentity ident)
         {
             var issuer = ident.Claims.First().Issuer;
 
             ident.AddClaim(new Claim(CustomClaimTypes.AuthType, AuthTypes.Local));
 
-            var roles = await InviteManager.GetDirectoryRolesAsync(ident.GetClaim(ClaimTypes.Upn));
+            var roles = InviteManager.GetDirectoryRoles(ident.GetClaim(ClaimTypes.Upn));
 
             foreach(var role in roles)
             {

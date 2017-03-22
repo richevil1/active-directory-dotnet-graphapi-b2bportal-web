@@ -12,7 +12,7 @@ namespace B2BPortal.Controllers
                 return RedirectToAction("Index", new  { controller = "Home", action = "Index", area = "Admin" });
             }
 
-            ViewBag.Title = "Request guess access.";
+            ViewBag.Title = string.Format("Request guess access to the {0} org", Settings.InvitingOrganization);
             return View();
         }
 
