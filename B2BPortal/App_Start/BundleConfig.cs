@@ -10,7 +10,8 @@ namespace B2BPortal
         {
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
                         "~/Scripts/jquery-{version}.js",
-                        "~/Scripts/bootstrap-tokenfield.js"));
+                        "~/Scripts/bootstrap-tokenfield.js",
+                        "~/scripts/app/global.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/jqueryval").Include(
                         "~/Scripts/jquery.validate*"));

@@ -1,4 +1,5 @@
-﻿@model B2BPortal.Models.PreAuthDomain
+﻿@using B2BPortal.Infrastructure
+@model AzureB2BInvite.Models.PreAuthDomain
 
 @{
     ViewBag.Title = "Pre-Auth Domains";
@@ -17,69 +18,82 @@
         @Html.HiddenFor(model => model.Id)
 
         <div class="form-group">
-            @Html.LabelFor(model => model.AuthUser, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.AuthUser, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.AuthUser, "", new { @class = "text-danger" })
+            @Html.LabelFor(model => model.DomainName, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-3">
+                @Html.EditorFor(model => model.DomainName, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.DomainName, "", new { @class = "text-danger" })
             </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.CreateDate, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.CreateDate, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.CreateDate, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.Domain, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Domain, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Domain, "", new { @class = "text-danger" })
+            <div class="col-md-7">
+                Enter a domain name, like "microsoft.com". Any potential guests that register with a login matching that domain name
+                will be automatically pre-registered. Any other registrations will be pended in the approval queue. If you selected
+                "Require Preauth" in your Site Config, then ONLY users with matching logins will be accepted.
             </div>
         </div>
 
         <div class="form-group">
             @Html.LabelFor(model => model.InvitationTemplate, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.InvitationTemplate, new { htmlAttributes = new { @class = "form-control" } })
+            <div class="col-md-3">
+                @Html.DropDownListFor(model => model.InvitationTemplate, (ViewBag.TemplateList as IEnumerable<SelectListItem>), new { @class = "form-control input-sm" })
                 @Html.ValidationMessageFor(model => model.InvitationTemplate, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-md-7">
+                (optional) - Select an invitation template.
+                @if (Settings.UseSMTP)
+                {
+                    <div>
+                        This template will be used to create the invitation message that is emailed.
+                        Use the "Manage Mail Templates" admin tool to create and manage templates.
+                    </div>
+                }
+                else
+                {
+                    <div>
+                        This text will be added to the default B2B invitation email sent by Azure Active
+                        Directory to your approved invitees. Use the "Manage Mail Templates" admin tool
+                        to create and manage templates.
+                    </div>
+                }
             </div>
         </div>
 
         <div class="form-group">
             @Html.LabelFor(model => model.RedirectLink, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
+            <div class="col-md-3">
                 @Html.EditorFor(model => model.RedirectLink, new { htmlAttributes = new { @class = "form-control" } })
                 @Html.ValidationMessageFor(model => model.RedirectLink, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-md-7">
+                This is the link that pre-authenticated users from this domain will be redirected to after
+                successfully reedeeming their B2B invitation. If this is left empty, they will be redirected
+                to the profile editor here, and after that, they'll be taken to
+                <a href="https://myapps.microsoft.com" target="_blank">https://myapps.microsoft.com</a>.
             </div>
         </div>
 
         <div class="form-group">
             @Html.LabelFor(model => model.GroupsList, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
+            <div class="col-md-3">
                 @Html.EditorFor(model => model.GroupsList, new { htmlAttributes = new { @class = "form-control tokenfield" } })
                 @Html.ValidationMessageFor(model => model.GroupsList, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-md-7">
+                (coming soon) - For all group names entered here, users that are automatically pre-authenticated from this domain
+                will also automatically be added to these groups in your Azure Active Directory tenant.
             </div>
         </div>
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Save" class="btn btn-default" />
+                <input type="submit" value="Save" class="btn btn-primary" />
+                @if (Model != null)
+                {
+                    @Html.ActionLink("Delete", "Delete", new { area = "admin" }, new { @class = "btn btn-warning", id = Model.Id })
+                }
+                @Html.ActionLink("Back to List", "Index", new { area = "admin" }, new { @class = "btn btn-default" })
             </div>
         </div>
     </div>
 }
-
-<div>
-    @Html.ActionLink("Back to List", "Index")
-    @if (Model != null)
-    {
-    <span>|</span>
-    @Html.ActionLink("Delete", "Delete", new { id = Model.Id })
-    }
-</div>
 
 @section scripts {
     <script type="text/javascript">

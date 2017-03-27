@@ -1,14 +1,14 @@
 ﻿using System;
-using B2BPortal.B2B;
 using B2BPortal.Data;
 using B2BPortal.Infrastructure.Filters;
-using B2BPortal.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using B2BPortal.Infrastructure;
-using B2BPortal.Rules;
 using System.IdentityModel.Claims;
+using AzureB2BInvite.Models;
+using B2BPortal.Interfaces;
+using AzureB2BInvite.Rules;
 
 namespace B2BPortal.Areas.Admin.Controllers
 {
@@ -18,7 +18,12 @@ namespace B2BPortal.Areas.Admin.Controllers
         // GET: Admin
         public async Task<ActionResult> Index()
         {
-            IEnumerable<GuestRequest> pendingRequests = await DocDBRepo<GuestRequest>.GetItemsAsync(i => i.Disposition == Disposition.Pending && i.DocType == DocTypes.GuestRequest);
+            if (!Settings.SiteConfigReady)
+            {
+                return RedirectToAction("Index", new { controller = "SiteConfig", action = "Index", area = "Admin" });
+            }
+
+            IEnumerable<GuestRequest> pendingRequests = await DocDBRepo.DB<GuestRequest>.GetItemsAsync(i => i.Disposition == Disposition.Pending);
             
             return View(pendingRequests);
         }
@@ -27,7 +32,9 @@ namespace B2BPortal.Areas.Admin.Controllers
         public async Task<ActionResult> Approve()
         {
             var approveCount = 0;
-            var requestList = await DocDBRepo<GuestRequest>.GetItemsAsync(r => r.Disposition == Disposition.Pending && r.DocType == DocTypes.GuestRequest);
+            var deniedCount = 0;
+            var requestList = await GuestRequestRules.GetPendingRequestsAsync();
+
             foreach (var request in requestList)
             {
                 var strDisposition = Request.Form[string.Format("Disposition.{0}", request.Id)];
@@ -40,6 +47,10 @@ namespace B2BPortal.Areas.Admin.Controllers
                 {
                     approveCount++;
                 }
+                if (disposition == Disposition.Denied)
+                {
+                    deniedCount++;
+                }
                 request.Disposition = disposition;
                 request.InternalComment = Request.Form[string.Format("InternalComment.{0}", request.Id)];
 
@@ -47,9 +58,9 @@ namespace B2BPortal.Areas.Admin.Controllers
                 var res = await GuestRequestRules.ExecuteDispositionAsync(request, User.Identity.GetClaim(ClaimTypes.Upn));
             }
 
-            requestList = await DocDBRepo<GuestRequest>.GetItemsAsync(r => r.Disposition == Disposition.Pending && r.DocType == DocTypes.GuestRequest);
+            requestList = await GuestRequestRules.GetPendingRequestsAsync();
 
-            ViewBag.Message = string.Format("{0} {1} approved, invitations sent.", approveCount, Utils.Pluralize(approveCount, "request"));
+            ViewBag.Message = string.Format("{0} {1} approved, {2} {3} denied, invitations sent.", approveCount, Utils.Pluralize(approveCount, "request"), deniedCount, Utils.Pluralize(deniedCount, "request"));
             return View("Index", requestList);
         }
     }

@@ -48,8 +48,12 @@
       <HintPath>..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Azure.Documents.Client, Version=1.12.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Azure.DocumentDB.1.12.2\lib\net45\Microsoft.Azure.Documents.Client.dll</HintPath>
+    <Reference Include="HtmlAgilityPack, Version=1.4.9.5, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
+      <HintPath>..\packages\HtmlAgilityPack.1.4.9.5\lib\Net45\HtmlAgilityPack.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Azure.Documents.Client, Version=1.13.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Azure.DocumentDB.1.13.0\lib\net45\Microsoft.Azure.Documents.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Azure.KeyVault.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -81,12 +85,12 @@
       <HintPath>..\packages\Microsoft.Graph.Core.1.3.0\lib\portable45-net45+win8+wpa81\Microsoft.Graph.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory, Version=3.13.8.999, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.3.13.8\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.dll</HintPath>
+    <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory, Version=3.13.9.1126, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.3.13.9\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory.Platform, Version=3.13.8.999, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.3.13.8\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.Platform.dll</HintPath>
+    <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory.Platform, Version=3.13.9.1126, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.3.13.9\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.Platform.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.IdentityModel.Logging, Version=1.1.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -123,10 +127,6 @@
     </Reference>
     <Reference Include="Microsoft.WindowsAzure.Configuration, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.WindowsAzure.ConfigurationManager.3.2.3\lib\net40\Microsoft.WindowsAzure.Configuration.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.WindowsAzure.Storage, Version=8.1.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\WindowsAzure.Storage.8.1.1\lib\net45\Microsoft.WindowsAzure.Storage.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -219,6 +219,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="api\AdminController.cs" />
+    <Compile Include="api\PreauthController.cs" />
     <Compile Include="App_Start\ApiConfig.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\InitAuth.cs" />
@@ -226,14 +227,13 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
+    <Compile Include="Areas\Admin\Controllers\InviteTemplateController.cs" />
     <Compile Include="Areas\Admin\Controllers\PreApprovalController.cs" />
-    <Compile Include="B2B\AdalUtil.cs" />
-    <Compile Include="B2B\InviteManager.cs" />
+    <Compile Include="Areas\Admin\Controllers\SiteConfigController.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Areas\Admin\Controllers\HomeController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ProfileController.cs" />
-    <Compile Include="Data\DocDBRepo.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -241,22 +241,14 @@
     <Compile Include="Infrastructure\CombineExpressions.cs" />
     <Compile Include="Infrastructure\Filters\AuthorizedInviterAttribute.cs" />
     <Compile Include="Infrastructure\Filters\CheckVisitorAttribute.cs" />
+    <Compile Include="Infrastructure\HtmlSanitizer.cs" />
     <Compile Include="Infrastructure\IdentityExtensions.cs" />
     <Compile Include="Infrastructure\Logging.cs" />
-    <Compile Include="Infrastructure\MailSender.cs" />
     <Compile Include="Infrastructure\Settings.cs" />
     <Compile Include="Infrastructure\Utils.cs" />
-    <Compile Include="Models\DocModelBase.cs" />
-    <Compile Include="Models\Enums.cs" />
-    <Compile Include="Models\GraphMemberRole.cs" />
-    <Compile Include="Models\GraphRoleUser.cs" />
-    <Compile Include="Models\GuestRequest.cs" />
-    <Compile Include="Models\GraphEmail.cs" />
-    <Compile Include="Models\GraphInvitation.cs" />
-    <Compile Include="Models\InviteResponse.cs" />
-    <Compile Include="Models\PreAuthDomains.cs" />
+    <Compile Include="Models\InviteTemplate.cs" />
+    <Compile Include="Models\SiteConfig.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Rules\GuestRequestRules.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -267,14 +259,22 @@
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\images\AADB2B.png" />
+    <Content Include="Content\images\ajax-loader.png" />
     <Content Include="Content\images\CheckNo.png" />
     <Content Include="Content\images\CheckYes.png" />
     <Content Include="Content\images\download.png" />
+    <Content Include="Content\images\error.png" />
+    <Content Include="Content\images\info.png" />
+    <Content Include="Content\images\LockUnlock.jpg" />
     <Content Include="Content\images\service.png" />
+    <Content Include="Content\images\success.png" />
+    <Content Include="Content\images\warning.png" />
     <Content Include="Content\tokenfield-typeahead.css" />
     <Content Include="Content\tokenfield-typeahead.min.css" />
+    <Content Include="Scripts\app\global.js" />
     <Content Include="Scripts\bootstrap-tokenfield.js" />
     <Content Include="Scripts\bootstrap-tokenfield.min.js" />
+    <Content Include="Templates\B2BDefaultInvite.html" />
     <Content Include="Templates\BodyTemplate-Basic.htm" />
     <Content Include="Templates\Base\MailTemplate.htm" />
     <Content Include="Templates\Base\MailTemplatePlain.htm" />
@@ -297,6 +297,13 @@
     <Content Include="Areas\Admin\Views\PreApproval\Index.cshtml" />
     <Content Include="Areas\Admin\Views\PreApproval\Edit.cshtml" />
     <Content Include="Areas\Admin\Views\PreApproval\Details.cshtml" />
+    <Content Include="Areas\Admin\Views\SiteConfig\List.cshtml" />
+    <Content Include="Areas\Admin\Views\SiteConfig\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\SiteConfig\Edit.cshtml" />
+    <Content Include="Areas\Admin\Views\SiteConfig\HistoryDetail.cshtml" />
+    <Content Include="Areas\Admin\Views\InviteTemplate\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\InviteTemplate\Details.cshtml" />
+    <Content Include="Areas\Admin\Views\InviteTemplate\Edit.cshtml" />
     <None Include="Properties\PublishProfiles\B2BPortal20170316124654 - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-3.1.1.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
@@ -332,15 +339,14 @@
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
-    <Content Include="settings.config">
-      <SubType>Designer</SubType>
-    </Content>
     <Content Include="Areas\Admin\Views\Home\Index.cshtml" />
-    <Content Include="Views\Profile\Index.cshtml" />
     <Content Include="Views\Home\SignUp.cshtml" />
     <Content Include="Views\Home\Claims.cshtml" />
     <Content Include="Views\Profile\SignUp.cshtml" />
     <Content Include="Views\Shared\PreAuthError.cshtml" />
+    <Content Include="Views\Home\NoConfig.cshtml" />
+    <Content Include="Views\Home\TOS.cshtml" />
+    <Content Include="Views\Profile\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Areas\Admin\Models\" />
@@ -348,9 +354,22 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
-    <None Include="Project_Readme.html" />
     <Content Include="Scripts\jquery-3.1.1.slim.min.map" />
     <Content Include="Scripts\jquery-3.1.1.min.map" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AzureB2BInvite\AzureB2BInvite.csproj">
+      <Project>{945d0fb2-77c0-4236-b742-15296ce42dc9}</Project>
+      <Name>AzureB2BInvite</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\B2BPortal.Data\B2BPortal.Data.csproj">
+      <Project>{d2f0f9ca-ba84-45f0-810a-e76d51bedbc7}</Project>
+      <Name>B2BPortal.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\B2BPortal.Interfaces\B2BPortal.Interfaces.csproj">
+      <Project>{c63718dc-92b5-46b9-b340-c0c8c23c649d}</Project>
+      <Name>B2BPortal.Interfaces</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -386,9 +405,9 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Microsoft.Net.Compilers.2.0.1\build\Microsoft.Net.Compilers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Net.Compilers.2.0.1\build\Microsoft.Net.Compilers.props'))" />
     <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.3\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.3\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
-    <Error Condition="!Exists('..\packages\Microsoft.Azure.DocumentDB.1.12.2\build\Microsoft.Azure.DocumentDB.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Azure.DocumentDB.1.12.2\build\Microsoft.Azure.DocumentDB.targets'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.Azure.DocumentDB.1.13.0\build\Microsoft.Azure.DocumentDB.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Azure.DocumentDB.1.13.0\build\Microsoft.Azure.DocumentDB.targets'))" />
   </Target>
-  <Import Project="..\packages\Microsoft.Azure.DocumentDB.1.12.2\build\Microsoft.Azure.DocumentDB.targets" Condition="Exists('..\packages\Microsoft.Azure.DocumentDB.1.12.2\build\Microsoft.Azure.DocumentDB.targets')" />
+  <Import Project="..\packages\Microsoft.Azure.DocumentDB.1.13.0\build\Microsoft.Azure.DocumentDB.targets" Condition="Exists('..\packages\Microsoft.Azure.DocumentDB.1.13.0\build\Microsoft.Azure.DocumentDB.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

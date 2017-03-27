@@ -1,0 +1,32 @@
+﻿@using B2BPortal.Infrastructure
+
+@{
+    ViewBag.Title = "TOS";
+    var TOSContent = ViewBag.TOSContent;
+    bool isHtml = (TOSContent.IndexOf('<') > -1);
+}
+
+<h2>@Settings.CurrSiteConfig.SiteName</h2>
+<h4>Terms Of Service</h4>
+@if (isHtml)
+{
+    <hr />
+    @Html.Raw(TOSContent)
+}
+else
+{
+    <pre>@TOSContent</pre>
+}
+<div class="form-group">
+    <button class="btn btn-default" id="btnClose">Close</button>
+</div>
+@section scripts
+{
+<script type="text/javascript">
+    $(function () {
+        $("#btnClose").on("click", function () {
+            window.close();
+        });
+    });
+</script>    
+}

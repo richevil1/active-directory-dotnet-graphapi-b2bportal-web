@@ -1,14 +1,13 @@
 # Azure Active Directory/ASP.Net MVC/GraphAPI B2BPortal
 ## Sample/Prototype project enabling self-service B2B capabilities for an Azure AD Tenant
 ## Quick Start
-<img src="http://azuredeploy.net/deploybutton.png"/>
 
-(coming soon)
-
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https://raw.githubusercontent.com/Azure/active-directory-dotnet-graphapi-b2bportal-web/master/azuredeploy.json" target="_blank"><img src="http://azuredeploy.net/deploybutton.png"/></a>
 
 __Details__
 * Allows self-service provisioning of guest accounts in a tenant. Portal enables this via API calls to the Microsoft Graph
-* Deploys the following:
+* Leverages Azure DocumentDB. For development, a downloadable emulator is available: https://aka.ms/documentdb-emulator
+* ARM template deploys the following:
   * Azure Web App
   * Azure DocumentDB
 * Requires the following:

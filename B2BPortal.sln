@@ -5,12 +5,18 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "B2BPortal", "B2BPortal\B2BPortal.csproj", "{A5D901A4-0743-4328-BD6A-1F3FAEBCA56E}"
 EndProject
-Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "B2BPortalDeploy", "B2BPortalDeploy\B2BPortalDeploy.deployproj", "{53264DEB-08A6-4EC3-80CD-6B2F54EBED60}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9AFBD835-1D40-4F5A-A575-65A4FB0D2D63}"
 	ProjectSection(SolutionItems) = preProject
+		azuredeploy.json = azuredeploy.json
+		azuredeploy.parameters.json = azuredeploy.parameters.json
 		README.md = README.md
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureB2BInvite", "AzureB2BInvite\AzureB2BInvite.csproj", "{945D0FB2-77C0-4236-B742-15296CE42DC9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "B2BPortal.Data", "B2BPortal.Data\B2BPortal.Data.csproj", "{D2F0F9CA-BA84-45F0-810A-E76D51BEDBC7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "B2BPortal.Interfaces", "B2BPortal.Interfaces\B2BPortal.Interfaces.csproj", "{C63718DC-92B5-46B9-B340-C0C8C23C649D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -22,10 +28,18 @@ Global
 		{A5D901A4-0743-4328-BD6A-1F3FAEBCA56E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A5D901A4-0743-4328-BD6A-1F3FAEBCA56E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A5D901A4-0743-4328-BD6A-1F3FAEBCA56E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{53264DEB-08A6-4EC3-80CD-6B2F54EBED60}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{53264DEB-08A6-4EC3-80CD-6B2F54EBED60}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{53264DEB-08A6-4EC3-80CD-6B2F54EBED60}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{53264DEB-08A6-4EC3-80CD-6B2F54EBED60}.Release|Any CPU.Build.0 = Release|Any CPU
+		{945D0FB2-77C0-4236-B742-15296CE42DC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{945D0FB2-77C0-4236-B742-15296CE42DC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{945D0FB2-77C0-4236-B742-15296CE42DC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{945D0FB2-77C0-4236-B742-15296CE42DC9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D2F0F9CA-BA84-45F0-810A-E76D51BEDBC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2F0F9CA-BA84-45F0-810A-E76D51BEDBC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2F0F9CA-BA84-45F0-810A-E76D51BEDBC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2F0F9CA-BA84-45F0-810A-E76D51BEDBC7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C63718DC-92B5-46B9-B340-C0C8C23C649D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C63718DC-92B5-46B9-B340-C0C8C23C649D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C63718DC-92B5-46B9-B340-C0C8C23C649D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C63718DC-92B5-46B9-B340-C0C8C23C649D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

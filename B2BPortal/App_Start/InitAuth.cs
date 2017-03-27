@@ -5,8 +5,8 @@ using System.Security.Claims;
 using System.Web;
 using Microsoft.Owin.Security.Cookies;
 using B2BPortal.Infrastructure;
-using B2BPortal.B2B;
 using System.Threading.Tasks;
+using AzureB2BInvite;
 
 namespace B2BPortal
 {
@@ -28,7 +28,7 @@ namespace B2BPortal
             try
             {
                 //if this is a multi-tenant visitor, we don't need to do anything here
-                if (ident.GetClaim(CustomClaimTypes.TenantId) != Settings.TenantID)
+                if (ident.GetClaim(CustomClaimTypes.TenantId) != AdalUtil.Settings.TenantID)
                 {
                     ident.AddClaim(new Claim(CustomClaimTypes.AuthType, AuthTypes.B2EMulti));
                     return ident;
@@ -52,9 +52,25 @@ namespace B2BPortal
 
             ident.AddClaim(new Claim(CustomClaimTypes.AuthType, AuthTypes.Local));
 
-            var roles = InviteManager.GetDirectoryRoles(ident.GetClaim(ClaimTypes.Upn));
+            if (!ident.HasClaim(ClaimTypes.Email))
+            {
+                var name = ident.GetClaim(ClaimTypes.Name);
+                if (name.IndexOf("@") > -1)
+                {
+                    ident.AddClaim(new Claim(ClaimTypes.Email, name));
+                }
+                else
+                {
+                    var upn = ident.GetClaim(ClaimTypes.Upn);
+                    if (upn.IndexOf("@") > -1)
+                    {
+                        ident.AddClaim(new Claim(ClaimTypes.Email, upn));
+                    }
+                }
+            }
 
-            foreach(var role in roles)
+            var roles = InviteManager.GetDirectoryRoles(ident.GetClaim(ClaimTypes.Name));
+            foreach (var role in roles)
             {
                 ident.AddClaim(new Claim(ClaimTypes.Role, role.DisplayName));
             }

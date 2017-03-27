@@ -1,76 +1,146 @@
 ﻿@using B2BPortal.Infrastructure
 @using System.Security.Claims
-@{ 
-    string Email="", FirstName="", LastName="";
+@using AzureB2BInvite
+
+@{
+    ViewBag.Title = Settings.CurrSiteConfig.SiteName;
+    string Email = "", FirstName = "", LastName = "";
     bool PreAuthed = false;
     //pick up the form pre-fills - if the user has PreAuthed via the multi-tenant app
-    if (User.Identity.IsAuthenticated && (Utils.GetClaim(CustomClaimTypes.TenantId) != Settings.TenantID))
+    if (User.Identity.IsAuthenticated && (Utils.GetClaim(CustomClaimTypes.TenantId) != AdalUtil.Settings.TenantID))
     {
         Email = (Utils.GetClaim(ClaimTypes.Email)) == null ? Utils.GetClaim(ClaimTypes.Name) : Utils.GetClaim(ClaimTypes.Email);
         FirstName = Utils.GetClaim(ClaimTypes.GivenName);
         LastName = Utils.GetClaim(ClaimTypes.Surname);
         PreAuthed = true;
     }
+    var requirePreauth = Settings.CurrSiteConfig.RequirePreauth;
+    var btnDisabled = (requirePreauth && PreAuthed) ? "" : "disabled";
 }
 <h3>@ViewBag.Title</h3>
-
-@using (Html.BeginForm("SignUp", "Profile", FormMethod.Post))
-{
-    <input type="hidden" name="PreAuthed" value="@PreAuthed.ToString().ToLower()" />
-
-    <div class="form-group">
-        <label for="EmailAddress">
-            Email Address
-        </label>
-        <input class="form-control" type="text" value="@Email" id="EmailAddress" name="EmailAddress" placeholder="Email">
-    </div>
-    <div class="form-group">
-        <label for="FirstName">
-            First Name
-        </label>
-        <input class="form-control" value="@FirstName" type="text" id="FirstName" name="FirstName" placeholder="First Name">
-    </div>
-    <div class="form-group">
-        <label for="LastName">
-            Last Name
-        </label>
-        <input class="form-control" value="@LastName" type="text" id="LastName" name="LastName" placeholder="Last Name">
-    </div>
-    if (PreAuthed)
-    {
-        <div class="form-group">
-            <label for="PreAuthed">
-                Pre-Authenticated
-            </label>
-            <img src="~/Content/images/CheckYes.png" />
-        </div>
-    }
-    <div class="form-group buttons">
-        <button class="btn btn-primary btn-default" type="submit">Request Access</button>
-        @if (!PreAuthed)
+<div class="row">
+    <div class="col-sm-5">
+        @using (Html.BeginForm("SignUp", "Profile", FormMethod.Post))
         {
-        <button class="btn btn-default" id="btnPreAuth" type="button">Pre-Auth *</button>
-        <p>
-            *Pre-Auth: Click this button to login with your existing work credentials.
-        </p>
+            <input type="hidden" name="PreAuthed" value="@PreAuthed.ToString().ToLower()" />
+
+            <div class="form-group">
+                <label for="EmailAddress">
+                    Email Address
+                </label>
+                <input class="form-control" type="text" value="@Email" id="EmailAddress" name="EmailAddress" placeholder="Email">
+            </div>
+            <div class="form-group">
+                <label for="FirstName">
+                    First Name
+                </label>
+                <input class="form-control" value="@FirstName" type="text" id="FirstName" name="FirstName" placeholder="First Name">
+            </div>
+            <div class="form-group">
+                <label for="LastName">
+                    Last Name
+                </label>
+                <input class="form-control" value="@LastName" type="text" id="LastName" name="LastName" placeholder="Last Name">
+            </div>
+            <div class="form-group">
+                <label for="Comment">
+                    Request Comment
+                </label>
+                <input class="form-control" type="text" id="Comment" name="Comment" placeholder="Add optional comment...">
+            </div>
+            if (PreAuthed)
+            {
+                <div class="form-group">
+                    <label for="PreAuthed">
+                        Pre-Authenticated
+                    </label>
+                    <img src="~/Content/images/CheckYes.png" />
+                </div>
+            }
+            if (Settings.CurrSiteConfig.RequireTOSAgreement)
+            {
+                <div class="form-group">
+                    <label for="TOSAgreed" style="padding-top:4px;">
+                        Agree with our @Html.ActionLink("Terms of Service", "TOS", "Home", new { area = "" }, new { target = "_blank" })?
+                    </label>
+                    <input type="checkbox" id="TOSAgreed" name="TOSAgreed">
+                </div>
+            }
+
+            <div class="form-group buttons">
+                <button id="btnSubmit" @btnDisabled class="btn btn-primary btn-default" type="submit">Request Access</button>
+            </div>
         }
     </div>
-}
+    <div class="col-sm-7">
+        <p class="welcome">@Settings.CurrSiteConfig.WelcomeMessage</p>
+
+        @if (Settings.CurrSiteConfig.RequirePreauth)
+        {
+            <blockquote style="font-size:.9em;">
+                <b>Note:</b>
+                <p>
+                    Registration requires that you are pre-authenticated.
+                </p>
+                <p>
+                    Once you enter your email address, it will be validated against a list of approved domains.
+                    If validation succeeds, you will be IMMEDIATELY REDIRECTED, asked to log in with the
+                    credentials associated with that email, and then asked to authorize our pre-auth
+                    application.
+                </p>
+                <p>
+                    Once that is complete, you will be returned here to complete your access request.
+                </p>
+            </blockquote>
+            <div id="noPreAuth" class="alert alert-danger hidden" role="alert">Sorry, you don't appear to be authorized for registration at this time.</div>
+        }
+    </div>
+</div>
 @section styles {
     <style type="text/css">
         div.buttons button {
-            width:150px;
-            margin:10px;
+            width: 150px;
+            margin: 10px;
         }
-    </style>    
+
+        #TOSAgreed {
+            margin: 12px;
+        }
+
+        p.welcome {
+            padding: 10px;
+            margin: 10px -10px;
+            background: #efefef;
+            font-size: 1.1em;
+            border: 1px solid #5a5a5a;
+        }
+    </style>
 }
 @section scripts {
-<script type="text/javascript">
-    $(function () {
-        $("#btnPreAuth").on("click", function () {
-            location.href='/Account/SignInWorkMulti';
-            return false;
+    <script type="text/javascript">
+        $(function () {
+            $("#btnPreAuth").on("click", function () {
+                location.href = '/Account/SignInWorkMulti';
+                return false;
+            });
+            $("#EmailAddress").on("blur", function () {
+                var email = $("#EmailAddress").val();
+                if (!SiteUtil.IsValidEmailAddress(email)) return;
+
+                var data = { Email: email }
+                SiteUtil.AjaxCall("/api/PreAuth/CheckDomain", data, function (redirect) {
+                    if (redirect) {
+                        location.href = '/Account/SignInWorkMulti';
+                    } else {
+                        @{
+                            if (requirePreauth)
+                            {
+                                @:$("#noPreAuth").removeClass("hidden");
+                            }
+                         }
+                    }
+                }, "POST");
+            });
         });
-    });
-</script>
+    </script>
 }

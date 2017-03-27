@@ -1,7 +1,5 @@
-﻿using B2BPortal.B2B;
-using B2BPortal.Data;
+﻿using B2BPortal.Data;
 using B2BPortal.Infrastructure;
-using B2BPortal.Models;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -12,6 +10,7 @@ using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using AzureB2BInvite;
 
 namespace B2BPortal
 {
@@ -19,57 +18,71 @@ namespace B2BPortal
     {
         protected void Application_Start()
         {
-            ControllerBuilder.Current.DefaultNamespaces.Add("B2BPortal.Controllers");
-            AreaRegistration.RegisterAllAreas();
-            FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
-            GlobalConfiguration.Configure(WebApiConfig.Register);
-            RouteConfig.RegisterRoutes(RouteTable.Routes);
-            BundleConfig.RegisterBundles(BundleTable.Bundles);
-            AntiForgeryConfig.UniqueClaimTypeIdentifier = "http://schemas.microsoft.com/identity/claims/objectidentifier";
+            try
+            {
+                ControllerBuilder.Current.DefaultNamespaces.Add("B2BPortal.Controllers");
+                AreaRegistration.RegisterAllAreas();
+                FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
+                GlobalConfiguration.Configure(WebApiConfig.Register);
+                RouteConfig.RegisterRoutes(RouteTable.Routes);
+                BundleConfig.RegisterBundles(BundleTable.Bundles);
+                AntiForgeryConfig.UniqueClaimTypeIdentifier = "http://schemas.microsoft.com/identity/claims/objectidentifier";
 
-            //Settings
-            Settings.InviterUPN = ConfigurationManager.AppSettings["ida:InviterUpn"];
-            Settings.AADInstanceLocal = ConfigurationManager.AppSettings["ida:AADInstanceLocal"];
-            Settings.AADInstanceMulti = ConfigurationManager.AppSettings["ida:AADInstanceMulti"];
-            Settings.TenantID = ConfigurationManager.AppSettings["ida:TenantId"];
+                //DocDB config
+                DocDBRepo.Settings.DocDBUri = ConfigurationManager.AppSettings["DocDBUri"];
+                DocDBRepo.Settings.DocDBAuthKey = ConfigurationManager.AppSettings["DocDBAuthKey"];
+                DocDBRepo.Settings.DocDBName = ConfigurationManager.AppSettings["DocDBName"];
+                DocDBRepo.Settings.DocDBCollection = ConfigurationManager.AppSettings["DocDBCollection"];
+                DocDBRepo.Initialize();
 
-            Settings.AppClientId_Admin = ConfigurationManager.AppSettings["ida:ClientId_Admin"];
-            Settings.AppClientSecret_Admin = ConfigurationManager.AppSettings["ida:ClientSecret_Admin"];
-            
-            Settings.GraphApiVersion = ConfigurationManager.AppSettings["GraphApiVersion"];
+                //Settings
+                var isConfig = Settings.LoadCurrSiteConfig().Result;
+                if (isConfig)
+                {
+                    //if new site, no config but invites are disabled until config is complete
+                    AdalUtil.Settings.InviterResponseEmailAddr = Settings.CurrSiteConfig.InviterResponseEmailAddr;
+                    MailSender.MailFrom = Settings.CurrSiteConfig.InviterResponseEmailAddr;
+                }
+                AdalUtil.Settings.AADInstanceLocal = ConfigurationManager.AppSettings["ida:AADInstanceLocal"];
+                AdalUtil.Settings.AADInstanceMulti = ConfigurationManager.AppSettings["ida:AADInstanceMulti"];
+                AdalUtil.Settings.TenantID = ConfigurationManager.AppSettings["ida:TenantId"];
 
-            Settings.StorageConnectionString = ConfigurationManager.AppSettings["StorageConnectionString"];
-            Settings.InviteRedirectUrl = ConfigurationManager.AppSettings["InviteRedirectUrl"];
-            Settings.InvitationEmailSubject = ConfigurationManager.AppSettings["InvitationEmailSubject"];
-            Settings.InvitingOrganization = ConfigurationManager.AppSettings["InvitingOrganization"];
-            Settings.InviterRoleNames = (ConfigurationManager.AppSettings["InviterRoleNames"] as string).Split(',');
-            Settings.AssignedInviterRole = ConfigurationManager.AppSettings["AssignedInviterRole"];
+                AdalUtil.Settings.AppClientId_Admin = ConfigurationManager.AppSettings["ida:ClientId_Admin"];
+                AdalUtil.Settings.AppClientSecret_Admin = ConfigurationManager.AppSettings["ida:ClientSecret_Admin"];
 
-            //SendGrid config
-            MailSender.MailEnabled = (ConfigurationManager.AppSettings["MailEnabled"] == "1");
-            MailSender.LogoPath = Server.MapPath(ConfigurationManager.AppSettings["MailLogoPath"]);
-            MailSender.MailTemplate = Settings.GetMailTemplate(ConfigurationManager.AppSettings["MailTemplateName"]);
-            MailSender.MailFrom = Settings.InviterUPN;
-            MailSender.MailServer = ConfigurationManager.AppSettings["MailServer"];
-            MailSender.MailServerPort = Convert.ToInt32(ConfigurationManager.AppSettings["SMTPPort"]);
-            MailSender.SMTPLogin = ConfigurationManager.AppSettings["SMTPLogin"];
-            MailSender.SMTPPassword = ConfigurationManager.AppSettings["SMTPPassword"];
+                AdalUtil.Settings.GraphApiVersion = ConfigurationManager.AppSettings["GraphApiVersion"];
 
-            //DocDB config
-            DocDBSettings.DocDBUri = ConfigurationManager.AppSettings["DocDBUri"];
-            DocDBSettings.DocDBAuthKey = ConfigurationManager.AppSettings["DocDBAuthKey"];
-            DocDBSettings.DocDBName = ConfigurationManager.AppSettings["DocDBName"];
-            DocDBSettings.DocDBCollection = ConfigurationManager.AppSettings["DocDBCollection"];
-            DocDBRepo<GuestRequest>.Initialize();
-            DocDBRepo<PreAuthDomain>.Initialize();
+                AdalUtil.Settings.InviteRedirectUrl = ConfigurationManager.AppSettings["InviteRedirectUrl"];
+                AdalUtil.Settings.InvitationEmailSubject = ConfigurationManager.AppSettings["InvitationEmailSubject"];
+                AdalUtil.Settings.DefaultBodyTemplateName = ConfigurationManager.AppSettings["DefaultBodyTemplateName"];
+                AdalUtil.Settings.InviterRoleNames = (ConfigurationManager.AppSettings["InviterRoleNames"] as string).Split(',');
+                AdalUtil.Settings.AssignedInviterRole = ConfigurationManager.AppSettings["AssignedInviterRole"];
 
-            /*
-             * TODO: Prefetching the app token here because initializing this library during admin
-             * authentication is timing out/failing.
-             * don't know if this is due to the api call or spinning up this code
-             * see AdalUtil.CallGraph...
-            */
-            AdalUtil.Authenticate();
+                //SMTP config
+                MailSender.MailEnabled = (ConfigurationManager.AppSettings["MailEnabled"] == "1");
+                MailSender.LogoPath = Server.MapPath(ConfigurationManager.AppSettings["MailLogoPath"]);
+                MailSender.MailTemplate = Settings.GetMailTemplate(ConfigurationManager.AppSettings["MailTemplateName"]);
+                MailSender.MailServer = ConfigurationManager.AppSettings["MailServer"];
+                MailSender.MailServerPort = Convert.ToInt32(ConfigurationManager.AppSettings["SMTPPort"]);
+                MailSender.SMTPLogin = ConfigurationManager.AppSettings["SMTPLogin"];
+                MailSender.SMTPPassword = ConfigurationManager.AppSettings["SMTPPassword"];
+
+                Settings.UseSMTP = (!string.IsNullOrEmpty(MailSender.MailServer));
+                AdalUtil.Settings.UseSMTP = Settings.UseSMTP;
+
+                /*
+                 * TODO: Prefetching the app token here because initializing this library during admin
+                 * authentication is timing out/failing.
+                 * don't know if this is due to the api call or spinning up this code
+                 * see AdalUtil.CallGraph...
+                */
+                AdalUtil.Authenticate();
+            }
+            catch (Exception ex)
+            {
+                Logging.WriteToAppLog("Error during site initialization", System.Diagnostics.EventLogEntryType.Error, ex);
+                throw;
+            }
         }
     }
 }

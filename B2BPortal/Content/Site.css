@@ -35,3 +35,14 @@ td,tr {
     padding-left: 5px;
     padding-right: 5px;
 }
+
+ul.dropdown-menu span.glyphicon {
+    margin-right:8px;
+}
+ul.dropdown-menu li a {
+    padding:6px 40px 6px 13px;
+}
+
+div.form-group button.btn, div.form-group a.btn, div.form-group input.btn {
+    width: 140px;
+}

@@ -32,5 +32,12 @@
     <Content Include="WebSite.json" />
     <Content Include="WebSite.parameters.json" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\B2BPortal\B2BPortal.csproj">
+      <Targets>Build;Package</Targets>
+      <AdditionalProperties>PackageLocation=..\B2BPortalDeploy\$(ProjectReferencesOutputPath)\B2BPortal\package.zip</AdditionalProperties>
+      <IncludeFilePath>$(ProjectReferencesOutputPath)\B2BPortal\package.zip</IncludeFilePath>
+    </ProjectReference>
+  </ItemGroup>
   <Target Name="GetReferenceAssemblyPaths" />
 </Project>

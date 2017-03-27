@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 using B2BPortal.Infrastructure;
+using AzureB2BInvite;
 
 namespace B2BPortal.Infrastructure.Filters
 {
@@ -18,7 +19,7 @@ namespace B2BPortal.Infrastructure.Filters
         public override void OnAuthorization(AuthorizationContext filterContext)
         {
             var currentUser = filterContext.HttpContext.User.Identity;
-            if (!currentUser.IsInAnyRole(Settings.InviterRoleNames))
+            if (!currentUser.IsInAnyRole(AdalUtil.Settings.InviterRoleNames))
             {
                 filterContext.Result = new RedirectToRouteResult(new RouteValueDictionary
                 {

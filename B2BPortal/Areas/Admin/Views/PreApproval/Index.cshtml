@@ -1,4 +1,4 @@
-﻿@model IEnumerable<B2BPortal.Models.PreAuthDomain>
+﻿@model IEnumerable<AzureB2BInvite.Models.PreAuthDomain>
 
 @{
     ViewBag.Title = "Pre-Approval Config";
@@ -8,15 +8,18 @@
 <h2>@ViewBag.Title</h2>
 
 <p>
-    @Html.ActionLink("Create New", "Create")
+    @Html.ActionLink("Add New...", "Edit", new { area = "admin" }, new { @class = "btn btn-primary" })
 </p>
 <table class="table">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.Domain)
+            @Html.DisplayNameFor(model => model.DomainName)
         </th>
         <th>
             @Html.DisplayNameFor(model => model.Groups)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.RedirectLink)
         </th>
         <th>
             @Html.DisplayNameFor(model => model.AuthUser)
@@ -35,7 +38,7 @@
     {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Domain)
+                @Html.DisplayFor(modelItem => item.DomainName)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Groups)

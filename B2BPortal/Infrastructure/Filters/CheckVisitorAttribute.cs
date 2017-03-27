@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AzureB2BInvite;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -14,7 +15,7 @@ namespace B2BPortal.Infrastructure.Filters
             var currTenant = filterContext.Principal.Identity.GetClaim(CustomClaimTypes.TenantId);
 
             //bail out if unauthenticated or if we're already logged into the home tenant
-            if (!filterContext.Principal.Identity.IsAuthenticated || currTenant == Settings.TenantID )
+            if (!filterContext.Principal.Identity.IsAuthenticated || currTenant == AdalUtil.Settings.TenantID )
             {
                 return;
             }

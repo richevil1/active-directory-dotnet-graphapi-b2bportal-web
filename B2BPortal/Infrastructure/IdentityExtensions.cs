@@ -26,6 +26,14 @@ namespace B2BPortal.Infrastructure
             return (identity1 != null && identity1.IsAuthenticated) ? identity1.FindFirst(claimName).Value : null;
         }
 
+        public static string GetEmail(this IIdentity identity)
+        {
+            if (identity == null)
+                throw new ArgumentNullException("identity");
+            var identity1 = identity as ClaimsIdentity;
+            return (identity1 != null && identity1.IsAuthenticated) ? identity1.FindFirst(ClaimTypes.Email).Value : null;
+        }
+
         public static T GetClaim<T>(this IIdentity identity, string claimName)
         {
             if (identity == null)

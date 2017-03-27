@@ -1,0 +1,39 @@
+﻿@model IEnumerable<B2BPortal.Models.SiteConfig>
+
+@{
+    ViewBag.Title = "Site Configuration";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<table class="table">
+    <tr>
+        <th>@Html.DisplayNameFor(model => model.ConfigVersion)</th>
+        <th>@Html.DisplayNameFor(model => model.ConfigDate)</th>
+        <th>@Html.DisplayNameFor(model => model.ConfigAuthor)</th>
+        <th>@Html.DisplayNameFor(model => model.SiteName)</th>
+        <th>@Html.DisplayNameFor(model => model.WelcomeMessage)</th>
+        <th>@Html.DisplayNameFor(model => model.RequirePreauth)</th>
+        <th>@Html.DisplayNameFor(model => model.RequireTOSAgreement)</th>
+        <th>@Html.DisplayNameFor(model => model.TOSDocument)</th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model)
+{
+    <tr>
+        <td>@Html.DisplayFor(modelItem => item.ConfigVersion)</td>
+        <td>@Html.DisplayFor(modelItem => item.ConfigDate)</td>
+        <td>@Html.DisplayFor(modelItem => item.ConfigAuthor)</td>
+        <td>@Html.DisplayFor(modelItem => item.SiteName)</td>
+        <td>@Html.DisplayFor(modelItem => item.WelcomeMessage)</td>
+        <td>@Html.DisplayFor(modelItem => item.RequirePreauth)</td>
+        <td>@Html.DisplayFor(modelItem => item.RequireTOSAgreement)</td>
+        <td>@Html.DisplayFor(modelItem => item.TOSDocument)</td>
+        <td>
+            @Html.ActionLink("Details", "HistoryDetail", new { id = item.Id })
+        </td>
+    </tr>
+}
+
+</table>

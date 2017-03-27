@@ -1,0 +1,112 @@
+﻿@model B2BPortal.Models.InviteTemplate
+
+@{
+    ViewBag.Title = "Edit";
+}
+
+<h2>Edit</h2>
+
+@using (Html.BeginForm("Save", "InviteTemplate", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>Invitation Template</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.Id)
+        @Html.HiddenFor(model => model.TemplateVersion)
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.TemplateName, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.TemplateName, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.TemplateName, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.SubjectTemplate, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.SubjectTemplate, new { htmlAttributes = new { @class = "form-control", @id = "SubjectTemplate" } })
+                @Html.ValidationMessageFor(model => model.SubjectTemplate, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.TemplateContent, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <ul class="nav nav-tabs" role="tablist">
+                    <li role="presentation" class="active"><a href="#edit" aria-controls="home" role="tab" data-toggle="tab">Edit</a></li>
+                    <li role="presentation"><a href="#preview" aria-controls="profile" role="tab" data-toggle="tab">Preview</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane active" id="edit">
+                        @Html.TextAreaFor(model => model.TemplateContent, new { @class = "form-control", @id = "TemplateContent" })
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="preview"></div>
+                </div>
+                @Html.ValidationMessageFor(model => model.TemplateContent, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <button type="button" id="btnReload" class="btn btn-danger btn-xs pull-right">Load Base...</button>
+                <input type="submit" value="Save" class="btn btn-primary" />
+                @if (Model != null)
+                {
+                    @Html.ActionLink("Delete", "Delete", new { area = "admin" }, new { @class = "btn btn-warning", id = Model.Id })
+                }
+                @Html.ActionLink("Back to List", "Index", new { area = "admin" }, new { @class = "btn btn-default" })
+            </div>
+        </div>
+    </div>
+}
+
+@section scripts {
+    <script type="text/javascript">
+        $(function () {
+            $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                if (e.target.hash == "#preview") {
+                    $(e.target.hash).html($("#edit textarea").val());
+                }
+            });
+            $("#btnReload").on("click", function () {
+                if (confirm("This will clear out the template in the edit window and replace it with the default template. If you change your mind, click \"Back to List\" and try again without saving.\r\n\r\nAre you sure you want to continue?")) {
+                    $.get("/api/Admin/GetStaticDefaultTemplate", null, function (res) {
+                        $("#edit textarea").val(res.BodyTemplate);
+                        $("#SubjectTemplate").val(res.SubjectTemplate);
+                    });
+                }
+            });
+        });
+    </script>
+}
+
+@section styles {
+    <style type="text/css">
+        input, label, select, textarea {
+            max-width: none;
+        }
+
+        #TemplateContent {
+            font-family: Consolas, 'Lucida Console', Courier New, Courier, monospace;
+            background-color: #fafafa;
+            height: 100%;
+        }
+
+        #preview, #edit {
+            height: 400px;
+            border: 1px solid #7a7a7a;
+        }
+
+        #preview {
+            padding: 8px;
+        }
+
+        #btnReload {
+            margin-top: -5px;
+        }
+    </style>
+}

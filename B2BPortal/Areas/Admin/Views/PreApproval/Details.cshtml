@@ -1,4 +1,4 @@
-﻿@model B2BPortal.Models.PreAuthDomain
+﻿@model AzureB2BInvite.Models.PreAuthDomain
 
 @{
     ViewBag.Title = "Details";
@@ -11,10 +11,10 @@
     <hr />
     <dl class="dl-horizontal">
         <dt>
-            @Html.DisplayNameFor(model => model.Domain)
+            @Html.DisplayNameFor(model => model.DomainName)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Domain)
+            @Html.DisplayFor(model => model.DomainName)
         </dd>
 
         <dt>
@@ -51,9 +51,18 @@
         <dd>
             @Html.DisplayFor(model => model.CreateDate)
         </dd>
-</dl>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.LastUpdated)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.LastUpdated)
+        </dd>
+    </dl>
 </div>
-<p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
-    @Html.ActionLink("Back to List", "Index")
-</p>
+<div class="form-group">
+    <div class="col-md-offset-2 col-md-10">
+        @Html.ActionLink("Edit", "Edit", new { area = "admin", id = Model.Id }, new { @class = "btn btn-primary" })
+        @Html.ActionLink("Back to List", "Index", new { area = "admin" }, new { @class = "btn btn-default" })
+    </div>
+</div>

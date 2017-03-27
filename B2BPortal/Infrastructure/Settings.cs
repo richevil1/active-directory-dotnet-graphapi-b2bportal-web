@@ -1,39 +1,31 @@
-﻿using B2BPortal.B2B;
+﻿using B2BPortal.Data;
 using B2BPortal.Models;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Dynamic;
-using System.IO;
 using System.Linq;
+using System.IO;
 using System.Web;
+using AzureB2BInvite.Models;
+using System.Threading.Tasks;
+using B2BPortal.Interfaces;
 
 namespace B2BPortal.Infrastructure
 {
     public static class Settings
     {
         public static string AppRootPath = HttpContext.Current.Server.MapPath("//");
-        public static string InviterUPN { get; set; }
-        public static string AADInstanceLocal { get; set; }
-        public static string AADInstanceMulti { get; set; }
-        public static string GraphApiVersion { get; set; }
-        public static string TenantID { get; set; }
+        public static bool SiteConfigReady {get; set;}
+        public static SiteConfig CurrSiteConfig { get; set; }
 
-        public static string AppClientId_Admin { get; set; }
-        public static string AppClientSecret_Admin { get; set; }
-
-        public static string StorageConnectionString { get; set; }
-
-        public static string RequestsTableName = "TableRequests";
-
-        public static string GraphResource = "https://graph.microsoft.com";
-        public static string InviteRedirectUrl { get; set; }
-
-        public static string InvitationEmailSubject { get; set; }
-        public static string[] InviterRoleNames { get; set; }
-        public static string AssignedInviterRole { get; set; }
+        /// <summary>
+        /// If SMTP configuration settings are null or empty in web.config, this will be set to false
+        /// If false, mail template content will be injected as additional messages within the Microsoft
+        /// B2B invite default template, and invitation messages will be sent by the Azure AD B2B process
+        /// automatically.
+        /// If SMTP settings are created, this will be true and custom templates will sent 
+        /// independently of Azure
+        /// </summary>
+        public static bool UseSMTP { get; set; }
 
         public static IEnumerable<GraphRoleUser> AssignedInviteRoleUsers { get; set; }
 
@@ -44,11 +36,39 @@ namespace B2BPortal.Infrastructure
         /// </summary>
         public static string[] VisitorAllowedPaths = { @"/", @"/profile/signup", @"/account/signin" };
 
-        public static string InvitingOrganization { get; set; }
         public static string GetMailTemplate(string templateName)
         {
             var mailPath = Path.Combine(AppRootPath, @"Templates\" + templateName);
             return File.ReadAllText(mailPath);
+        }
+        /// <summary>
+        /// Load latest site configuration record from the database.
+        /// </summary>
+        /// <returns>false if no record found, true indicates the latest record is available in Settings.CurrSiteConfig</returns>
+        public static async Task<bool> LoadCurrSiteConfig()
+        {
+            try
+            {
+                CurrSiteConfig = (await DocDBRepo.DB<SiteConfig>.GetItemsAsync(c => c.DocType == DocTypes.SiteConfig)).LastOrDefault();
+                SiteConfigReady = (CurrSiteConfig != null);
+                return SiteConfigReady;
+            }
+            catch (Exception ex)
+            {
+                Logging.WriteToAppLog("Problem loading site config", System.Diagnostics.EventLogEntryType.Error, ex);
+                SiteConfigReady = false;
+                return SiteConfigReady;
+            }
+        }
+        /// <summary>
+        /// Write a new SiteConfig record. The latest record is returned by LoadCurrSiteConfig, and older configs are stored 
+        /// for history (terms of service are stored in these config versions)
+        /// </summary>
+        /// <param name="config"></param>
+        public static async void UpdateCurrSiteConfig(SiteConfig config)
+        {
+            await DocDBRepo.DB<SiteConfig>.CreateItemAsync(config);
+            CurrSiteConfig = config;
         }
     }
 }

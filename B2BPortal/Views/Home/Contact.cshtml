@@ -1,3 +1,10 @@
-﻿
+﻿@using B2BPortal.Infrastructure
+
 <h2>@ViewBag.Message</h2>
 
+<dl class="dl-horizontal">
+    <dt>Company</dt>
+    <dd>@Settings.CurrSiteConfig.InvitingOrg</dd>
+    <dt>For more information</dt>
+    <dd><a href="mailto:@Settings.CurrSiteConfig.InviterResponseEmailAddr">@Settings.CurrSiteConfig.InviterResponseEmailAddr</a></dd>
+</dl>
