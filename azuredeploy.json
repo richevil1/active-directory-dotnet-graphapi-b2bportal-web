@@ -76,8 +76,8 @@
     }
   },
   "variables": {
-    "webSiteName": "[concat(parameters('hostingPlanName'), '-web', uniqueString(resourceGroup().id))]",
-    "docDbHost": "[concat(parameters('hostingPlanName'), '-db', uniqueString(resourceGroup().id))]",
+    "webSiteName": "[concat(tolower(parameters('hostingPlanName')), '-web', uniqueString(resourceGroup().id))]",
+    "docDbHost": "[concat(tolower(parameters('hostingPlanName')), '-db', uniqueString(resourceGroup().id))]",
     "docDbName": "B2BRequests",
     "docDbCollection": "GuestRequests",
     "mailEnabled": "1"
@@ -88,7 +88,7 @@
       "kind": "GlobalDocumentDB",
       "name": "[variables('docDbHost')]",
       "apiVersion": "2015-04-08",
-      "location": "resourceGroup().location",
+      "location": "[resourceGroup().location]",
       "tags": {
         "displayName": "DocDB"
       },
@@ -130,12 +130,12 @@
       },
       "dependsOn": [
         "[resourceId('Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
-        "[variables('docDbName')]"
+        "[variables('docDbHost')]"
       ],
       "properties": {
         "name": "[variables('webSiteName')]",
         "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('hostingPlanName'))]",
-        "siteConfig"; {
+        "siteConfig": {
           "phpVersion": "off",
           "appSettings": [
             {
@@ -220,7 +220,7 @@
   ],
   "outputs": {
     "WebSiteObject": {
-      "value": "[reference(resourceId('Microsoft.Storage/storageAccounts/', variables('webSiteName')), '2016-01-01')]",
+      "value": "[reference(resourceId('Microsoft.Web/sites/', variables('webSiteName')), '2015-08-01')]",
       "type": "object"
     }
   }

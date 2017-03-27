@@ -2,117 +2,111 @@
 Import-Module Azure -ErrorAction SilentlyContinue
 
 #DEPLOYMENT OPTIONS
-    $CompanyName             = "HackerDemo"
-    $TenantId                = "a70fadca-e867-489c-b119-72dc9f00c26b"
-    $RGName                  = "<YOUR RESOURCE GROUP>"
-    $DeployRegion            = "<SELECT AZURE REGION>"
-    $SiteName                = "B2BDeployTest1"
-    $AdminAppName            = "B2B Self-Serve Administration"
-    $PreauthAppName          = "$CompanyName - B2B Pre-Authentication Sign-In"
+    $TestNo                  = "3"
+    $DeployRegion            = "West US 2"
+    $CompanyName             = "Contoso"
+
+    $TenantName              = "contoso.com"
+    $AADTenantId             = "[AAD TenantID for auth app hosting]"
+    $AADSubName              = "ADTestTenant"
+
+    $AzureTenantId           = "[AAD TenantID for web app hosting]"
+    $AzureSubName            = "MyAzureSubscription"
+
+    $RGName                  = "B2BTest$TestNo"
+    $SiteName                = "B2BDeployTest$TestNo"
+
+    $AdminAppName            = "B2B Self-Serve Administration$TestNo"
+    $AdminAppUri             = "https://$($SiteName)admin.$TenantName"
+    $PreauthAppName          = "$CompanyName - B2B Pre-Authentication Sign-In$TestNo"
+    $PreAuthAppUri           = "https://$($SiteName).$TenantName"
+
     $pw1                     = [Guid]::NewGuid().ToString().Replace("-","")
     $pw2                     = [System.Text.Encoding]::UTF8.GetBytes($pw1)
     $spAdminPassword         = [System.Convert]::ToBase64String($pw2)
 #END DEPLOYMENT OPTIONS
 
-#Login if necessary
-$AzureSub="GTP - Brett Hacker"
-#$AzureSub="MSDN"
-
+#ensure we're logged in
 try {
     $ctx=Get-AzureRmContext -ErrorAction Stop
 }
 catch {
-    Login-AzureRmAccount
+    Login-AzureRmAccount -TenantId $AADTenantID -SubscriptionName $AADSubName
 }
-#this will only work if the same account can see the tenant and Azure sub at the same time
-Set-AzureRmContext -SubscriptionName "ADTenantTest" -TenantId $TenantId
 
 #Dot-sourced variable override (optional, comment out if not using)
-#. C:\dev\A_CustomDeploySettings\B2BPortal.ps1
+. C:\dev\A_CustomDeploySettings\B2BPortal.ps1
 
-#ensure we're logged in
-Get-AzureRmContext -ErrorAction Stop
+#this will only work if the same account can see the tenant and Azure sub at the same time
+Set-AzureRmContext -SubscriptionName $AADSubName -TenantId $AADTenantId
 
-#generate required AzureAD applications
-#note: setting loopback on apps for now - will update after the ARM deployment is complete (below)...
-$adminApp = New-AzureRmADApplication -DisplayName $AdminAppName -HomePage "https://loopback" -IdentifierUris "https://$($SiteName)admin"
-    New-AzureRmADServicePrincipal -ApplicationId $adminApp.ApplicationId
-$preauthApp = New-AzureRmADApplication -DisplayName $PreauthAppName -HomePage "https://$($SiteName).azurewebsites.net" -IdentifierUris "https://$($SiteName).hackerdemo.com" -AvailableToOtherTenants $true
-    New-AzureRmADServicePrincipal -ApplicationId $preauthApp.ApplicationId
+$newApps = $false;
 
-Start-Sleep 15
-New-AzureRmRoleAssignment -RoleDefinitionName Reader -ServicePrincipalName $adminApp.ApplicationId
-New-AzureRmRoleAssignment -RoleDefinitionName Reader -ServicePrincipalName $preauthApp.ApplicationId
+$adminApp = Get-AzureRmADApplication -DisplayNameStartWith $AdminAppName
+if ($adminApp -eq $null) {
+    #generate required AzureAD applications
+    #note: setting loopback on apps for now - will update after the ARM deployment is complete (below)...
+    $adminApp = New-AzureRmADApplication -DisplayName $AdminAppName -HomePage "https://loopback" -IdentifierUris $AdminAppUri
+        New-AzureRmADServicePrincipal -ApplicationId $adminApp.ApplicationId
+    $newApps = $true
+}
 
-$spSecurePw =  ConvertTo-SecureString $spAdminPassword -AsPlainText -Force -ErrorAction Stop
-[PSCredential]$adminAppCreds = New-Object PSCredential ($adminApp.ApplicationId, $spSecurePw)
+$preauthApp = Get-AzureRmADApplication -DisplayNameStartWith $PreAuthAppName
+if ($preauthApp -eq $null) {
+    $preauthApp = New-AzureRmADApplication -DisplayName $PreauthAppName -HomePage "https://$($SiteName).azurewebsites.net" -IdentifierUris $PreauthAppUri -AvailableToOtherTenants $true
+        New-AzureRmADServicePrincipal -ApplicationId $preauthApp.ApplicationId
+    $newApps = $true
+}
 
-New-AzureRmADAppCredential -ApplicationId $adminApp.ApplicationId -Password $spAdminPassword
+if ($newApps) {
+    Start-Sleep 15
+}
+
+$adminAppCred = Get-AzureRmADAppCredential -ApplicationId $adminApp.ApplicationId
+if ($adminAppCred -eq $null) {
+    New-AzureRmADAppCredential -ApplicationId $adminApp.ApplicationId -Password $spAdminPassword
+}
+
+#New-AzureRmRoleAssignment -RoleDefinitionName Reader -ServicePrincipalName $adminApp.ApplicationId
+#New-AzureRmRoleAssignment -RoleDefinitionName Reader -ServicePrincipalName $preauthApp.ApplicationId
+
 
 #deploy
 if ($ctx.SubscriptionName -ne $AzureSub) {
-    Set-AzureRmContext -SubscriptionName $AzureSub
+    Set-AzureRmContext -SubscriptionName $AzureSubName -TenantId $AzureTenantId
 }
 
 $parms=@{
     "hostingPlanName"             = $SiteName;
     "skuName"                     = "F1";
     "skuCapacity"                 = 1;
-    "tenantName"                  = $AdfsFarmCount;
-    "clientId_admin"              = $usersArray;
-    "clientSecret_admin"          = "";
-    "clientId_preAuth"            = "";
+    "tenantName"                  = $TenantName;
+    "tenantId"                    = $TenantId;
+    "clientId_admin"              = $adminApp.ApplicationId;
+    "clientSecret_admin"          = $spAdminPassword;
+    "clientId_preAuth"            = $preauthApp.ApplicationId;
     "mailServerFqdn"              = "";
     "smtpLogin"                   = "";
     "smptPassword"                = "";
 }
 
-$TemplateFile = "https://raw.githubusercontent.com/Azure/active-directory-dotnet-graphapi-b2bportal-web/master/azuredeploy.json"
+#$TemplateFile = "https://raw.githubusercontent.com/Azure/active-directory-dotnet-graphapi-b2bportal-web/master/azuredeploy.json"
+$TemplateFile = "C:\Dev\active-directory-dotnet-graphapi-b2bportal-web\azuredeploy.json"
 
 try {
     Get-AzureRmResourceGroup -Name $RGName -ErrorAction Stop
     Write-Host "Resource group $RGName exists, updating deployment"
 }
 catch {
-    $RG = New-AzureRmResourceGroup -Name $RGName -Location $DeployRegion -Tag @{ Shutdown = "true"; Startup = "false"}
+    $RG = New-AzureRmResourceGroup -Name $RGName -Location $DeployRegion
     Write-Host "Created new resource group $RGName."
 }
 $version ++
-$deployment = New-AzureRmResourceGroupDeployment -ResourceGroupName $RGName -TemplateParameterObject $parms -TemplateFile $TemplateFile -Name "adfsDeploy$version"  -Force -Verbose
+$deployment = New-AzureRmResourceGroupDeployment -ResourceGroupName $RGName -TemplateParameterObject $parms -TemplateFile $TemplateFile -Name "B2BDeploy$version"  -Force -Verbose
 
 if ($deployment) {
-    if (-not (Get-Command Get-FQDNForVM -ErrorAction SilentlyContinue)) {
-        #load add-on functions to facilitate the RDP connectoid creation below
-        $url="$($assetLocation)Scripts/Addons.ps1"
-        $tempfile = "$env:TEMP\Addons.ps1"
-        $webclient = New-Object System.Net.WebClient
-        $webclient.DownloadFile($url, $tempfile)
-        . $tempfile
-    }
+    #to-do: update URIs and reply URLs for apps, based on output parms from $deployment
 
-    $RDPFolder = "$env:USERPROFILE\desktop\$RGName\"
-    if (!(Test-Path -Path $RDPFolder)) {
-        md $RDPFolder
-    }
-    $ADName = $ADDomainName.Split('.')[0]
-    $vms = Find-AzureRmResource -ResourceGroupNameContains $RGName | where {($_.ResourceType -like "Microsoft.Compute/virtualMachines")}
-    $pxcount=0
-    if ($vms) {
-        foreach ($vm in $vms) {
-            $fqdn=Get-FQDNForVM -ResourceGroupName $RGName -VMName $vm.Name
-            New-RDPConnectoid -ServerName $fqdn -LoginName "$($ADName)\$($userName)" -RDPName $vm.Name -OutputDirectory $RDPFolder -Width $RDPWidth -Height $RDPHeight
-            if ($vm.Name.IndexOf("PX") -gt -1) {
-                $pxcount++
-                $WshShell = New-Object -comObject WScript.Shell
-                $Shortcut = $WshShell.CreateShortcut("$($RDPFolder)ADFSTest$pxcount.lnk")
-                $Shortcut.TargetPath = "https://$fqdn/adfs/ls/idpinitiatedsignon.aspx"
-                $Shortcut.IconLocation = "%ProgramFiles%\Internet Explorer\iexplore.exe, 0"
-                $Shortcut.Save()
-            }
-        }
-    }
-
-    start $RDPFolder
 }
 
 $endTime=Get-Date
