@@ -38,13 +38,14 @@ namespace AzureB2BInvite
                 invitation.InvitedUserEmailAddress = request.EmailAddress;
                 invitation.InviteRedirectUrl = (!string.IsNullOrEmpty(inviteRedirectUrl)) ? inviteRedirectUrl : Settings.InviteRedirectUrl;
                 invitation.SendInvitationMessage = (!Settings.UseSMTP);
-                if (useCustomEmailTemplate)
-                {
-                    invitation.InvitedUserMessageInfo = new InvitedUserMessageInfo
-                    {
-                        CustomizedMessageBody=domainSettings.InvitationTemplate
-                    };
-                }
+                //todo - fix templates
+                //if (useCustomEmailTemplate)
+                //{
+                //    invitation.InvitedUserMessageInfo = new InvitedUserMessageInfo
+                //    {
+                //        CustomizedMessageBody=domainSettings.InvitationTemplate
+                //    };
+                //}
 
                 // Invite user. Your app needs to have User.ReadWrite.All or Directory.ReadWrite.All to invite
                 serverResponse = CallGraph(inviteEndPoint, invitation);

@@ -19,7 +19,7 @@ namespace B2BPortal.Infrastructure
         public static SiteConfig CurrSiteConfig { get; set; }
 
         /// <summary>
-        /// If SMTP configuration settings are null or empty in web.config, this will be set to false
+        /// If the SMTP "MailServer" configuration settings is null or empty in web.config, this will be set to false
         /// If false, mail template content will be injected as additional messages within the Microsoft
         /// B2B invite default template, and invitation messages will be sent by the Azure AD B2B process
         /// automatically.

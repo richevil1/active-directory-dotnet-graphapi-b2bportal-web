@@ -94,7 +94,6 @@ namespace AzureB2BInvite.Models
         public void Init()
         {
             Disposition = Disposition.Pending;
-            PreAuthed = false;
             RequestDate = DateTime.UtcNow;
             LastModDate = DateTime.UtcNow;
         }

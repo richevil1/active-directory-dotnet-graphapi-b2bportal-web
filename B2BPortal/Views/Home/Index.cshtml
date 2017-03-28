@@ -15,7 +15,8 @@
         PreAuthed = true;
     }
     var requirePreauth = Settings.CurrSiteConfig.RequirePreauth;
-    var btnDisabled = (requirePreauth && PreAuthed) ? "" : "disabled";
+    var requireTOS = Settings.CurrSiteConfig.RequireTOSAgreement;
+    var btnDisabled = (requirePreauth && PreAuthed && (!requireTOS)) ? "" : "disabled";
 }
 <h3>@ViewBag.Title</h3>
 <div class="row">
@@ -122,6 +123,13 @@
             $("#btnPreAuth").on("click", function () {
                 location.href = '/Account/SignInWorkMulti';
                 return false;
+            });
+            $("#TOSAgreed").on("click", function () {
+                if ($("#TOSAgreed")[0].checked) {
+                    $("#btnSubmit").removeAttr("disabled");
+                } else {
+                    $("#btnSubmit").attr("disabled","true");
+                }
             });
             $("#EmailAddress").on("blur", function () {
                 var email = $("#EmailAddress").val();

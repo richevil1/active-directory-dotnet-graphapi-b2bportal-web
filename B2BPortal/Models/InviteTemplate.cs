@@ -74,6 +74,7 @@ namespace B2BPortal.Models
             template.LastUpdated = DateTime.UtcNow;
             return (await DocDBRepo.DB<InviteTemplate>.CreateItemAsync(template));
         }
+
         public static async Task<IEnumerable<InviteTemplate>> InitializeDefaultTemplate(string templateAuthor)
         {
             var template = new InviteTemplate

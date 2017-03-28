@@ -55,7 +55,9 @@ namespace B2BPortal
 
                 AdalUtil.Settings.GraphApiVersion = ConfigurationManager.AppSettings["GraphApiVersion"];
 
-                AdalUtil.Settings.InviteRedirectUrl = ConfigurationManager.AppSettings["InviteRedirectUrl"];
+                AdalUtil.Settings.DefaultRedirectUrl = ConfigurationManager.AppSettings["InviteRedirectUrl"];
+                AdalUtil.Settings.InviteRedirectUrl = Settings.CurrSiteConfig.InviteRedirectUrl;
+
                 AdalUtil.Settings.InvitationEmailSubject = ConfigurationManager.AppSettings["InvitationEmailSubject"];
                 AdalUtil.Settings.DefaultBodyTemplateName = ConfigurationManager.AppSettings["DefaultBodyTemplateName"];
                 AdalUtil.Settings.InviterRoleNames = (ConfigurationManager.AppSettings["InviterRoleNames"] as string).Split(',');

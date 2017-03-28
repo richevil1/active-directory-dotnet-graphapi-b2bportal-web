@@ -10,16 +10,16 @@
 
 @if (Model.Disposition == Disposition.Pending)
 {
-    <div>Your request is being processed.Your request ID is "@Model.Id".</div>
+    <div>Your request is being processed. Your request ID is "@Model.Id".</div>
 }
 else
 {
     <div>
         <p>
-            Your request has been @Model.Disposition.ToString().
-            If approved, your invitation email has been sent to "@Model.EmailAddress". Follow the instructions in the email to redeem your invitation.
+            If approved, your invitation email will be sent to "@Model.EmailAddress". Follow the instructions in the email to redeem your invitation.
         </p>
         <p>
+            Your request has been @Model.Disposition.ToString().<br />
             Your request ID is "@Model.Id".
         </p>
     </div>

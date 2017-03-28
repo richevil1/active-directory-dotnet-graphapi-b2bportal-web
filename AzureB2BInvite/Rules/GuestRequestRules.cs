@@ -23,6 +23,7 @@ namespace AzureB2BInvite.Rules
                 var approvedDomainSettings = (await DocDBRepo.DB<PreAuthDomain>.GetItemsAsync(d => d.DomainName == domain)).SingleOrDefault();
                 if (approvedDomainSettings != null)
                 {
+                    request.Disposition = Disposition.AutoApproved;
                     request = await ExecuteDispositionAsync(request, approvedDomainSettings.AuthUser, approvedDomainSettings);
                 }
             }
