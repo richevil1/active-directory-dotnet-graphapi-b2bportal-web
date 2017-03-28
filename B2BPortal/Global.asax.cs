@@ -33,7 +33,7 @@ namespace B2BPortal
                 DocDBRepo.Settings.DocDBAuthKey = ConfigurationManager.AppSettings["DocDBAuthKey"];
                 DocDBRepo.Settings.DocDBName = ConfigurationManager.AppSettings["DocDBName"];
                 DocDBRepo.Settings.DocDBCollection = ConfigurationManager.AppSettings["DocDBCollection"];
-                DocDBRepo.Initialize();
+                var client = DocDBRepo.Initialize().Result;
 
                 //Settings
                 var isConfig = Settings.LoadCurrSiteConfig().Result;

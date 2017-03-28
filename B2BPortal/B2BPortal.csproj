@@ -304,6 +304,7 @@
     <Content Include="Areas\Admin\Views\InviteTemplate\Index.cshtml" />
     <Content Include="Areas\Admin\Views\InviteTemplate\Details.cshtml" />
     <Content Include="Areas\Admin\Views\InviteTemplate\Edit.cshtml" />
+    <None Include="Properties\PublishProfiles\b2bdeploytest3-webom47k4qd7z5e2 - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\B2BPortal20170316124654 - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-3.1.1.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />

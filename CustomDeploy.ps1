@@ -2,7 +2,7 @@
 Import-Module Azure -ErrorAction SilentlyContinue
 
 #DEPLOYMENT OPTIONS
-    $TestNo                  = "3"
+    $TestNo                  = "4"
     $DeployRegion            = "West US 2"
     $CompanyName             = "Contoso"
 
@@ -26,23 +26,23 @@ Import-Module Azure -ErrorAction SilentlyContinue
     $spAdminPassword         = [System.Convert]::ToBase64String($pw2)
 #END DEPLOYMENT OPTIONS
 
+#Dot-sourced variable override (optional, comment out if not using)
+. C:\dev\A_CustomDeploySettings\B2BPortal.ps1
+
 #ensure we're logged in
 try {
     $ctx=Get-AzureRmContext -ErrorAction Stop
 }
 catch {
-    Login-AzureRmAccount -TenantId $AADTenantID -SubscriptionName $AADSubName
+    Login-AzureRmAccount -SubscriptionName $AADSubName -TenantId $AADTenantId -ErrorAction Stop
 }
 
-#Dot-sourced variable override (optional, comment out if not using)
-. C:\dev\A_CustomDeploySettings\B2BPortal.ps1
-
 #this will only work if the same account can see the tenant and Azure sub at the same time
-Set-AzureRmContext -SubscriptionName $AADSubName -TenantId $AADTenantId
+Set-AzureRmContext -TenantId $AADTenantId -SubscriptionName $AADSubName -ErrorAction Stop
 
 $newApps = $false;
 
-$adminApp = Get-AzureRmADApplication -DisplayNameStartWith $AdminAppName
+$adminApp = Get-AzureRmADApplication -DisplayNameStartWith $AdminAppName -ErrorAction Stop
 if ($adminApp -eq $null) {
     #generate required AzureAD applications
     #note: setting loopback on apps for now - will update after the ARM deployment is complete (below)...
@@ -72,16 +72,14 @@ if ($adminAppCred -eq $null) {
 
 
 #deploy
-if ($ctx.SubscriptionName -ne $AzureSub) {
-    Set-AzureRmContext -SubscriptionName $AzureSubName -TenantId $AzureTenantId
-}
+Set-AzureRmContext -SubscriptionName $AzureSubName -TenantId $AzureTenantId -ErrorAction Stop
 
 $parms=@{
     "hostingPlanName"             = $SiteName;
     "skuName"                     = "F1";
     "skuCapacity"                 = 1;
     "tenantName"                  = $TenantName;
-    "tenantId"                    = $TenantId;
+    "tenantId"                    = $AADTenantId;
     "clientId_admin"              = $adminApp.ApplicationId;
     "clientSecret_admin"          = $spAdminPassword;
     "clientId_preAuth"            = $preauthApp.ApplicationId;
@@ -106,6 +104,10 @@ $deployment = New-AzureRmResourceGroupDeployment -ResourceGroupName $RGName -Tem
 
 if ($deployment) {
     #to-do: update URIs and reply URLs for apps, based on output parms from $deployment
+    #also to-do: update application permissions and APIs - may need to be done in the portal
+    $hostName = $Deployment.Outputs.webSiteObject.Value.enabledHostNames.Item(0).ToString()
+    $adminApp.ReplyUrls.Add("https://$hostname/")
+    $preauthApp.ReplyUrls.Add("https://$hostname/")
 
 }
 
