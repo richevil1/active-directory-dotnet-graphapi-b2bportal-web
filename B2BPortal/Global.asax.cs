@@ -79,9 +79,7 @@ namespace B2BPortal
                  * don't know if this is due to the api call or spinning up this code
                  * see AdalUtil.CallGraph...
                 */
-                var task2 = AdalUtil.Authenticate();
-                task2.RunSynchronously();
-
+                AdalUtil.Authenticate();
             }
             catch (Exception ex)
             {
