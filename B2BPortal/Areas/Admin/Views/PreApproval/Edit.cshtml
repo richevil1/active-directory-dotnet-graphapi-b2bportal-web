@@ -3,6 +3,19 @@
 
 @{
     ViewBag.Title = "Pre-Auth Domains";
+    var _templates = new List<SelectListItem>();
+
+    if (ViewBag.Templates != null)
+    {
+        _templates = (List<SelectListItem>)ViewBag.Templates;
+
+        var templates = _templates.Select(t => new SelectListItem
+        {
+            Selected = (t.Value == Model.InvitationTemplate),
+            Text = t.Text,
+            Value = t.Value
+        });
+    }
 }
 
 <h2>@ViewBag.Title</h2>
@@ -33,7 +46,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.InvitationTemplate, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-3">
-                @Html.DropDownListFor(model => model.InvitationTemplate, (ViewBag.TemplateList as IEnumerable<SelectListItem>), new { @class = "form-control input-sm" })
+                @Html.DropDownListFor(model => model.InvitationTemplate, _templates, new { @class = "form-control input-sm" })
                 @Html.ValidationMessageFor(model => model.InvitationTemplate, "", new { @class = "text-danger" })
             </div>
             <div class="col-md-7">

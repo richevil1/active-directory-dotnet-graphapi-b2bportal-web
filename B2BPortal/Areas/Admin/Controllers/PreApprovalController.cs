@@ -35,6 +35,7 @@ namespace B2BPortal.Areas.Admin.Controllers
         [HttpPost]
         public async Task<ActionResult> Create(PreAuthDomain domain)
         {
+            ViewBag.Templates = _templates;
             if (ModelState.IsValid)
             {
                 try
@@ -53,6 +54,7 @@ namespace B2BPortal.Areas.Admin.Controllers
 
         public async Task<ActionResult> Edit(string id)
         {
+            ViewBag.Templates = _templates;
             PreAuthDomain domain;
             if (id == null)
             {
@@ -65,18 +67,13 @@ namespace B2BPortal.Areas.Admin.Controllers
                 domain = await PreAuthDomain.GetDomain(id);
             }
 
-            var templates = _templates.Select(t => new SelectListItem {
-                Selected = (t.Value==domain.InvitationTemplate),
-                Text = t.Text,
-                Value = t.Value
-            });
-
-            ViewBag.TemplateList = templates;
+            ViewBag.Templates = _templates;
             return View(domain);
         }
 
         public async Task<ActionResult> Details(string id)
         {
+            ViewBag.Templates = _templates;
             PreAuthDomain domain = await PreAuthDomain.GetDomain(id);
             if (domain.InvitationTemplate.Length > 0)
             {
@@ -89,6 +86,7 @@ namespace B2BPortal.Areas.Admin.Controllers
         [HttpPost]
         public async Task<ActionResult> Edit(PreAuthDomain preAuthDomain)
         {
+            ViewBag.Templates = _templates;
             if (ModelState.IsValid)
             {
                 try
