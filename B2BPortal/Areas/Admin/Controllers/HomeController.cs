@@ -55,7 +55,7 @@ namespace B2BPortal.Areas.Admin.Controllers
                 request.InternalComment = Request.Form[string.Format("InternalComment.{0}", request.Id)];
 
                 //TODO: Upn vs. Email...
-                var res = await GuestRequestRules.ExecuteDispositionAsync(request, User.Identity.GetClaim(ClaimTypes.Upn));
+                var res = await GuestRequestRules.ExecuteDispositionAsync(request, User.Identity.GetEmail());
             }
 
             requestList = await GuestRequestRules.GetPendingRequestsAsync();
