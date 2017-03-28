@@ -20,6 +20,13 @@ namespace B2BPortal
         {
             try
             {
+                //DocDB config
+                DocDBRepo.Settings.DocDBUri = ConfigurationManager.AppSettings["DocDBUri"];
+                DocDBRepo.Settings.DocDBAuthKey = ConfigurationManager.AppSettings["DocDBAuthKey"];
+                DocDBRepo.Settings.DocDBName = ConfigurationManager.AppSettings["DocDBName"];
+                DocDBRepo.Settings.DocDBCollection = ConfigurationManager.AppSettings["DocDBCollection"];
+                DocDBRepo.Initialize();
+
                 ControllerBuilder.Current.DefaultNamespaces.Add("B2BPortal.Controllers");
                 AreaRegistration.RegisterAllAreas();
                 FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
@@ -27,13 +34,6 @@ namespace B2BPortal
                 RouteConfig.RegisterRoutes(RouteTable.Routes);
                 BundleConfig.RegisterBundles(BundleTable.Bundles);
                 AntiForgeryConfig.UniqueClaimTypeIdentifier = "http://schemas.microsoft.com/identity/claims/objectidentifier";
-
-                //DocDB config
-                DocDBRepo.Settings.DocDBUri = ConfigurationManager.AppSettings["DocDBUri"];
-                DocDBRepo.Settings.DocDBAuthKey = ConfigurationManager.AppSettings["DocDBAuthKey"];
-                DocDBRepo.Settings.DocDBName = ConfigurationManager.AppSettings["DocDBName"];
-                DocDBRepo.Settings.DocDBCollection = ConfigurationManager.AppSettings["DocDBCollection"];
-                var client = DocDBRepo.Initialize().Result;
 
                 //Settings
                 var isConfig = Settings.LoadCurrSiteConfig().Result;
