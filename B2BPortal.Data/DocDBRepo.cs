@@ -117,12 +117,13 @@ namespace B2BPortal.Data
             }
         }
 
-        public static async Task Initialize()
+        public static async Task<DocumentClient> Initialize()
         {
             baseDocCollectionUri = UriFactory.CreateDocumentCollectionUri(Settings.DocDBName, Settings.DocDBCollection);
             client = new DocumentClient(new Uri(Settings.DocDBUri), Settings.DocDBAuthKey);
             await CreateDatabaseIfNotExistsAsync();
             await CreateCollectionIfNotExistsAsync();
+            return client;
         }
 
         private static async Task CreateDatabaseIfNotExistsAsync()

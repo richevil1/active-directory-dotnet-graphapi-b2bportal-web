@@ -26,9 +26,9 @@ namespace B2BPortal
                 DocDBRepo.Settings.DocDBAuthKey = ConfigurationManager.AppSettings["DocDBAuthKey"];
                 DocDBRepo.Settings.DocDBName = ConfigurationManager.AppSettings["DocDBName"];
                 DocDBRepo.Settings.DocDBCollection = ConfigurationManager.AppSettings["DocDBCollection"];
-                
-                var task = DocDBRepo.Initialize();
-                task.RunSynchronously();
+
+                var client = DocDBRepo.Initialize().Result;
+                var s = client.AuthKey;
 
                 ControllerBuilder.Current.DefaultNamespaces.Add("B2BPortal.Controllers");
                 AreaRegistration.RegisterAllAreas();
@@ -39,7 +39,7 @@ namespace B2BPortal
                 AntiForgeryConfig.UniqueClaimTypeIdentifier = "http://schemas.microsoft.com/identity/claims/objectidentifier";
 
                 //Settings
-                var isConfig = Settings.LoadCurrSiteConfig().Result;
+                var isConfig = Settings.LoadCurrSiteConfig();
                 if (isConfig)
                 {
                     //if new site, no config but invites are disabled until config is complete

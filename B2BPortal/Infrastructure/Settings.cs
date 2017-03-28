@@ -8,6 +8,7 @@ using System.Web;
 using AzureB2BInvite.Models;
 using System.Threading.Tasks;
 using B2BPortal.Interfaces;
+using Microsoft.Azure.Documents.Client;
 
 namespace B2BPortal.Infrastructure
 {
@@ -45,11 +46,11 @@ namespace B2BPortal.Infrastructure
         /// Load latest site configuration record from the database.
         /// </summary>
         /// <returns>false if no record found, true indicates the latest record is available in Settings.CurrSiteConfig</returns>
-        public static async Task<bool> LoadCurrSiteConfig()
+        public static bool LoadCurrSiteConfig()
         {
             try
             {
-                CurrSiteConfig = (await DocDBRepo.DB<SiteConfig>.GetItemsAsync(c => c.DocType == DocTypes.SiteConfig)).LastOrDefault();
+                CurrSiteConfig = DocDBRepo.DB<SiteConfig>.GetItemsAsync(c => c.DocType == DocTypes.SiteConfig).Result.LastOrDefault();
                 SiteConfigReady = (CurrSiteConfig != null);
                 return SiteConfigReady;
             }
@@ -60,6 +61,7 @@ namespace B2BPortal.Infrastructure
                 return SiteConfigReady;
             }
         }
+
         /// <summary>
         /// Write a new SiteConfig record. The latest record is returned by LoadCurrSiteConfig, and older configs are stored 
         /// for history (terms of service are stored in these config versions)
