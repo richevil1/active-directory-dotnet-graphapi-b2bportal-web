@@ -4,7 +4,10 @@
   "parameters": {
     "hostingPlanName": {
       "type": "string",
-      "minLength": 1
+      "minLength": 1,
+      "metadata": {
+        "description": "Azure App Services use \"Hosting Plans\" to define the compute resources that will run your app. The name of this plan will also be used elsewhere throughout this deployment, as part of your database host name and your default web site name"
+      }
     },
     "skuName": {
       "type": "string",
