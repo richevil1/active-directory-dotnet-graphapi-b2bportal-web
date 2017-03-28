@@ -2,25 +2,42 @@
 Import-Module Azure -ErrorAction SilentlyContinue
 
 #DEPLOYMENT OPTIONS
+    #optional, defines uniqueness for deployments
     $TestNo                  = "4"
+    #region to deploy into - see https://azure.microsoft.com/en-us/regions/
     $DeployRegion            = "West US 2"
+    #Name of your company - will be displayed through your site
     $CompanyName             = "Contoso"
 
+    #The name of the Azure AD tenant that will host your two auth apps
     $TenantName              = "contoso.com"
+    #The GUID of that tenant
     $AADTenantId             = "[AAD TenantID for auth app hosting]"
+    #The name of your Azure subscription associated with your Azure AD auth tenant
     $AADSubName              = "ADTestTenant"
 
+    #The GUID of your Azure AD tenant that's associated with your Azure subscription (where the site will be deployed)
     $AzureTenantId           = "[AAD TenantID for web app hosting]"
+    #The name of that subscription
     $AzureSubName            = "MyAzureSubscription"
 
+    #The name of the Resource Group where all of these resources will be deployed
     $RGName                  = "B2BTest$TestNo"
+    #The "name" of your web application
     $SiteName                = "B2BDeployTest$TestNo"
 
+    #The display name of your Azure AD administrative auth app. This name is displayed when a user logs in to your app from Azure AD
     $AdminAppName            = "B2B Self-Serve Administration$TestNo"
+    #A unique URI that defines your application
     $AdminAppUri             = "https://$($SiteName)admin.$TenantName"
+    
+    #The display name of your Azure AD "pre-auth" auth app. This is the app prospective guests will optionally use to prove their
+    #identity via their home account
     $PreauthAppName          = "$CompanyName - B2B Pre-Authentication Sign-In$TestNo"
+    #A unique URI that defines your application. Unlike the admin URI, this one must be unique in the world, as it's a multi-tenant application
     $PreAuthAppUri           = "https://$($SiteName).$TenantName"
 
+    #generating a unique "secret" for your admin app to exectute B2B operations on your behalf
     $pw1                     = [Guid]::NewGuid().ToString().Replace("-","")
     $pw2                     = [System.Text.Encoding]::UTF8.GetBytes($pw1)
     $spAdminPassword         = [System.Convert]::ToBase64String($pw2)
