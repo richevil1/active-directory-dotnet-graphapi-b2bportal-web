@@ -25,8 +25,14 @@ namespace AzureB2BInvite
                         (!string.IsNullOrEmpty(domainSettings.RedirectLink))
                             ? domainSettings.RedirectLink
                                 : Settings.DefaultRedirectUrl;
-
-            var useCustomEmailTemplate = (domainSettings != null) & (!string.IsNullOrEmpty(domainSettings.InvitationTemplate));
+            var useCustomEmailTemplate = false;
+            if (domainSettings != null)
+            {
+                if (!string.IsNullOrEmpty(domainSettings.InvitationTemplate))
+                {
+                    useCustomEmailTemplate = true;
+                }
+            }
 
             AdalResponse serverResponse = null;
             try
