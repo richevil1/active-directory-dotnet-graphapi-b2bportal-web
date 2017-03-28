@@ -21,11 +21,14 @@ namespace B2BPortal
             try
             {
                 //DocDB config
+
                 DocDBRepo.Settings.DocDBUri = ConfigurationManager.AppSettings["DocDBUri"];
                 DocDBRepo.Settings.DocDBAuthKey = ConfigurationManager.AppSettings["DocDBAuthKey"];
                 DocDBRepo.Settings.DocDBName = ConfigurationManager.AppSettings["DocDBName"];
                 DocDBRepo.Settings.DocDBCollection = ConfigurationManager.AppSettings["DocDBCollection"];
-                DocDBRepo.Initialize();
+                
+                var task = DocDBRepo.Initialize();
+                task.RunSynchronously();
 
                 ControllerBuilder.Current.DefaultNamespaces.Add("B2BPortal.Controllers");
                 AreaRegistration.RegisterAllAreas();
@@ -76,7 +79,9 @@ namespace B2BPortal
                  * don't know if this is due to the api call or spinning up this code
                  * see AdalUtil.CallGraph...
                 */
-                AdalUtil.Authenticate();
+                var task2 = AdalUtil.Authenticate();
+                task2.RunSynchronously();
+
             }
             catch (Exception ex)
             {
