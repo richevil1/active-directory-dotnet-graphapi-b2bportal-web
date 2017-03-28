@@ -96,7 +96,15 @@ namespace B2BPortal.Areas.Admin.Controllers
                         preAuthDomain.Groups = new List<string>(preAuthDomain.GroupsList.Split(','));
                     }
                     preAuthDomain.AuthUser = User.Identity.GetEmail();
-                    preAuthDomain = await PreAuthDomain.UpdateDomain(preAuthDomain);
+
+                    if (preAuthDomain.Id == null)
+                    {
+                        preAuthDomain = await PreAuthDomain.AddDomain(preAuthDomain);
+                    }
+                    else
+                    {
+                        preAuthDomain = await PreAuthDomain.UpdateDomain(preAuthDomain);
+                    }
 
                     return RedirectToAction("Index");
                 }

@@ -2,7 +2,7 @@
 ## Sample/Prototype project enabling self-service B2B capabilities for an Azure AD Tenant
 ## Quick Start
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https://raw.githubusercontent.com/Azure/active-directory-dotnet-graphapi-b2bportal-web/master/azuredeploy.json" target="_blank"><img src="http://azuredeploy.net/deploybutton.png"/></a>
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Factive-directory-dotnet-graphapi-b2bportal-web%2Fmaster%2Fazuredeploy.json" target="_blank"><img src="http://azuredeploy.net/deploybutton.png"/></a>
 
 __Details__
 * Allows self-service provisioning of guest accounts in a tenant. Portal enables this via API calls to the Microsoft Graph

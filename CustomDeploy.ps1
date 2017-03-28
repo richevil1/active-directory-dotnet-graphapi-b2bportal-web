@@ -106,9 +106,21 @@ if ($deployment) {
     #to-do: update URIs and reply URLs for apps, based on output parms from $deployment
     #also to-do: update application permissions and APIs - may need to be done in the portal
     $hostName = $Deployment.Outputs.webSiteObject.Value.enabledHostNames.Item(0).ToString()
-    $adminApp.ReplyUrls.Add("https://$hostname/")
-    $preauthApp.ReplyUrls.Add("https://$hostname/")
+    $url = "https://$hostname/"
+    $adminApp.ReplyUrls.Add($url)
+    $preauthApp.ReplyUrls.Add($url)
+    #todo: update app reply urls
 
+    $ProjectFolder = "$env:USERPROFILE\desktop\$RGName\"
+    if (!(Test-Path -Path $ProjectFolder)) {
+        md $ProjectFolder
+    }
+    $WshShell = New-Object -comObject WScript.Shell
+    $Shortcut = $WshShell.CreateShortcut("$($ProjectFolder)B2B Self-Service Site.lnk")
+    $Shortcut.TargetPath = 
+    $Shortcut.IconLocation = "%ProgramFiles%\Internet Explorer\iexplore.exe, 0"
+    $Shortcut.Save()
+    start $ProjectFolder
 }
 
 $endTime=Get-Date
