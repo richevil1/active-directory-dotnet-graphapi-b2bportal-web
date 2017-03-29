@@ -43,9 +43,10 @@ namespace B2BPortal
                 if (isConfig)
                 {
                     //if new site, no config but invites are disabled until config is complete
-                    AdalUtil.Settings.InviterResponseEmailAddr = Settings.CurrSiteConfig.InviterResponseEmailAddr;
-                    MailSender.MailFrom = Settings.CurrSiteConfig.InviterResponseEmailAddr;
+                    AdalUtil.Settings.SiteRedemptionSettings = Settings.CurrSiteConfig.SiteRedemptionSettings;
+                    MailSender.MailFrom = Settings.CurrSiteConfig.SiteRedemptionSettings.InviterResponseEmailAddr;
                 }
+
                 AdalUtil.Settings.AADInstanceLocal = ConfigurationManager.AppSettings["ida:AADInstanceLocal"];
                 AdalUtil.Settings.AADInstanceMulti = ConfigurationManager.AppSettings["ida:AADInstanceMulti"];
                 AdalUtil.Settings.TenantID = ConfigurationManager.AppSettings["ida:TenantId"];
@@ -54,9 +55,6 @@ namespace B2BPortal
                 AdalUtil.Settings.AppClientSecret_Admin = ConfigurationManager.AppSettings["ida:ClientSecret_Admin"];
 
                 AdalUtil.Settings.GraphApiVersion = ConfigurationManager.AppSettings["GraphApiVersion"];
-
-                AdalUtil.Settings.DefaultRedirectUrl = ConfigurationManager.AppSettings["InviteRedirectUrl"];
-                AdalUtil.Settings.InviteRedirectUrl = Settings.CurrSiteConfig.InviteRedirectUrl;
 
                 AdalUtil.Settings.InvitationEmailSubject = ConfigurationManager.AppSettings["InvitationEmailSubject"];
                 AdalUtil.Settings.DefaultBodyTemplateName = ConfigurationManager.AppSettings["DefaultBodyTemplateName"];

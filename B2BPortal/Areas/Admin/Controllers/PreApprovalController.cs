@@ -19,7 +19,7 @@ namespace B2BPortal.Areas.Admin.Controllers
         public PreApprovalController()
         {
             var task = Task.Run(async () => {
-                var templates = (await InviteTemplate.GetTemplates());
+                var templates = (await TemplateUtilities.GetTemplates());
                 _templates = new List<SelectListItem>();
                 _templates.Add(new SelectListItem { Selected = true, Text = "Select optional email template", Value = "" });
                 _templates.AddRange(templates.Select(t => new SelectListItem { Selected = false, Text = t.TemplateName, Value = t.Id }));
@@ -75,9 +75,9 @@ namespace B2BPortal.Areas.Admin.Controllers
         {
             ViewBag.Templates = _templates;
             PreAuthDomain domain = await PreAuthDomain.GetDomain(id);
-            if (domain.InvitationTemplate.Length > 0)
+            if (domain.InviteTemplateId.Length > 0)
             {
-                domain.InvitationTemplate = string.Format("{0} ({1})", domain.InvitationTemplate, _templates.Where(t => t.Value == domain.InvitationTemplate).Single().Text);
+                domain.InviteTemplateId = string.Format("{0} ({1})", domain.InviteTemplateId, _templates.Where(t => t.Value == domain.InviteTemplateId).Single().Text);
             }
             ViewBag.Operation = "Details";
             return View(domain);
@@ -95,6 +95,7 @@ namespace B2BPortal.Areas.Admin.Controllers
                     {
                         preAuthDomain.Groups = new List<string>(preAuthDomain.GroupsList.Split(','));
                     }
+
                     preAuthDomain.AuthUser = User.Identity.GetEmail();
 
                     if (preAuthDomain.Id == null)

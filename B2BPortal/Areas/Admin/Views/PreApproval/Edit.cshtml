@@ -3,6 +3,8 @@
 
 @{
     ViewBag.Title = "Pre-Auth Domains";
+    ViewBag.RedemptionPropertyName = "DomainRedemptionSettings";
+
     var _templates = new List<SelectListItem>();
 
     if (ViewBag.Templates != null)
@@ -11,7 +13,7 @@
 
         var templates = _templates.Select(t => new SelectListItem
         {
-            Selected = (t.Value == Model.InvitationTemplate),
+            Selected = (t.Value == Model.InviteTemplateId),
             Text = t.Text,
             Value = t.Value
         });
@@ -42,12 +44,12 @@
                 "Require Preauth" in your Site Config, then ONLY users with matching logins will be accepted.
             </div>
         </div>
-
+        <hr />
         <div class="form-group">
-            @Html.LabelFor(model => model.InvitationTemplate, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.InviteTemplateId, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-3">
-                @Html.DropDownListFor(model => model.InvitationTemplate, _templates, new { @class = "form-control input-sm" })
-                @Html.ValidationMessageFor(model => model.InvitationTemplate, "", new { @class = "text-danger" })
+                @Html.DropDownListFor(model => model.InviteTemplateId, _templates, new { @class = "form-control input-sm" })
+                @Html.ValidationMessageFor(model => model.InviteTemplateId, "", new { @class = "text-danger" })
             </div>
             <div class="col-md-7">
                 (optional) - Select an invitation template.
@@ -68,21 +70,7 @@
                 }
             </div>
         </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.RedirectLink, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-3">
-                @Html.EditorFor(model => model.RedirectLink, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.RedirectLink, "", new { @class = "text-danger" })
-            </div>
-            <div class="col-md-7">
-                This is the link that pre-authenticated users from this domain will be redirected to after
-                successfully reedeeming their B2B invitation. If this is left empty, they will be redirected
-                to the profile editor here, and after that, they'll be taken to
-                <a href="https://myapps.microsoft.com" target="_blank">https://myapps.microsoft.com</a>.
-            </div>
-        </div>
-
+        <hr />
         <div class="form-group">
             @Html.LabelFor(model => model.GroupsList, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-3">
@@ -94,6 +82,11 @@
                 will also automatically be added to these groups in your Azure Active Directory tenant.
             </div>
         </div>
+        <hr />
+
+        <h4>Redemption Settings - This Domain</h4>
+
+        @Html.Partial("_editRedemptionSettings", Model.DomainRedemptionSettings)
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">

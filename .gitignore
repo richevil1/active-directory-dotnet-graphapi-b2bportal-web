@@ -6,8 +6,8 @@
 *.user
 *.userosscache
 *.sln.docstates
-*settings.config
-*settings*.config
+/B2BPortal/*settings.config
+/B2BPortal/Web.config_*
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs

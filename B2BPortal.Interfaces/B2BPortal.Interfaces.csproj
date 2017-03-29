@@ -47,6 +47,7 @@
     <Compile Include="DocModelBase.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="IDocModelBase.cs" />
+    <Compile Include="IInviteTemplate.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

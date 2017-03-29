@@ -88,6 +88,8 @@ namespace B2BPortal.Data
             /// <returns></returns>
             public static async Task<IEnumerable<T>> GetItemsAsync(Expression<Func<T, bool>> predicate)
             {
+                if (predicate == null) return await GetItemsAsync();
+
                 var docType = (DocTypes)Enum.Parse(typeof(DocTypes), typeof(T).Name);
 
                 var cli = client.CreateDocumentQuery<T>(baseDocCollectionUri);

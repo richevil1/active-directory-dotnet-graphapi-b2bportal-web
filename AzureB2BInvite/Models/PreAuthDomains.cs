@@ -6,12 +6,18 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace AzureB2BInvite.Models
 {
     public class PreAuthDomain: DocModelBase, IDocModelBase
     {
+        public PreAuthDomain()
+        {
+            DomainRedemptionSettings = new RedemptionSettings();
+            InviteTemplateContent = new InviteTemplate();
+        }
         /// <summary>
         /// The UPN of the user creating this PreAuth record
         /// </summary>
@@ -47,20 +53,18 @@ namespace AzureB2BInvite.Models
         public string DomainName { get; set; }
 
         /// <summary>
-        /// String name of the email body template to use for pre-auth invitations handled by this record.
-        /// Templates are stored in the /Templates folder
+        /// RecordID for the email body template to use for pre-auth invitations handled by this record.
         /// </summary>
-        [DisplayName("Invitation Template")]
-        [JsonProperty(PropertyName = "invitationTemplate")]
-        public string InvitationTemplate { get; set; }
+        [ScaffoldColumn(false)]
+        [JsonProperty(PropertyName = "inviteTemplateId")]
+        public string InviteTemplateId { get; set; }
 
         /// <summary>
-        /// Optional link for guests approved via this tenant. After the email redemption link is clicked by the guest, and after
-        /// the redemption is complete, the user's browser will be automatically redirected to this link.
+        /// Default site-wide redemption settings - will be in effect for non-preauthed domain invitations
         /// </summary>
-        [DisplayName("Redirect URL")]
-        [JsonProperty(PropertyName = "redirectLink")]
-        public string RedirectLink { get; set; }
+        [DisplayName("Domain Redemption Settings")]
+        [JsonProperty(PropertyName = "domainRedemptionSettings")]
+        public RedemptionSettings DomainRedemptionSettings { get; set; }
 
         /// <summary>
         /// Optional - Users matching the domain name will be automatically added to each group in this list
@@ -74,14 +78,21 @@ namespace AzureB2BInvite.Models
         [ScaffoldColumn(false)]
         public string GroupsList { get; set; }
 
-        public static async Task<IEnumerable<PreAuthDomain>> GetDomains()
+        [JsonIgnore]
+        [ScaffoldColumn(false)]
+        public InviteTemplate InviteTemplateContent { get; private set; }
+
+        public static async Task<IEnumerable<PreAuthDomain>> GetDomains(Expression<Func<PreAuthDomain, bool>> predicate = null)
         {
-            return (await DocDBRepo.DB<PreAuthDomain>.GetItemsAsync()).OrderByDescending(c => c.LastUpdated);
+            var res = (await DocDBRepo.DB<PreAuthDomain>.GetItemsAsync(predicate)).OrderByDescending(c => c.LastUpdated);
+            return res;
         }
 
         public static async Task<PreAuthDomain> GetDomain(string id)
         {
-            return (await DocDBRepo.DB<PreAuthDomain>.GetItemAsync(id));
+            var res = (await DocDBRepo.DB<PreAuthDomain>.GetItemAsync(id));
+            res.InviteTemplateContent = (await DocDBRepo.DB<InviteTemplate>.GetItemAsync(res.InviteTemplateId));
+            return res;
         }
 
         public static async Task<PreAuthDomain> AddDomain(PreAuthDomain domain)

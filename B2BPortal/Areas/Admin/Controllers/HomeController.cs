@@ -39,17 +39,16 @@ namespace B2BPortal.Areas.Admin.Controllers
             {
                 var strDisposition = Request.Form[string.Format("Disposition.{0}", request.Id)];
                 var disposition = (Disposition)Enum.Parse(typeof(Disposition), strDisposition);
-                if (disposition == Disposition.Pending)
-                {
-                    continue;
-                }
-                if (disposition == Disposition.Approved)
-                {
-                    approveCount++;
-                }
-                if (disposition == Disposition.Denied)
-                {
-                    deniedCount++;
+                switch (disposition)
+                { 
+                    case Disposition.Pending:
+                        continue;
+                    case Disposition.Approved:
+                        approveCount++;
+                        break;
+                    case Disposition.Denied:
+                        deniedCount++;
+                        break;
                 }
                 request.Disposition = disposition;
                 request.InternalComment = Request.Form[string.Format("InternalComment.{0}", request.Id)];

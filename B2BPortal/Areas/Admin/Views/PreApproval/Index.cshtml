@@ -16,12 +16,15 @@
             @Html.DisplayNameFor(model => model.DomainName)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Groups)
+            @Html.DisplayNameFor(model => model.DomainRedemptionSettings.InviterResponseEmailAddr)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.RedirectLink)
+            @Html.DisplayNameFor(model => model.DomainRedemptionSettings.InviteRedirectUrl)
         </th>
         <th>
+            @Html.DisplayNameFor(model => model.DomainRedemptionSettings.RequirePreauth)
+        </th>
+        <th> 
             @Html.DisplayNameFor(model => model.AuthUser)
         </th>
         <th>
@@ -41,10 +44,13 @@
                 @Html.DisplayFor(modelItem => item.DomainName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Groups)
+                @Html.DisplayFor(modelItem => item.DomainRedemptionSettings.InviterResponseEmailAddr)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.RedirectLink)
+                @Html.DisplayFor(modelItem => item.DomainRedemptionSettings.InviteRedirectUrl)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DomainRedemptionSettings.RequirePreauth)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.AuthUser)

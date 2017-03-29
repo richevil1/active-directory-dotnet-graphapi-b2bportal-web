@@ -105,7 +105,7 @@ namespace AzureB2BInvite.Models
 
         [ScaffoldColumn(false)]
         [JsonProperty(PropertyName = "provisionedPlans")]
-        public string[] ProvisionedPlans { get; set; }
+        public dynamic[] ProvisionedPlans { get; set; }
 
         [ScaffoldColumn(false)]
         [JsonProperty(PropertyName = "proxyAddresses")]

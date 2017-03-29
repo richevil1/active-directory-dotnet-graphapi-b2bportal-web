@@ -1,4 +1,5 @@
-﻿using Microsoft.Graph;
+﻿using AzureB2BInvite.Models;
+using Microsoft.Graph;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Newtonsoft.Json;
 using System;
@@ -23,13 +24,11 @@ namespace AzureB2BInvite
             public static string AppClientId_Admin { get; set; }
             public static string AppClientSecret_Admin { get; set; }
             public static string InvitingOrganization { get; set; }
-            public static string InviteRedirectUrl { get; set; }
+            public static RedemptionSettings SiteRedemptionSettings { get; set; }
             public static string InvitationEmailSubject { get; set; }
             public static string DefaultBodyTemplateName { get; set; }
-            public static string InviterResponseEmailAddr { get; set; }
             public static string[] InviterRoleNames { get; set; }
             public static string AssignedInviterRole { get; set; }
-            public static string DefaultRedirectUrl { get; set; }
             public static bool UseSMTP { get; set; }
         }
 
@@ -83,10 +82,10 @@ namespace AzureB2BInvite
                         {
                             response = httpClient.PostAsync(uri, content).Result;
                         }
-                        response.EnsureSuccessStatusCode();
                         res.ResponseContent = response.Content.ReadAsStringAsync().Result;
                         res.StatusCode = response.StatusCode;
                         res.Message = response.ReasonPhrase;
+                        response.EnsureSuccessStatusCode();
                     }
                 }
                 else
@@ -104,12 +103,16 @@ namespace AzureB2BInvite
             catch (Exception ex)
             {
                 res.Successful = false;
+                var serverError = JsonConvert.DeserializeObject<GraphError>(res.ResponseContent);
+                
                 var reason = (response == null ? "N/A" : response.ReasonPhrase);
-                res.Message = string.Format("{0} (server response: {1})", ex.Message, reason);
+                var serverErrorMessage = (serverError.Error ==null) ? "N/A" : serverError.Error.Message;
+                res.Message = string.Format("{0} (Server response: {1}. Server detail: {2})", ex.Message, reason, serverErrorMessage);
                 return res;
             }
         }
     }
+
     public class AdalResponse
     {
         public string ResponseContent { get; set; }

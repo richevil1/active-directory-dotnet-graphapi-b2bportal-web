@@ -40,6 +40,10 @@ namespace AzureB2BInvite.Rules
             {
                 //INVITE
                 request.Status = await InviteManager.SendInvitation(request, domainSettings);
+                if (request.Status.Substring(0, 5) == "Error")
+                {
+                    request.Disposition = Disposition.Pending;
+                }
             }
 
             //UPDATE

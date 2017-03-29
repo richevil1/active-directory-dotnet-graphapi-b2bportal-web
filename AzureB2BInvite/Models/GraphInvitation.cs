@@ -6,7 +6,41 @@ using System.Web;
 
 namespace AzureB2BInvite.Models
 {
+    public class GraphInvitation
+    {
+        [JsonProperty(PropertyName = "@odata.context") ]
+        public string context { get; set; }
 
+        [JsonProperty(PropertyName = "id")]
+        public string id { get; set; }
+
+        [JsonProperty(PropertyName = "inviteRedeemUrl")]
+        public string InviteRedeemUrl { get; set; }
+
+        [JsonProperty(PropertyName = "invitedUserDisplayName")]
+        public string InvitedUserDisplayName { get; set; }
+
+        [JsonProperty(PropertyName = "invitedUserType")]
+        public string InvitedUserType { get; set; }
+
+        [JsonProperty(PropertyName = "invitedUserEmailAddress")]
+        public string InvitedUserEmailAddress { get; set; }
+
+        [JsonProperty(PropertyName = "sendInvitationMessage")]
+        public bool SendInvitationMessage { get; set; }
+
+        [JsonProperty(PropertyName = "invitedUserMessageInfo")]
+        public InvitedUserMessageInfo InvitedUserMessageInfo { get; set; }
+
+        [JsonProperty(PropertyName = "inviteRedirectUrl")]
+        public string InviteRedirectUrl { get; set; }
+
+        [JsonProperty(PropertyName = "status")]
+        public string Status { get; set; }
+
+        [JsonProperty(PropertyName = "invitedUser")]
+        public InvitedUser InvitedUser { get; set; }
+    }
     public class EmailAddress
     {
         [JsonProperty(PropertyName = "name")]
@@ -52,42 +86,12 @@ namespace AzureB2BInvite.Models
         public string Id { get; set; }
     }
 
-    public class GraphInvitation
+    public class GraphError
     {
-        [JsonProperty(PropertyName = "@odata.context") ]
-        public string context { get; set; }
-
-        [JsonProperty(PropertyName = "id")]
-        public string id { get; set; }
-
-        [JsonProperty(PropertyName = "inviteRedeemUrl")]
-        public string InviteRedeemUrl { get; set; }
-
-        [JsonProperty(PropertyName = "invitedUserDisplayName")]
-        public string InvitedUserDisplayName { get; set; }
-
-        [JsonProperty(PropertyName = "invitedUserType")]
-        public string InvitedUserType { get; set; }
-
-        [JsonProperty(PropertyName = "invitedUserEmailAddress")]
-        public string InvitedUserEmailAddress { get; set; }
-
-        [JsonProperty(PropertyName = "sendInvitationMessage")]
-        public bool SendInvitationMessage { get; set; }
-
-        [JsonProperty(PropertyName = "invitedUserMessageInfo")]
-        public InvitedUserMessageInfo InvitedUserMessageInfo { get; set; }
-
-        [JsonProperty(PropertyName = "inviteRedirectUrl")]
-        public string InviteRedirectUrl { get; set; }
-
-        [JsonProperty(PropertyName = "status")]
-        public string Status { get; set; }
-
-        [JsonProperty(PropertyName = "invitedUser")]
-        public InvitedUser InvitedUser { get; set; }
+        [JsonProperty(PropertyName = "error")]
+        public ResponseError Error { get; set; }
     }
-
+    
     //error object
     public class ResponseError
     {
@@ -106,7 +110,7 @@ namespace AzureB2BInvite.Models
         [JsonProperty(PropertyName = "request-id")]
         public string RequestId;
 
-        [JsonProperty(PropertyName = "data")]
-        public string Data;
+        [JsonProperty(PropertyName = "date")]
+        public DateTime Date;
     }
 }

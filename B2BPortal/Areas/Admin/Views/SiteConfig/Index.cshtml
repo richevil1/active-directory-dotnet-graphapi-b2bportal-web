@@ -13,17 +13,17 @@
         <dt>@Html.DisplayNameFor(model => model.WelcomeMessage)</dt>
         <dd>@Html.DisplayFor(model => model.WelcomeMessage)</dd>
 
-        <dt>@Html.DisplayNameFor(model => model.RequirePreauth)</dt>
-        <dd>@Html.DisplayFor(model => model.RequirePreauth)</dd>
-
         <dt>@Html.DisplayNameFor(model => model.RequireTOSAgreement)</dt>
         <dd>@Html.DisplayFor(model => model.RequireTOSAgreement)</dd>
 
         <dt>@Html.DisplayNameFor(model => model.TOSDocument)</dt>
         <dd>@Html.ActionLink("Click to view TOS", "TOS", "Home", new { area = "", id = Model.Id }, new { target = "_blank" })</dd>
     </dl>
-    <hr />
 
+    <hr />
+    @Html.Partial("_viewRedemptionSettings", Model.SiteRedemptionSettings)
+
+    <hr />
     <dl class="dl-horizontal">
         <dt>@Html.DisplayNameFor(model => model.ConfigVersion)</dt>
         <dd>@Html.DisplayFor(model => model.ConfigVersion)</dd>

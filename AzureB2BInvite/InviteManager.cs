@@ -19,16 +19,16 @@ namespace AzureB2BInvite
         {
             var displayName = string.Format("{0} {1}", request.FirstName, request.LastName);
 
-            //use domain custom setting if exists, else use global site config setting
-            var inviteRedirectUrl = (domainSettings == null) ?
-                    Settings.DefaultRedirectUrl :
-                        (!string.IsNullOrEmpty(domainSettings.RedirectLink))
-                            ? domainSettings.RedirectLink
-                                : Settings.DefaultRedirectUrl;
             var useCustomEmailTemplate = false;
+            var redemptionSettings = Settings.SiteRedemptionSettings;
+
+            //use domain custom setting if exists, else use global site config setting
             if (domainSettings != null)
             {
-                if (!string.IsNullOrEmpty(domainSettings.InvitationTemplate))
+                redemptionSettings = domainSettings.DomainRedemptionSettings;
+                //domainSettings.InviteTemplateContent;
+                
+                if (!string.IsNullOrEmpty(domainSettings.InviteTemplateId))
                 {
                     useCustomEmailTemplate = true;
                 }
@@ -42,31 +42,30 @@ namespace AzureB2BInvite
                 GraphInvitation invitation = new GraphInvitation();
                 invitation.InvitedUserDisplayName = displayName;
                 invitation.InvitedUserEmailAddress = request.EmailAddress;
-                invitation.InviteRedirectUrl = (!string.IsNullOrEmpty(inviteRedirectUrl)) ? inviteRedirectUrl : Settings.InviteRedirectUrl;
+                invitation.InviteRedirectUrl = redemptionSettings.InviteRedirectUrl;
                 invitation.SendInvitationMessage = (!Settings.UseSMTP);
-                //todo - fix templates
-                //if (useCustomEmailTemplate)
-                //{
-                //    invitation.InvitedUserMessageInfo = new InvitedUserMessageInfo
-                //    {
-                //        CustomizedMessageBody=domainSettings.InvitationTemplate
-                //    };
-                //}
+
+                if (useCustomEmailTemplate && invitation.SendInvitationMessage)
+                {
+                    invitation.InvitedUserMessageInfo = new InvitedUserMessageInfo
+                    {
+                        CustomizedMessageBody = domainSettings.InviteTemplateContent.TemplateContent
+                    };
+                }
 
                 // Invite user. Your app needs to have User.ReadWrite.All or Directory.ReadWrite.All to invite
                 serverResponse = CallGraph(inviteEndPoint, invitation);
                 var responseData = JsonConvert.DeserializeObject<GraphInvitation>(serverResponse.ResponseContent);
                 if (responseData.id == null)
                 {
-                    var responseError = JsonConvert.DeserializeObject<ResponseError>(serverResponse.ResponseContent);
-                    return string.Format("Invite not sent - API error: {0}", responseError.Code);
+                    return string.Format("Error: Invite not sent - API error: {0}", serverResponse.Message);
                 }
 
-                if (useCustomEmailTemplate)
+                if (Settings.UseSMTP)
                 {
                     var emailSubject = Settings.InvitationEmailSubject.Replace("{{orgname}}", Settings.InvitingOrganization);
 
-                    string body = FormatEmailBody(responseData);
+                    string body = FormatEmailBody(responseData, redemptionSettings);
                     SendViaSMTP(emailSubject, body, invitation.InvitedUserEmailAddress);
                 }
 
@@ -80,14 +79,15 @@ namespace AzureB2BInvite
             }
         }
 
-        private static string FormatEmailBody(GraphInvitation data)
+        private static string FormatEmailBody(GraphInvitation data, RedemptionSettings redemption)
         {
+            
             var body = new StringBuilder();
             body.AppendFormat("You've been invited to access applications in the {0} organization<br>", Settings.InvitingOrganization);
-            body.AppendFormat("by {0}<br>", Settings.InviterResponseEmailAddr);
+            body.AppendFormat("by {0}<br>", redemption.InviterResponseEmailAddr);
             body.AppendFormat("<a href='{0}'>Get Started</a><br>", data.InviteRedeemUrl);
             body.AppendFormat("Return to the above link at any time for access.<br><hr>");
-            body.AppendFormat("Questions? Contact {0} at <a href='mailto:{1}'>{1}</a>", Settings.InvitingOrganization, Settings.InviterResponseEmailAddr);
+            body.AppendFormat("Questions? Contact {0} at <a href='mailto:{1}'>{1}</a>", Settings.InvitingOrganization, redemption.InviterResponseEmailAddr);
             return body.ToString();
         }
 

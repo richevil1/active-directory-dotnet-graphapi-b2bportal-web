@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using B2BPortal.Infrastructure;
 using B2BPortal.Models;
 using B2BPortal.Infrastructure.Filters;
+using AzureB2BInvite.Models;
 
 namespace B2BPortal.Areas.Admin.Controllers
 {
@@ -17,8 +18,7 @@ namespace B2BPortal.Areas.Admin.Controllers
             var config = await SiteConfig.GetCurrConfig();
             if (config == null)
             {
-                config = new SiteConfig();
-                config.InviteRedirectUrl = string.Format("{0}://{1}/profile", Request.Url.Scheme, Request.Url.DnsSafeHost);
+                config = new SiteConfig(Request.Url);
                 return View("Edit", config);
             }
             return View(config);
@@ -61,10 +61,11 @@ namespace B2BPortal.Areas.Admin.Controllers
                 }
                 catch
                 {
-                    return View();
+                    ViewBag.Error = "An error occured saving your config, please check the error logs and try again.";
+                    return View("Edit", config);
                 }
             }
-            return View();
+            return View("Edit", config);
         }
     }
 }

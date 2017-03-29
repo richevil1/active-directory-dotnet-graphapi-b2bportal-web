@@ -11,11 +11,24 @@ using B2BPortal.Infrastructure;
 using B2BPortal.Interfaces;
 using AzureB2BInvite;
 using Westwind.Web.Utilities;
+using AzureB2BInvite.Models;
 
 namespace B2BPortal.Models
 {
     public class SiteConfig : DocModelBase, IDocModelBase
     {
+        public SiteConfig() : this(null)
+        {
+
+        }
+        public SiteConfig(Uri SiteUri = null)
+        {
+            SiteRedemptionSettings = new RedemptionSettings();
+            SiteRedemptionSettings.EditProfileAfterRedeem = true;
+            if (SiteUri!=null)
+                SiteRedemptionSettings.InviteRedirectUrl = string.Format("{0}://{1}/profile", SiteUri.Scheme, SiteUri.DnsSafeHost);
+        }
+
         /// <summary>
         /// Site name displayed on home page (above description)
         /// </summary>
@@ -30,36 +43,12 @@ namespace B2BPortal.Models
         [JsonProperty(PropertyName = "invitingOrg")]
         public string InvitingOrg { get; set; }
 
-        /// <summary>
-        /// Name of inviting organization
-        /// </summary>
-        [DisplayName("Email displayed in invitation email for replies")]
-        [JsonProperty(PropertyName = "inviterResponseEmailAddr")]
-        public string InviterResponseEmailAddr { get; set; }
-
-        /// <summary>
-        /// URL the guest is returned to after an invitation is redeemed.
-        /// In the UX, a selector is presented offering to return to the Profile editor, the org "MyApps" page, or a custom URL.
-        /// (custom domain pre-auth records also define this URL - if they exist, they will override this setting)
-        /// </summary>
-        [DisplayName("Return URL after an invite is redeemed")]
-        [JsonProperty(PropertyName = "inviteRedirectUrl")]
-        public string InviteRedirectUrl { get; set; }
-
-        /// <summary>
+         /// <summary>
         /// Welcome message displayed on the home page - HTML allowed
         /// </summary>
         [DisplayName("Welcome Message")]
         [JsonProperty(PropertyName = "welcomeMessage")]
         public string WelcomeMessage { get; set; }
-
-        /// <summary>
-        /// Are guests only allowed to request access when their login credential matches a domain preauth, and 
-        /// pre-authentication to their home domain is completed?
-        /// </summary>
-        [DisplayName("Require Preauth")]
-        [JsonProperty(PropertyName = "requirePreauth")]
-        public bool RequirePreauth { get; set; }
 
         /// <summary>
         /// TODO: Should users be informed via email when their request was denied? (Requires SMTP)
@@ -82,6 +71,13 @@ namespace B2BPortal.Models
         [AllowHtml]
         [JsonProperty(PropertyName = "tosDocument")]
         public string TOSDocument { get; set; }
+
+        /// <summary>
+        /// Default site-wide redemption settings - will be in effect for non-preauthed domain invitations
+        /// </summary>
+        [DisplayName("Site Redemption Settings")]
+        [JsonProperty(PropertyName = "siteRedemptionSettings")]
+        public RedemptionSettings SiteRedemptionSettings { get; set; }
 
         /// <summary>
         /// Date this version of settings was committed
@@ -131,10 +127,8 @@ namespace B2BPortal.Models
             Settings.SiteConfigReady = true;
             Settings.CurrSiteConfig = config;
 
-            //refresh settings elsewhere in the app
-            MailSender.MailFrom = Settings.CurrSiteConfig.InviterResponseEmailAddr;
-            AdalUtil.Settings.InviterResponseEmailAddr = Settings.CurrSiteConfig.InviterResponseEmailAddr;
-            AdalUtil.Settings.DefaultRedirectUrl = Settings.CurrSiteConfig.InviteRedirectUrl;
+            //refresh invitation settings
+            AdalUtil.Settings.SiteRedemptionSettings = Settings.CurrSiteConfig.SiteRedemptionSettings;
 
             return config;
         }

@@ -18,17 +18,10 @@
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.InvitationTemplate)
+            @Html.DisplayNameFor(model => model.InviteTemplateId)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.InvitationTemplate)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.RedirectLink)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.RedirectLink)
+            @Html.DisplayFor(model => model.InviteTemplateId)
         </dd>
 
         <dt>
@@ -44,7 +37,11 @@
         <dd>
             @Html.DisplayFor(model => model.AuthUser)
         </dd>
+    </dl>
 
+    @Html.Partial("_viewRedemptionSettings", Model.DomainRedemptionSettings)
+
+    <dl class="dl-horizontal">
         <dt>
             @Html.DisplayNameFor(model => model.CreateDate)
         </dt>

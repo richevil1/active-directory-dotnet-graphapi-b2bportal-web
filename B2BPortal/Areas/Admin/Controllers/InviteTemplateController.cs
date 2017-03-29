@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using B2BPortal.Infrastructure;
 using B2BPortal.Models;
 using B2BPortal.Infrastructure.Filters;
+using B2BPortal.Data;
 
 namespace B2BPortal.Areas.Admin.Controllers
 {
@@ -14,17 +15,17 @@ namespace B2BPortal.Areas.Admin.Controllers
     {
         public async Task<ActionResult> Index()
         {
-            var templates = await InviteTemplate.GetTemplates();
+            var templates = await TemplateUtilities.GetTemplates();
             if (templates.Count() == 0)
             {
-                templates = await InviteTemplate.InitializeDefaultTemplate(User.Identity.GetEmail());
+                templates = await TemplateUtilities.InitializeDefaultTemplate(User.Identity.GetEmail());
             }
             return View(templates);
         }
 
         public async Task<ActionResult> Details(string id)
         {
-            var template = await InviteTemplate.GetTemplate(id);
+            var template = await TemplateUtilities.GetTemplate(id);
             return View(template);
         }
 
@@ -36,7 +37,7 @@ namespace B2BPortal.Areas.Admin.Controllers
                 template = new InviteTemplate();
             } else
             {
-                template = await InviteTemplate.GetTemplate(id);
+                template = await TemplateUtilities.GetTemplate(id);
 
             }
             return View(template);
@@ -52,11 +53,11 @@ namespace B2BPortal.Areas.Admin.Controllers
                     template.TemplateAuthor = User.Identity.GetEmail();
                     if (template.Id == null)
                     {
-                        template = await InviteTemplate.AddTemplate(template);
+                        template = await TemplateUtilities.AddTemplate(template);
                     }
                     else
                     {
-                        template = await InviteTemplate.UpdateTemplate(template);
+                        template = await TemplateUtilities.UpdateTemplate(template);
                     }
                     return RedirectToAction("Index");
                 }

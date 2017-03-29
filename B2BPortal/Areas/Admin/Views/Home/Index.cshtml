@@ -66,78 +66,88 @@
             <td><textarea name="InternalComment.@request.Id" style="width:200px;" rows="2">@request.InternalComment</textarea></td>
         </tr>
     }
-</table>
-<p>
-    <button class="btn btn-primary" type="submit" @disableButton style="margin-top:10px;">Save Changes</button>
-</p>
+    </table>
+    <div class="form-group" style="margin-top:15px;">
+        <button class="btn btn-primary" type="submit" @disableButton>Save Changes</button>
+        <button class="btn btn-default" id="btnRefresh" type="button">Refresh</button>
+    </div>
 
 }
-@section styles {
-    <style type="text/css">
-        table td, table th {
-            padding:7px;
-        }
-        #GlobalApproval {
-            width:170px;
-            display:inline-block;
-        }
-        @@media all and (max-width:1199px) {
-            #tblPendingRequests div.btn-group label.btn {
-                width:62px;
-                font-size:.85em;
+    @section styles {
+        <style type="text/css">
+            table td, table th {
+                padding: 7px;
             }
-            #tblPendingRequests td, #tblPendingRequests th {
-                font-size:.8em;
-                padding:3px;
-            }
-        }
-        @@media all and (max-width:991px) {
-            #tblPendingRequests div.btn-group label.btn {
-                width:54px;
-                font-size:.8em;
-            }
-            #tblPendingRequests td, #tblPendingRequests th {
-                font-size:.8em;
-                padding:3px;
-            }
+
             #GlobalApproval {
-                font-size:.95em;
-                width:120px!important;
+                width: 170px;
+                display: inline-block;
             }
-        }
-    </style>
-}
 
-@section scripts {
-    <script type="text/javascript">
-        $(function () {
-            $("#btnApplyGlobal").on("click", function () {
-                var globalValue = $("#GlobalApproval").val();
-                $("input:radio").each(function (i, o) {
-                    if (o.value == globalValue) {
-                        $(o).click();
-                    }
-                });
-            });
-            $("input:radio").parent("label").on("click", function () {
-                var o = $(this);
-                var val = o.children("input").val();
-                o.parentsUntil("tr").last().parent().css("background-color", getColor(val));
-            });
+            @@media all and (max-width:1199px) {
+                #tblPendingRequests div.btn-group label.btn {
+                    width: 62px;
+                    font-size: .85em;
+                }
 
-            function getColor(d) {
-                switch (d) {
-                    case "0":
-                        return "#d2ffc9";
-                        break;
-                    case "2":
-                        return "#ffd8c9";
-                        break;
-                    case "3":
-                        return "@pendingColor";
-                        break;
+                #tblPendingRequests td, #tblPendingRequests th {
+                    font-size: .8em;
+                    padding: 3px;
                 }
             }
-        });
-    </script>
-}
+
+            @@media all and (max-width:991px) {
+                #tblPendingRequests div.btn-group label.btn {
+                    width: 54px;
+                    font-size: .8em;
+                }
+
+                #tblPendingRequests td, #tblPendingRequests th {
+                    font-size: .8em;
+                    padding: 3px;
+                }
+
+                #GlobalApproval {
+                    font-size: .95em;
+                    width: 120px !important;
+                }
+            }
+        </style>
+    }
+
+    @section scripts {
+        <script type="text/javascript">
+            $(function () {
+                $("#btnApplyGlobal").on("click", function () {
+                    var globalValue = $("#GlobalApproval").val();
+                    $("input:radio").each(function (i, o) {
+                        if (o.value == globalValue) {
+                            $(o).click();
+                        }
+                    });
+                });
+                $("#btnRefresh").on("click", function () {
+                    location.href = "/admin";
+                });
+                $("input:radio").parent("label").on("click", function () {
+                    var o = $(this);
+                    var val = o.children("input").val();
+                    o.parentsUntil("tr").last().parent().css("background-color", getColor(val));
+                });
+
+                function getColor(d) {
+                    switch (d) {
+                        case "0":
+                            return "#d2ffc9";
+                            break;
+                        case "2":
+                            return "#ffd8c9";
+                            break;
+                        case "3":
+                            return "@pendingColor";
+                            break;
+                    }
+                }
+            });
+        </script>
+    }
