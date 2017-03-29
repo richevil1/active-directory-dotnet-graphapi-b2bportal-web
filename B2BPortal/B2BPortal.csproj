@@ -351,7 +351,6 @@
     <Content Include="Views\Home\NoConfig.cshtml" />
     <Content Include="Views\Home\TOS.cshtml" />
     <Content Include="Views\Profile\Index.cshtml" />
-    <Content Include="settings.config" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Areas\Admin\Models\" />
