@@ -6,8 +6,11 @@
 *.user
 *.userosscache
 *.sln.docstates
-/B2BPortal/*settings.config
+/B2BPortal/anonsettings.config
+/B2BPortal/settings.config
+/B2BPortal/hdsettings.config
 /B2BPortal/Web.config_*
+/B2BPortal/woodbridge*.config
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -252,3 +255,5 @@ paket-files/
 # JetBrains Rider
 .idea/
 *.sln.iml
+/B2BPortal/woodbridgesettings.config_33_28_2017-11_33_29
+/B2BPortal/woodbridgesettings.config_33_28_2017-11_33_52

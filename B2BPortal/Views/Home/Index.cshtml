@@ -16,7 +16,7 @@
     }
     var requirePreauth = Settings.CurrSiteConfig.SiteRedemptionSettings.RequirePreauth;
     var requireTOS = Settings.CurrSiteConfig.RequireTOSAgreement;
-    var btnDisabled = (requirePreauth && PreAuthed && (!requireTOS)) ? "" : "disabled";
+    var btnDisabled = ((!(requirePreauth && PreAuthed)) && (!requireTOS)) ? "" : "disabled";
 }
 <h3>@ViewBag.Title</h3>
 <div class="row">
@@ -70,6 +70,7 @@
 
             <div class="form-group buttons">
                 <button id="btnSubmit" @btnDisabled class="btn btn-primary btn-default" type="submit">Request Access</button>
+                <div id="needPreauth" class="alert alert-warning hidden" role="alert">Pre-authorization is still required.</div>
             </div>
         }
     </div>
@@ -126,9 +127,19 @@
             });
             $("#TOSAgreed").on("click", function () {
                 if ($("#TOSAgreed")[0].checked) {
-                    $("#btnSubmit").removeAttr("disabled");
+                    @{
+                            if ((!requirePreauth) || (requirePreauth && PreAuthed))
+                            {
+                                @:$("#btnSubmit").removeAttr("disabled");
+                                                }
+                            if ((requirePreauth && !PreAuthed))
+                            {
+                                @:$("#needPreauth").removeClass("hidden");
+                            }
+                        }
+                    needPreauth
                 } else {
-                    $("#btnSubmit").attr("disabled","true");
+                    $("#btnSubmit").attr("disabled", "true");
                 }
             });
             $("#EmailAddress").on("blur", function () {
