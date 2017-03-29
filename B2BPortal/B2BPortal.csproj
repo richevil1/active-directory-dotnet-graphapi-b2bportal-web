@@ -307,8 +307,6 @@
     <Content Include="Areas\Admin\Views\Shared\_editRedemptionSettings.cshtml" />
     <Content Include="Areas\Admin\Views\Shared\_viewRedemptionSettings.cshtml" />
     <Content Include="Areas\Admin\Views\Shared\TestView.cshtml" />
-    <Content Include="anonsettings.config" />
-    <Content Include="hdsettings.config" />
     <None Include="Properties\PublishProfiles\b2bdeploytest3-webom47k4qd7z5e2 - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\B2BPortal20170316124654 - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-3.1.1.intellisense.js" />
@@ -353,8 +351,6 @@
     <Content Include="Views\Home\NoConfig.cshtml" />
     <Content Include="Views\Home\TOS.cshtml" />
     <Content Include="Views\Profile\Index.cshtml" />
-    <Content Include="settings.config" />
-    <Content Include="woodbridgesettings.config" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Areas\Admin\Models\" />
