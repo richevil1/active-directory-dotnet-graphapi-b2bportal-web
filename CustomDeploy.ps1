@@ -37,10 +37,13 @@ Import-Module Azure -ErrorAction SilentlyContinue
     #A unique URI that defines your application. Unlike the admin URI, this one must be unique in the world, as it's a multi-tenant application
     $PreAuthAppUri           = "https://$($SiteName).$TenantName"
 
-    #generating a unique "secret" for your admin app to exectute B2B operations on your behalf
-    $pw1                     = [Guid]::NewGuid().ToString().Replace("-","")
-    $pw2                     = [System.Text.Encoding]::UTF8.GetBytes($pw1)
-    $spAdminPassword         = [System.Convert]::ToBase64String($pw2)
+    #generating a unique "secret" for your admin app to execute B2B operations on your behalf
+	$bytes = New-Object Byte[] 32
+	$rand = [System.Security.Cryptography.RandomNumberGenerator]::Create()
+	$rand.GetBytes($bytes)
+	$rand.Dispose()
+	$spAdminPassword = [System.Convert]::ToBase64String($bytes)
+
 #END DEPLOYMENT OPTIONS
 
 #Dot-sourced variable override (optional, comment out if not using)
