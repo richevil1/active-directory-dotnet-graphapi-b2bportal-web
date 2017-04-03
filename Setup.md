@@ -4,17 +4,17 @@ Two Azure Active Directory apps must be created in your tenant. The first is the
 
 * Log into the Azure portal, and click on Azure Active Directory, then click on Properties
 
- ![alt text][App1a]
+  ![alt text][App1a]
 
 * Click to copy the "Directory ID". This is also referred to as a "Tenant Id". Save this string, you'll need it in a bit.
 * Click on App registrations
 
- ![alt text][App1]
+  ![alt text][App1]
 
 * Click "+ Add" and enter the name of your app (like "B2B Admin App"). This title will be seen when users are prompted for their credentials.
 * Select "Web app / API", and enter the Sign-on URL. If you're setting this up before you deploy the app to Azure, you can enter https://loopback as a placeholder. Click "Create".
 
- ![alt text][App2]
+  ![alt text][App2]
 
 * From the application list, find the app you just created and click to open and edit it
 * Click on "Required permissions", then click "+ Add". On "Select an API", click and select "Microsoft Graph"
@@ -39,13 +39,13 @@ Two Azure Active Directory apps must be created in your tenant. The first is the
 
  * Finally, before we are done with the first app, record the "Application ID". You can click to the right of it in the main panel and it will copy it to your clipboard. Record it along with the app secret from above - these two strings will be needed to setup the web app.
 
- ![alt text][App5]
+  ![alt text][App5]
 
  The second app is the "pre-auth" app. This is a multi-tenant application that you'll create to allow your prospective guests to authenticate against their home Azure Active Directory tenant before completing their sign-up request. This allows you to know that they are who they say they are.
   * Follow the steps to create an app above. Name this one something like "B2B Pre-authentication App". It can include your company name, and you can customize it with a logo if you like. Use https://loopback for this sign-on URL too (for now).
   * Again, find the app you just created and click to edit it. On this one, on the Properties, page, you need to toggle the "Multi-tenanted" button to "Yes". Click "Save".
 
-  ![alt text][App6]
+   ![alt text][App6]
 
   * Under "Required permissions", you will again add the Microsoft Graph API. This time you only need to check one item:
     * DELEGATED PERMISSIONS
@@ -56,7 +56,7 @@ Two Azure Active Directory apps must be created in your tenant. The first is the
   * There is one additional step we need to take for the pre-auth app - we need to edit the "Manifest". This is a text file that gives us detailed access to some of the inner features of Azure AD applications. We need to enable "oauth2AllowImplicitFlow" for this application. By default, it is "false" and we will change it to "true".
     In the main panel, click "Manifest" to open the manifest editor.
 
-  ![alt text][Manifest]
+   ![alt text][Manifest]
 
   * Find the line "oauth2AllowImplicitFlow", and change "false" to "true". Don't include quotes, just replace the word.
   * Click "Save".
@@ -66,7 +66,7 @@ __Web Application Setup__
 
 At this point, you should have 5 items saved: the tenant ID, the admin app ID and secret, and the pre-auth app ID and secret. You can now click the "Deploy to Azure" button on the landing page of this GitHub Repo, and it will take you to Azure. Log in, and you'll see a form like this one:
 
-  ![alt text][ARMDeploy]
+   ![alt text][ARMDeploy]
 
   * Enter the name of your new Resource Group. This is where the web application and DocumentDB will be deployed.
   * Select a region to deploy into.
