@@ -37,7 +37,7 @@ Two Azure Active Directory apps must be created in your tenant. The first is the
 
   ![alt text][App4]
 
- * Finally, before we are done with the first app, record the "Application ID". You can click to the right of it in the main panel and it will copy it to your clipboard. Record it along with the app secret from above - these two strings will be needed to setup the web app.
+* Finally, before we are done with the first app, record the "Application ID". You can click to the right of it in the main panel and it will copy it to your clipboard. Record it along with the app secret from above - these two strings will be needed to setup the web app.
 
   ![alt text][App5]
 
@@ -45,7 +45,7 @@ Two Azure Active Directory apps must be created in your tenant. The first is the
   * Follow the steps to create an app above. Name this one something like "B2B Pre-authentication App". It can include your company name, and you can customize it with a logo if you like. Use https://loopback for this sign-on URL too (for now).
   * Again, find the app you just created and click to edit it. On this one, on the Properties, page, you need to toggle the "Multi-tenanted" button to "Yes". Click "Save".
 
-   ![alt text][App6]
+    ![alt text][App6]
 
   * Under "Required permissions", you will again add the Microsoft Graph API. This time you only need to check one item:
     * DELEGATED PERMISSIONS
@@ -56,7 +56,7 @@ Two Azure Active Directory apps must be created in your tenant. The first is the
   * There is one additional step we need to take for the pre-auth app - we need to edit the "Manifest". This is a text file that gives us detailed access to some of the inner features of Azure AD applications. We need to enable "oauth2AllowImplicitFlow" for this application. By default, it is "false" and we will change it to "true".
     In the main panel, click "Manifest" to open the manifest editor.
 
-   ![alt text][Manifest]
+    ![alt text][Manifest]
 
   * Find the line "oauth2AllowImplicitFlow", and change "false" to "true". Don't include quotes, just replace the word.
   * Click "Save".
