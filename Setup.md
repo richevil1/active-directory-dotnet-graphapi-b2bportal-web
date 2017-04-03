@@ -84,6 +84,25 @@ The remaining fields are optional - if you like, you can set this app to use you
 
 That's it. Click "Purchase" (there's no charge for this software - you are agreeing to pay for the Azure compute resources you are about to provision). Within 2-5 minutes, the deployment will complete and your application will be ready.
 
+__Cleanup__
+
+Now that the app is deployed, there's a final step. We need to go back into our Azure Active Directory apps and update the URLs to match the URL of our new web app.
+  * Navigate to your new web application - it's under "App Services". Click to copy the URL.
+
+    ![alt text][Url]
+  
+  * Edit each of your Azure AD apps. First, update the Home page URL:
+
+    ![alt text][Url3]
+  
+  * Now edit the reply URL:
+
+    ![alt text][Url2]
+  
+All done!
+
+__Configuration__
+
 The first step will be for an administrator, or someone with "Guest Inviter" privilidges in the tenant, to log in. The app will notice that this is the first time you've logged in and will walk you through the initial configuration. Once that's complete, you can give the web address to potential guests.
 
 Azure App Services supports creating custom web addresses. The customization of App Services is beyond the scope of this article, but details can be found here: https://docs.microsoft.com/en-us/azure/app-service-web/custom-dns-web-site-buydomains-web-app. NOTE: custom domain names are available with the Basic or above SKU. Basic and above also includes a 99.95% SLA. 
@@ -99,3 +118,6 @@ Azure App Services supports creating custom web addresses. The customization of 
 [App6]: ./DocImages/App6.png "Set to multi-tenant"
 [Manifest]: ./DocImages/Manifest.png "Editing the manifest"
 [ARMDeploy]: ./DocImages/ARMDeploy.png "ARM Deployment form in Azure"
+[Url]: ./DocImages/Url.png "Copy web URL"
+[Url2]: ./DocImages/Url2.png "Update reply address"
+[Url3]: ./DocImages/Url3.png "Update home page"
