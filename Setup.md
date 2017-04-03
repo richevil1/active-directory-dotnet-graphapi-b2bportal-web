@@ -103,7 +103,7 @@ All done!
 
 __Configuration__
 
-The first step will be for an administrator, or someone with "Guest Inviter" privilidges in the tenant, to log in. The app will notice that this is the first time you've logged in and will walk you through the initial configuration. Once that's complete, you can give the web address to potential guests.
+The first step will be for an administrator, or someone with "Guest Inviter" privileges in the tenant, to log in. The app will notice that this is the first time you've logged in and will walk you through the initial configuration. Once that's complete, you can give the web address to potential guests.
 
 Azure App Services supports creating custom web addresses. The customization of App Services is beyond the scope of this article, but details can be found here: https://docs.microsoft.com/en-us/azure/app-service-web/custom-dns-web-site-buydomains-web-app. NOTE: custom domain names are available with the Basic or above SKU. Basic and above also includes a 99.95% SLA. 
 
