@@ -4,6 +4,8 @@
 
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Factive-directory-dotnet-graphapi-b2bportal-web%2Fmaster%2Fazuredeploy.json" target="_blank"><img src="http://azuredeploy.net/deploybutton.png"/></a>
 
+[Detailed step-by-step deployment instructions](./Setup.md)
+
 __Details__
 * Allows self-service provisioning of guest accounts in a tenant. Portal enables this via API calls to the Microsoft Graph
 * Leverages Azure DocumentDB. For development, a downloadable emulator is available: https://aka.ms/documentdb-emulator

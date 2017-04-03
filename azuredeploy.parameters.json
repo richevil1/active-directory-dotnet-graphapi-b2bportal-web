@@ -26,8 +26,11 @@
     "clientId_preAuth": {
       "value": null
     },
-    "mailServerFqdn": {
+    "clientSecret_preAuth": {
       "value": null
+    },
+    "mailServerFqdn": {
+        "value": null
     },
     "smtpLogin": {
       "value": null

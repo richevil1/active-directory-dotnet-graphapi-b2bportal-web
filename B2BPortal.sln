@@ -12,6 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		azuredeploy.parameters.json = azuredeploy.parameters.json
 		CustomDeploy.ps1 = CustomDeploy.ps1
 		README.md = README.md
+		Setup.md = Setup.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureB2BInvite", "AzureB2BInvite\AzureB2BInvite.csproj", "{945D0FB2-77C0-4236-B742-15296CE42DC9}"
@@ -19,6 +20,11 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "B2BPortal.Data", "B2BPortal.Data\B2BPortal.Data.csproj", "{D2F0F9CA-BA84-45F0-810A-E76D51BEDBC7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "B2BPortal.Interfaces", "B2BPortal.Interfaces\B2BPortal.Interfaces.csproj", "{C63718DC-92B5-46B9-B340-C0C8C23C649D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DocImages", "DocImages", "{EDF300F8-9691-461E-A7E2-D376335D3257}"
+	ProjectSection(SolutionItems) = preProject
+		DocImages\App1.png = DocImages\App1.png
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,5 +51,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{EDF300F8-9691-461E-A7E2-D376335D3257} = {9AFBD835-1D40-4F5A-A575-65A4FB0D2D63}
 	EndGlobalSection
 EndGlobal
