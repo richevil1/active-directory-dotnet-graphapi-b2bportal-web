@@ -8,8 +8,8 @@ Two Azure Active Directory apps must be created in your tenant. The first is the
 * Click on App registrations
  ![alt text][App1]
 * Click "+ Add" and enter the name of your app (like "B2B Admin App"). This title will be seen when users are prompted for their credentials.
-* Select "Web app / API", and enter the Sign-on URL. If you're setting this up before you deploy the app to Azure, you can enter https://loopback as a placeholder.Cclick "Create".
-  ![alt text][App2]
+* Select "Web app / API", and enter the Sign-on URL. If you're setting this up before you deploy the app to Azure, you can enter https://loopback as a placeholder. Click "Create".
+ ![alt text][App2]
 * From the application list, find the app you just created and click to open and edit it
 * Click on "Required permissions", then click "+ Add". On "Select an API", click and select "Microsoft Graph"
 * Click "Select permissions". On the "Enable Access" panel that appears, check the following items:
@@ -26,9 +26,9 @@ Two Azure Active Directory apps must be created in your tenant. The first is the
 * Click "Save". An application secret will be generated and displayed. COPY this key and record it - you'll need it in an minute when setting up the web application. NOTE: this key will not be displayed again and cannot be retrieved. If you lose it, you'll have to come back, delete it, and create another one.
   ![alt text][App4]
  * Finally, before we are done with the first app, record the "Application ID". You can click to the right of it in the main panel and it will copy it to your clipboard. Record it along with the app secret from above - these two strings will be needed to setup the web app.
-  ![alt text][App5]
+ ![alt text][App5]
 
-  The second app is the "pre-auth" app. This is a multi-tenant application that you'll create to allow your prospective guests to authenticate against their home Azure Active Directory tenant before completing their sign-up request. This allows you to know that they are who they say they are.
+ The second app is the "pre-auth" app. This is a multi-tenant application that you'll create to allow your prospective guests to authenticate against their home Azure Active Directory tenant before completing their sign-up request. This allows you to know that they are who they say they are.
   * Follow the steps to create an app above. Name this one something like "B2B Pre-authentication App". It can include your company name, and you can customize it with a logo if you like. Use https://loopback for this sign-on URL too (for now).
   * Again, find the app you just created and click to edit it. On this one, on the Properties, page, you need to toggle the "Multi-tenanted" button to "Yes". Click "Save".
   ![alt text][App6]
@@ -46,7 +46,7 @@ Two Azure Active Directory apps must be created in your tenant. The first is the
   * That's it!
 
 __Web Application Setup__
-At this point, you should have 4 items saved: the admin app ID and secret, and the pre-auth app ID and secret. You can now click the "Deploy to Azure" button on the landing page of this GitHub Repo, and it will take you to Azure. Log in, and you'll see a form like this one:
+At this point, you should have 5 items saved: the tenant ID, the admin app ID and secret, and the pre-auth app ID and secret. You can now click the "Deploy to Azure" button on the landing page of this GitHub Repo, and it will take you to Azure. Log in, and you'll see a form like this one:
   ![alt text][ARMDeploy]
   * Enter the name of your new Resource Group. This is where the web application and DocumentDB will be deployed.
   * Select a region to deploy into.
