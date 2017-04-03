@@ -86,7 +86,7 @@ That's it. Click "Purchase" (there's no charge for this software - you are agree
 
 The first step will be for an administrator, or someone with "Guest Inviter" privilidges in the tenant, to log in. The app will notice that this is the first time you've logged in and will walk you through the initial configuration. Once that's complete, you can give the web address to potential guests.
 
-Azure App Services supports creating custom web addresses. The customization of App Services is beyond the scope of this article, but details can be found here: https://docs.microsoft.com/en-us/azure/app-service-web/custom-dns-web-site-buydomains-web-app. 
+Azure App Services supports creating custom web addresses. The customization of App Services is beyond the scope of this article, but details can be found here: https://docs.microsoft.com/en-us/azure/app-service-web/custom-dns-web-site-buydomains-web-app. NOTE: custom domain names are available with the Basic or above SKU. Basic and above also includes a 99.95% SLA. 
 
 
 [App1]: ./DocImages/App1.png "Open Azure AD Application Panel"
