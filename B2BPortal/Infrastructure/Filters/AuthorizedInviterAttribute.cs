@@ -19,11 +19,32 @@ namespace B2BPortal.Infrastructure.Filters
         public override void OnAuthorization(AuthorizationContext filterContext)
         {
             var currentUser = filterContext.HttpContext.User.Identity;
+            var qs = filterContext.HttpContext.Request.Url.PathAndQuery;
+
+            var redir = new RouteValueDictionary
+                {
+                    { "controller", "account" }, { "action", "signin" }, { "area", "" }
+                };
+
+            redir["redir"] = qs;
+
+            if (!currentUser.IsAuthenticated)
+            {
+                filterContext.Result = new RedirectToRouteResult(redir);
+                return;
+            }
+
+            if (currentUser.GetClaim(CustomClaimTypes.AuthType) != AuthTypes.Local)
+            {
+                filterContext.Result = new RedirectToRouteResult(redir);
+                return;
+            }
+
             if (!currentUser.IsInAnyRole(AdalUtil.Settings.InviterRoleNames))
             {
                 filterContext.Result = new RedirectToRouteResult(new RouteValueDictionary
                 {
-                    { "controller", "home" }, { "action", "error" }
+                    { "controller", "home" }, { "action", "error" }, { "area", "" }
                 });
             }
         }

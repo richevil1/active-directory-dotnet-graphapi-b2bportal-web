@@ -31,7 +31,6 @@ namespace B2BPortal.Data
         /// Welcome message displayed on the home page - HTML allowed
         /// </summary>
         [DisplayName("Subject Template")]
-        [Required]
         [JsonProperty(PropertyName = "subjectTemplate")]
         public string SubjectTemplate { get; set; }
 

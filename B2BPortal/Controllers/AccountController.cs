@@ -22,22 +22,27 @@ namespace B2BPortal.Controllers
             HttpContext.GetOwinContext().Authentication.Challenge(
                 new AuthenticationProperties
                 {
-                    RedirectUri = "/",
+                    RedirectUri = "/"
                 },
                 AuthTypes.B2EMulti);
         }
 
         public void SignIn()
         {
-            if (!Request.IsAuthenticated)
+            var currTenant = User.Identity.GetClaim(CustomClaimTypes.TenantId);
+
+            if (User.Identity.GetClaim(CustomClaimTypes.AuthType)==AuthTypes.Local)
             {
-                HttpContext.GetOwinContext().Authentication.Challenge(
-                    new AuthenticationProperties
-                    {
-                        RedirectUri = "/",
-                    },
-                    AuthTypes.Local);
+                EndSession();
             }
+            var redir = Request.QueryString["redir"];
+            if (redir == null) redir = "/";
+            HttpContext.GetOwinContext().Authentication.Challenge(
+                new AuthenticationProperties
+                {
+                    RedirectUri = redir,
+                },
+                AuthTypes.Local);
         }
 
         public void SignOut()

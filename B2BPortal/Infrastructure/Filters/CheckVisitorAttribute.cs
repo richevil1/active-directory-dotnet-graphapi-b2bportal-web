@@ -12,10 +12,9 @@ namespace B2BPortal.Infrastructure.Filters
     {
         public void OnAuthentication(AuthenticationContext filterContext)
         {
-            var currTenant = filterContext.Principal.Identity.GetClaim(CustomClaimTypes.TenantId);
-
+            var user = filterContext.Principal.Identity;
             //bail out if unauthenticated or if we're already logged into the home tenant
-            if (!filterContext.Principal.Identity.IsAuthenticated || currTenant == AdalUtil.Settings.TenantID )
+            if (!user.IsAuthenticated || (user.GetClaim(CustomClaimTypes.AuthType) == AuthTypes.Local))
             {
                 return;
             }

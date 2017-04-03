@@ -1,77 +1,147 @@
-﻿@model B2BPortal.Data.InviteTemplate
+﻿@using B2BPortal.Infrastructure
+@model B2BPortal.Data.InviteTemplate
 
 @{
-    ViewBag.Title = "Edit";
+    ViewBag.Title = "Invitation Template";
+    var isEditing = (Model != null && Model.Id!=null);
+    var useSMTP = (Settings.UseSMTP);
+    var smtpbutton = (Settings.UseSMTP) ? "primary" : "default";
+    var apibutton = (Settings.UseSMTP) ? "default" : "primary";
 }
-
-<h2>Edit</h2>
 
 @using (Html.BeginForm("Save", "InviteTemplate", FormMethod.Post))
 {
     @Html.AntiForgeryToken()
-
-    <div class="form-horizontal">
-        <h4>Invitation Template</h4>
-        <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        @Html.HiddenFor(model => model.Id)
-        @Html.HiddenFor(model => model.TemplateVersion)
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.TemplateName, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.TemplateName, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.TemplateName, "", new { @class = "text-danger" })
-            </div>
+    <div class="panel panel-primary" style="margin-top:20px;">
+        <div class="panel-title panel-heading">
+            @ViewBag.Title - @ViewBag.Operation
         </div>
+        <div class="panel-body">
+            <div class="form-horizontal">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                @Html.HiddenFor(model => model.Id)
+                @Html.HiddenFor(model => model.TemplateVersion)
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.SubjectTemplate, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.SubjectTemplate, new { htmlAttributes = new { @class = "form-control", @id = "SubjectTemplate" } })
-                @Html.ValidationMessageFor(model => model.SubjectTemplate, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.TemplateContent, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                <ul class="nav nav-tabs" role="tablist">
-                    <li role="presentation" class="active"><a href="#edit" aria-controls="home" role="tab" data-toggle="tab">Edit</a></li>
-                    <li role="presentation"><a href="#preview" aria-controls="profile" role="tab" data-toggle="tab">Preview</a></li>
-                </ul>
-                <div class="tab-content">
-                    <div role="tabpanel" class="tab-pane active" id="edit">
-                        @Html.TextAreaFor(model => model.TemplateContent, new { @class = "form-control", @id = "TemplateContent" })
+                <div class="form-group control">
+                    <div class="col-md-12">
+                        <div class="pull-right">
+                            Send Mode:
+                            <div class="btn-group sendmode" role="group" aria-label="...">
+                                <button disabled type="button" class="btn btn-xs btn-@smtpbutton"><span class="glyphicon glyphicon-envelope"></span> SMTP</button>
+                                <button disabled type="button" class="btn btn-xs btn-@apibutton"><span class="glyphicon glyphicon-flash"></span> Azure</button>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-default control"><span class="glyphicon glyphicon-floppy-disk"></span> Save</button>
+                        @if (isEditing)
+                        {
+                            <button id="btnDelete" type="button" class="btn btn-default control"><span class="glyphicon glyphicon-trash"></span> Delete</button>
+                        }
+                        <button id="btnCancel" type="button" class="btn btn-default control"><span class="glyphicon glyphicon-remove"></span> Cancel</button>
+                        <button id="btnHelp" type="button" class="btn btn-default control"><span class="glyphicon glyphicon-question-sign"></span> Help</button>
                     </div>
-                    <div role="tabpanel" class="tab-pane" id="preview"></div>
                 </div>
-                @Html.ValidationMessageFor(model => model.TemplateContent, "", new { @class = "text-danger" })
-            </div>
-        </div>
 
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <button type="button" id="btnReload" class="btn btn-danger btn-xs pull-right">Load Base...</button>
-                <input type="submit" value="Save" class="btn btn-primary" />
-                @if (Model != null)
+                <div class="form-group">
+                    @Html.LabelFor(model => model.TemplateName, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.TemplateName, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.TemplateName, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                @if (useSMTP)
                 {
-                    @Html.ActionLink("Delete", "Delete", new { area = "admin" }, new { @class = "btn btn-warning", id = Model.Id })
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.SubjectTemplate, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.SubjectTemplate, new { htmlAttributes = new { @class = "form-control", @id = "SubjectTemplate" } })
+                            @Html.ValidationMessageFor(model => model.SubjectTemplate, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
                 }
-                @Html.ActionLink("Back to List", "Index", new { area = "admin" }, new { @class = "btn btn-default" })
+
+                <div class="form-group">
+                    <div class="col-md-2">
+                        @Html.LabelFor(model => model.TemplateContent, htmlAttributes: new { @class = "control-label pull-right" })
+                        @if (useSMTP)
+                        {
+                            <div class="fields pull-left">
+                                <span>Available Fields</span>
+                                <ul>
+                                    <li>{{InvitingOrgName}}</li>
+                                    <li>{{InvitationLink}}</li>
+                                    <li>{{OrgContactEmail}}</li>
+                                </ul>
+                            </div>
+                        }
+                    </div>
+                    <div class="col-md-10">
+                        <ul class="nav nav-tabs" role="tablist">
+                            <li role="presentation" class="active"><a href="#edit" aria-controls="home" role="tab" data-toggle="tab">Edit</a></li>
+                            <li role="presentation"><a href="#preview" aria-controls="profile" role="tab" data-toggle="tab">Preview</a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div role="tabpanel" class="tab-pane active" id="edit">
+                                @Html.TextAreaFor(model => model.TemplateContent, new { @class = "form-control", @id = "TemplateContent" })
+                            </div>
+                            <div role="tabpanel" class="tab-pane" id="preview"></div>
+                        </div>
+                        @Html.ValidationMessageFor(model => model.TemplateContent, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                @if (useSMTP)
+                {
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-10">
+                            <button type="button" id="btnReload" class="btn btn-danger btn-xs pull-right">Load Base...</button>
+                        </div>
+                    </div>
+                }
             </div>
         </div>
+    </div>
+    <div class="hidden" id="HelpContent">
+        Invitation templates work in two different ways depending on how your site is configured:
+        <ul>
+            <li>
+                The Azure Active Directory B2B service can send invitation emails on your behalf. In this model, the email format is predetermined,
+                and supports an optional customized message that can be embedded in the email. The "Template Content" is where you will enter that 
+                custom message
+            </li>
+            <li>
+                This self-service invite tool optionally supports directly sending invitation emails via a custom mail service (SMTP).
+                Your site currently is @((useSMTP) ? "" : "not") configured to deliver messages this way. If SMTP is configured, this template will define
+                the entire email message. Custom field strings are available to place the desired content (invitation link, business name, etc.) 
+            </li>
+        </ul>
+        The "Send Mode" indicator shows how your site is currently configured.
     </div>
 }
 
 @section scripts {
     <script type="text/javascript">
         $(function () {
+            $("#TemplateName").focus();
             $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
                 if (e.target.hash == "#preview") {
                     $(e.target.hash).html($("#edit textarea").val());
+                } else {
+                    $("#TemplateContent").focus();
                 }
             });
+            $("#btnCancel").on("click", function () {
+                location.href = "/admin/invitetemplate/";
+            });
+            $("#btnHelp").on("click", function () {
+                SiteUtil.ShowHelp("Email Templates", $("#HelpContent").html());
+            });
+
+            $("#btnDelete").on("click", function () {
+                if (!confirm("Are you sure you want to delete this profile?")) return;
+
+                document.forms[0].action = "/admin/InviteTemplate/Delete";
+                document.forms[0].submit();
+            });
+
             $("#btnReload").on("click", function () {
                 if (confirm("This will clear out the template in the edit window and replace it with the default template. If you change your mind, click \"Back to List\" and try again without saving.\r\n\r\nAre you sure you want to continue?")) {
                     $.get("/api/Admin/GetStaticDefaultTemplate", null, function (res) {
@@ -108,5 +178,26 @@
         #btnReload {
             margin-top: -5px;
         }
+        div.sendmode button.btn {
+            width:70px;
+        }
+        div.fields {
+            position: relative;
+            top: 330px;
+            margin-left: 20px;
+        }
+
+            div.fields span {
+                font-weight: bold;
+                font-style: italic;
+            }
+
+            div.fields ul {
+                list-style-type: none;
+            }
+
+                div.fields ul li {
+                    margin-left: -20px;
+                }
     </style>
 }

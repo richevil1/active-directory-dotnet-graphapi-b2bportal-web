@@ -19,9 +19,9 @@ namespace B2BPortal.Areas.Admin.Controllers
             if (config == null)
             {
                 config = new SiteConfig(Request.Url);
-                return View("Edit", config);
             }
-            return View(config);
+            return View("Edit", config);
+            //return View(config);
         }
 
         public async Task<ActionResult> List()
@@ -38,6 +38,7 @@ namespace B2BPortal.Areas.Admin.Controllers
 
         public async Task<ActionResult> Edit(string id)
         {
+            ViewBag.Operation = "Edit";
             var config = await SiteConfig.GetConfig(id);
             return View(config);
         }

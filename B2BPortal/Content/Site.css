@@ -21,19 +21,12 @@ input,
 label,
 select,
 textarea {
-  max-width: 280px;
-  vertical-align: middle;
-}
-div.tokenfield.form-control {
-  max-width: 280px!important;
+  max-width: none;
   vertical-align: middle;
 }
 
 td,tr {
-    padding-top: 5px;
-    padding-bottom: 5px;
-    padding-left: 5px;
-    padding-right: 5px;
+    padding: 5px;
 }
 
 ul.dropdown-menu span.glyphicon {
@@ -45,4 +38,74 @@ ul.dropdown-menu li a {
 
 div.form-group button.btn, div.form-group a.btn, div.form-group input.btn {
     width: 140px;
+}
+div.notes {
+    font-size:.9em;
+    display:none;
+}
+label {
+    cursor:pointer;
+}
+.glyphicon.glyphicon-aad-true {
+    background-image: url('/content/images/AADIcon_18.png');
+    background-repeat:no-repeat;
+    display:inline-block;
+    width:18px;
+    height:18px;
+}
+.glyphicon.glyphicon-aad-false {
+    background-image: url('/content/images/AADIcon_18_bw.png');
+    background-repeat:no-repeat;
+    display:inline-block;
+    width:18px;
+    height:18px;
+}
+
+.bg-rowEdit {
+  color: #4a4a4a;
+  background-color: #fff;
+}
+.bg-rowEdit:hover,
+.bg-rowEdit:focus {
+  background-color: #cecccc;
+}
+span.helpIcon {
+    background-image: url(/Content/images/help.png);
+    background-repeat: no-repeat;
+    display:inline-block;
+    width:10px;
+    height:10px;
+    cursor:pointer;
+}
+label.addHelp:after{
+    content:"";
+    padding: 2px!important;
+    margin-left:2px;
+    display:inline-block;
+    width:10px;
+    height:10px;
+    position: relative;
+    cursor:pointer;
+    background-image: url(/Content/images/help.png);
+    background-repeat: no-repeat;
+}
+.tooltip .tooltip-inner, .tooltip .tooltip-arrow {
+    border-top-color: #5a5a5a;
+}
+.tooltip-inner {
+    padding:8px;
+    max-width:500px;
+    text-align:left;
+}
+button.btn.control {
+    width:80px!important;
+    font-size:.9em;
+}
+.form-group.control {
+    border-bottom:1px solid #cacaca;
+    margin-top:-10px;
+    padding-bottom:8px;
+}
+span.form-control label.addHelp {
+    padding-top:2px!important;
 }

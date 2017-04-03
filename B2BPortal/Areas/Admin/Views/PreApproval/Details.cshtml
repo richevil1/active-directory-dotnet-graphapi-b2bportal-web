@@ -2,6 +2,7 @@
 
 @{
     ViewBag.Title = "Details";
+    var groups = (Model.Groups != null) ? string.Join(", ", Model.Groups) : "N/A";
 }
 
 <h2>Details</h2>
@@ -25,10 +26,10 @@
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.GroupsList)
+            @Html.DisplayNameFor(model => model.Groups)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.GroupsList)
+            @groups
         </dd>
         <hr />
         <dt>

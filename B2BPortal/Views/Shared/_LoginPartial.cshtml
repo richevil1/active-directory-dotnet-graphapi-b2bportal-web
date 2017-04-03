@@ -1,4 +1,8 @@
-﻿@if (Request.IsAuthenticated)
+﻿@using B2BPortal.Infrastructure
+@{ 
+    var isLocalAuth = (User.Identity.GetClaim(CustomClaimTypes.AuthType) == AuthTypes.Local);
+}
+@if (isLocalAuth)
 {
     <text>
         <ul class="nav navbar-nav navbar-right">

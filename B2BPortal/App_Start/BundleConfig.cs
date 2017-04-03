@@ -10,7 +10,6 @@ namespace B2BPortal
         {
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
                         "~/Scripts/jquery-{version}.js",
-                        "~/Scripts/bootstrap-tokenfield.js",
                         "~/scripts/app/global.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/jqueryval").Include(
@@ -27,7 +26,6 @@ namespace B2BPortal
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
-                      "~/Content/bootstrap-tokenfield.min.css",
                       "~/Content/site.css"));
         }
     }

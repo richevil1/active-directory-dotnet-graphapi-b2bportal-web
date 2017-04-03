@@ -7,13 +7,13 @@
     string Email = "", FirstName = "", LastName = "";
     bool PreAuthed = false;
     //pick up the form pre-fills - if the user has PreAuthed via the multi-tenant app
-    if (User.Identity.IsAuthenticated && (Utils.GetClaim(CustomClaimTypes.TenantId) != AdalUtil.Settings.TenantID))
-    {
-        Email = (Utils.GetClaim(ClaimTypes.Email)) == null ? Utils.GetClaim(ClaimTypes.Name) : Utils.GetClaim(ClaimTypes.Email);
-        FirstName = Utils.GetClaim(ClaimTypes.GivenName);
-        LastName = Utils.GetClaim(ClaimTypes.Surname);
-        PreAuthed = true;
-    }
+    if (User.Identity.IsAuthenticated || (Utils.GetClaim(CustomClaimTypes.AuthType) == AuthTypes.B2EMulti))
+        {
+            Email = (Utils.GetClaim(ClaimTypes.Email)) == null ? Utils.GetClaim(ClaimTypes.Name) : Utils.GetClaim(ClaimTypes.Email);
+            FirstName = Utils.GetClaim(ClaimTypes.GivenName);
+            LastName = Utils.GetClaim(ClaimTypes.Surname);
+            PreAuthed = true;
+        }
     var requirePreauth = Settings.CurrSiteConfig.SiteRedemptionSettings.RequirePreauth;
     var requireTOS = Settings.CurrSiteConfig.RequireTOSAgreement;
     var btnDisabled = ((!(requirePreauth && PreAuthed)) && (!requireTOS)) ? "" : "disabled";
@@ -75,7 +75,7 @@
         }
     </div>
     <div class="col-sm-7">
-        <p class="welcome">@Html.Raw(Settings.CurrSiteConfig.WelcomeMessage.Replace(Environment.NewLine, "<br/>"))</p>
+        <p class="well">@Html.Raw(Settings.CurrSiteConfig.WelcomeMessage.Replace(Environment.NewLine, "<br/>"))</p>
 
         @if (Settings.CurrSiteConfig.SiteRedemptionSettings.RequirePreauth)
         {
@@ -108,21 +108,13 @@
         #TOSAgreed {
             margin: 12px;
         }
-
-        p.welcome {
-            padding: 10px;
-            margin: 10px -10px;
-            background: #efefef;
-            font-size: 1.1em;
-            border: 1px solid #5a5a5a;
-        }
     </style>
 }
 @section scripts {
     <script type="text/javascript">
         $(function () {
             $("#btnPreAuth").on("click", function () {
-                location.href = '/Account/SignInWorkMulti';
+                location.href = '/Account/SignInWorkMulti?user=' + $("#EmailAddress").val();
                 return false;
             });
             $("#TOSAgreed").on("click", function () {
@@ -149,7 +141,7 @@
                 var data = { Email: email }
                 SiteUtil.AjaxCall("/api/PreAuth/CheckDomain", data, function (redirect) {
                     if (redirect) {
-                        location.href = '/Account/SignInWorkMulti';
+                        location.href = '/Account/SignInWorkMulti?user=' + $("#EmailAddress").val();
                     } else {
                         @{
                             if (requirePreauth)

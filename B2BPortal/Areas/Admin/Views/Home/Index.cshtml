@@ -1,153 +1,168 @@
 ﻿@using AzureB2BInvite.Models;
 @model IEnumerable<GuestRequest>
-@{ 
+@{
     var pendingColor = "#fbffc9";
     ViewBag.Title = "Pending Guest Requests";
     bool hasRecords = (Model.Count() > 0);
     var disableButton = (hasRecords) ? "" : "disabled";
 }
-<h2>@ViewBag.Title</h2>
-
-@if (ViewBag.Message != null)
-{
-    <div class="alert alert-success alert-dismissible" role="alert">
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        @ViewBag.Message
-    </div>
-}
 
 @using (Html.BeginForm("Approve", "Home", new { area = "Admin" }, FormMethod.Post))
 {
-<table id="tblPendingRequests" border="1" style="table-layout">
-    <tr>
-        <th style="white-space:nowrap">
-            <select class="form-control" id="GlobalApproval">
-                <option value="0">Approve all</option>
-                <option value="2">Deny all</option>
-                <option value="3">Leave pending</option>
-            </select>
-            <button type="button" id="btnApplyGlobal" class="btn btn-default"><span class="glyphicon glyphicon-ok-sign"></span></button>
-        </th>
-        <th>RequestID</th>
-        <th>Email Address</th>
-        <th>Request Comment</th>
-        <th>Status</th>
-        <th>Notes</th>
-    </tr>
-    @if (!hasRecords)
-    {
-        <tr><td colspan="6">No pending requests</td></tr>
-    }
-
-    @foreach (var request in Model)
-    {
-        <tr style="background-color:@pendingColor">
-            <td align="center">
-                <div class="btn-group" data-toggle="buttons">
-                    <label class="btn btn-primary">
-                        <input type="radio" name="Disposition.@request.Id" value="0" autocomplete="off"> Approve
-                    </label>
-                    <label class="btn btn-primary">
-                        <input type="radio" name="Disposition.@request.Id" value="2" autocomplete="off"> Deny
-                    </label>
-                    <label class="btn btn-primary active">
-                        <input type="radio" name="Disposition.@request.Id" value="3" autocomplete="off" checked> Pending
-                    </label>
+    @Html.AntiForgeryToken()
+    <div class="panel panel-primary" style="margin-top:20px;">
+        <div class="panel-title panel-heading">
+            @ViewBag.Title
+        </div>
+        <div class="panel-body">
+            <div class="form-horizontal">
+                <div class="form-group control">
+                    <div class="col-md-12">
+                        <button type="submit" @disableButton class="btn btn-default control"><span class="glyphicon glyphicon-floppy-disk"></span> Save</button>
+                        <button id="btnRefresh" type="button" class="btn btn-default control"><span class="glyphicon glyphicon-refresh"></span> Refresh</button>
+                    </div>
                 </div>
-            </td>
-            <td>
-                @request.Id
-                <input type="hidden" name="Id" value="@request.Id" />
-                <input type="hidden" name="EmailAddress.@request.Id" value="@request.EmailAddress" />
-            </td>
-            <td>@request.EmailAddress</td>
-            <td>@request.Comment</td>
-            <td style="font-size:.8em;">@request.Status</td>
-            <td><textarea name="InternalComment.@request.Id" style="width:200px;" rows="2">@request.InternalComment</textarea></td>
-        </tr>
-    }
-    </table>
-    <div class="form-group" style="margin-top:15px;">
-        <button class="btn btn-primary" type="submit" @disableButton>Save Changes</button>
-        <button class="btn btn-default" id="btnRefresh" type="button">Refresh</button>
-    </div>
 
+                @if (ViewBag.Message != null)
+                {
+                    <div class="alert alert-success alert-dismissible" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        @ViewBag.Message
+                    </div>
+                }
+                <div class="col-md-12">
+                    <table id="tblPendingRequests" class="table">
+                        <tr class="head">
+                            <th style="white-space:nowrap">
+                                <select class="form-control" id="GlobalApproval">
+                                    <option value="0">Approve all</option>
+                                    <option value="2">Deny all</option>
+                                    <option value="3">Leave pending</option>
+                                </select>
+                                <button type="button" id="btnApplyGlobal" class="btn btn-default"><span class="glyphicon glyphicon-ok-sign"></span></button>
+                            </th>
+                            <th>RequestID</th>
+                            <th>Email Address</th>
+                            <th>Request Comment</th>
+                            <th>Status</th>
+                            <th>Notes</th>
+                        </tr>
+                        @if (!hasRecords)
+                        {
+                            <tr><td colspan="6">No pending requests</td></tr>
+                        }
+
+                        @foreach (var request in Model)
+                        {
+                            <tr style="background-color:@pendingColor">
+                                <td align="center">
+                                    <div class="btn-group" data-toggle="buttons">
+                                        <label class="btn btn-primary">
+                                            <input type="radio" name="Disposition.@request.Id" value="0" autocomplete="off"> Approve
+                                        </label>
+                                        <label class="btn btn-primary">
+                                            <input type="radio" name="Disposition.@request.Id" value="2" autocomplete="off"> Deny
+                                        </label>
+                                        <label class="btn btn-primary active">
+                                            <input type="radio" name="Disposition.@request.Id" value="3" autocomplete="off" checked> Pending
+                                        </label>
+                                    </div>
+                                </td>
+                                <td>
+                                    @request.Id
+                                    <input type="hidden" name="Id" value="@request.Id" />
+                                    <input type="hidden" name="EmailAddress.@request.Id" value="@request.EmailAddress" />
+                                </td>
+                                <td>@request.EmailAddress</td>
+                                <td>@request.Comment</td>
+                                <td style="font-size:.8em;">@request.Status</td>
+                                <td><textarea class="form-control" name="InternalComment.@request.Id" style="width:200px;" rows="2">@request.InternalComment</textarea></td>
+                            </tr>
+                        }
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 }
-    @section styles {
-        <style type="text/css">
-            table td, table th {
-                padding: 7px;
+@section styles {
+    <style type="text/css">
+        table td, table th {
+            padding: 7px;
+        }
+        #tblPendingRequests tr.head th {
+            border-top:0;
+            vertical-align:bottom;
+        }
+        #GlobalApproval {
+            width: 170px;
+            display: inline-block;
+        }
+
+        @@media all and (max-width:1199px) {
+            #tblPendingRequests div.btn-group label.btn {
+                width: 62px;
+                font-size: .85em;
+            }
+
+            #tblPendingRequests td, #tblPendingRequests th {
+                font-size: .8em;
+                padding: 3px;
+            }
+        }
+
+        @@media all and (max-width:991px) {
+            #tblPendingRequests div.btn-group label.btn {
+                width: 54px;
+                font-size: .8em;
+            }
+
+            #tblPendingRequests td, #tblPendingRequests th {
+                font-size: .8em;
+                padding: 3px;
             }
 
             #GlobalApproval {
-                width: 170px;
-                display: inline-block;
+                font-size: .95em;
+                width: 120px !important;
             }
+        }
+    </style>
+}
 
-            @@media all and (max-width:1199px) {
-                #tblPendingRequests div.btn-group label.btn {
-                    width: 62px;
-                    font-size: .85em;
-                }
-
-                #tblPendingRequests td, #tblPendingRequests th {
-                    font-size: .8em;
-                    padding: 3px;
-                }
-            }
-
-            @@media all and (max-width:991px) {
-                #tblPendingRequests div.btn-group label.btn {
-                    width: 54px;
-                    font-size: .8em;
-                }
-
-                #tblPendingRequests td, #tblPendingRequests th {
-                    font-size: .8em;
-                    padding: 3px;
-                }
-
-                #GlobalApproval {
-                    font-size: .95em;
-                    width: 120px !important;
-                }
-            }
-        </style>
-    }
-
-    @section scripts {
-        <script type="text/javascript">
-            $(function () {
-                $("#btnApplyGlobal").on("click", function () {
-                    var globalValue = $("#GlobalApproval").val();
-                    $("input:radio").each(function (i, o) {
-                        if (o.value == globalValue) {
-                            $(o).click();
-                        }
+@section scripts {
+    <script type="text/javascript">
+                $(function () {
+                    $("#btnApplyGlobal").on("click", function () {
+                        var globalValue = $("#GlobalApproval").val();
+                        $("input:radio").each(function (i, o) {
+                            if (o.value == globalValue) {
+                                $(o).click();
+                            }
+                        });
                     });
-                });
-                $("#btnRefresh").on("click", function () {
-                    location.href = "/admin";
-                });
-                $("input:radio").parent("label").on("click", function () {
-                    var o = $(this);
-                    var val = o.children("input").val();
-                    o.parentsUntil("tr").last().parent().css("background-color", getColor(val));
-                });
+                    $("#btnRefresh").on("click", function () {
+                        location.href = "/admin";
+                    });
+                    $("input:radio").parent("label").on("click", function () {
+                        var o = $(this);
+                        var val = o.children("input").val();
+                        o.parentsUntil("tr").last().parent().css("background-color", getColor(val));
+                    });
 
-                function getColor(d) {
-                    switch (d) {
-                        case "0":
-                            return "#d2ffc9";
-                            break;
-                        case "2":
-                            return "#ffd8c9";
-                            break;
-                        case "3":
-                            return "@pendingColor";
-                            break;
+                    function getColor(d) {
+                        switch (d) {
+                            case "0":
+                                return "#d2ffc9";
+                                break;
+                            case "2":
+                                return "#ffd8c9";
+                                break;
+                            case "3":
+                                return "@pendingColor";
+                                break;
+                        }
                     }
-                }
-            });
-        </script>
-    }
+                });
+    </script>
+}

@@ -1,101 +1,94 @@
 ﻿@model B2BPortal.Models.SiteConfig
 
 @{
-    ViewBag.Title = "Edit";
+    ViewBag.Title = "Site Configuration";
     ViewBag.RedemptionPropertyName = "SiteRedemptionSettings";
 }
-
-<h2>Edit</h2>
 
 @using (Html.BeginForm("Save", "SiteConfig", FormMethod.Post))
 {
     @Html.AntiForgeryToken()
-
-    <div class="form-horizontal">
-        <h4>Site Configuration</h4>
-        <hr />
-        @if (ViewBag.Error != null)
-        {
-            <div class="alert alert-danger alert-dismissible" role="alert">
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                @ViewBag.Error
-            </div>
-        }
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        @Html.HiddenFor(model => model.Id)
-        @Html.HiddenFor(model => model.ConfigVersion)
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.SiteName, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-3">
-                @Html.EditorFor(model => model.SiteName, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.SiteName, "", new { @class = "text-danger" })
-            </div>
-            <div class="col-md-7">
-                Name that will be displayed on the front page and in invitation emails (like "My Org Name Guest Enrollment").
-            </div>
+    <div class="panel panel-primary" style="margin-top:20px;">
+        <div class="panel-title panel-heading">
+            Edit Site Configuration
         </div>
-        <hr />
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.InvitingOrg, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-3">
-                @Html.EditorFor(model => model.InvitingOrg, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.InvitingOrg, "", new { @class = "text-danger" })
-            </div>
-            <div class="col-md-7">
-                Name that will be displayed in the site title and in other areas that identify the org name.
-            </div>
-        </div>
-        <hr />
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.WelcomeMessage, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-3">
-                <textarea name="WelcomeMessage" class="form-control" rows="5">@Model.WelcomeMessage</textarea>
-            </div>
-            <div class="col-md-7">
-                Brief text narrative explaining the purpose of the site, those invited,
-                apps that might be made available, instructions, rules, etc. Optional. Plain text only.
-            </div>
-        </div>
-        <hr />
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.TOSDocument, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-3">
-                <textarea class="form-control" rows="5" name="TOSDocument">@Model.TOSDocument</textarea>
-            </div>
-            <div class="col-md-7">
-                Terms of Service for guest access. Basic HTML or plain text acceptable (SCRIPT and other risky tags will be removed).
-            </div>
-        </div>
-        <hr />
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.RequireTOSAgreement, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-3">
-                <div class="checkbox">
-                    @Html.EditorFor(model => model.RequireTOSAgreement)
-                    @Html.ValidationMessageFor(model => model.RequireTOSAgreement, "", new { @class = "text-danger" })
+        <div class="panel-body">
+            <div class="form-horizontal">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                @Html.HiddenFor(model => model.Id)
+                @Html.HiddenFor(model => model.ConfigVersion)
+                <div class="form-group control">
+                    <div class="col-md-12">
+                        <button type="submit" class="btn btn-default control"><span class="glyphicon glyphicon-floppy-disk"></span> Save</button>
+                        <button id="btnCancel" type="button" class="btn btn-default control"><span class="glyphicon glyphicon-remove"></span> Cancel</button>
+                    </div>
                 </div>
-            </div>
-            <div class="col-md-7">
-                If checked, users will only be able to proceed if they have checked to confirm their
-                agreement with the Terms of Service.
-            </div>
-        </div>
-        <hr />
-        <h4>Redemption Settings - Global</h4>
 
-        @Html.Partial("_editRedemptionSettings", Model.SiteRedemptionSettings)
+                @if (ViewBag.Error != null)
+                {
+                    <div class="alert alert-danger alert-dismissible" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        @ViewBag.Error
+                    </div>
+                }
 
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Save" class="btn btn-primary" />
-                @Html.ActionLink("Back to List", "Index", new { area = "admin" }, new { @class = "btn btn-default" })
+                <div class="form-group">
+                    <div class="col-md-6">
+                        @Html.LabelFor(model => model.SiteName, htmlAttributes: new { @class = "control-label addHelp" })
+
+                        @Html.EditorFor(model => model.SiteName, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.SiteName, "", new { @class = "text-danger" })
+                        <div class="notes">
+                            Name that will be displayed on the front page and in invitation emails (like "My Org Name Guest Enrollment").
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        @Html.LabelFor(model => model.InvitingOrg, htmlAttributes: new { @class = "control-label addHelp" })
+                        @Html.EditorFor(model => model.InvitingOrg, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.InvitingOrg, "", new { @class = "text-danger" })
+                        <div class="notes">
+                            Name that will be displayed in the site title and in other areas that identify the org name.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-6">
+                        @Html.LabelFor(model => model.WelcomeMessage, htmlAttributes: new { @class = "control-label addHelp" })
+                        @Html.TextAreaFor(model => model.WelcomeMessage, htmlAttributes: new { @rows = "7", @class = "form-control" })
+                        <div class="notes">
+                            Brief text narrative explaining the purpose of the site, those invited,
+                            apps that might be made available, instructions, rules, etc. Optional. Plain text only.
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        @Html.LabelFor(model => model.TOSDocument, htmlAttributes: new { @class = "control-label addHelp" })
+                        @Html.TextAreaFor(model => model.TOSDocument, htmlAttributes: new { @rows = "5", @class = "form-control" })
+                        <div class="input-group" style="margin-top:6px;">
+                            <span class="input-group-addon">
+                                @Html.EditorFor(model => model.RequireTOSAgreement)
+                            </span>
+                            @Html.LabelFor(model => model.RequireTOSAgreement, htmlAttributes: new { @class = "form-control", @id = "lblRequireTOSAgreement" })
+                        </div>
+                        @Html.ValidationMessageFor(model => model.RequireTOSAgreement, "", new { @class = "text-danger" })
+                        <div class="notes">
+                            Terms of Service for guest access. Basic HTML or plain text acceptable (SCRIPT and other risky tags will be removed).
+                            If "Require TOS Agreement" is checked, users will only be able to proceed if they have checked to confirm their
+                            agreement with the Terms of Service.
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+    @Html.Partial("_editRedemptionSettings", Model.SiteRedemptionSettings)
 }
-
+@section scripts {
+    <script type="text/javascript">
+        $(function () {
+            $("#btnCancel").on("click", function () {
+                location.href = "/admin/";
+            });
+        });
+    </script>
+}

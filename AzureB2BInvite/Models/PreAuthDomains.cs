@@ -21,7 +21,7 @@ namespace AzureB2BInvite.Models
         /// <summary>
         /// The UPN of the user creating this PreAuth record
         /// </summary>
-        [DisplayName("Auth User")]
+        [DisplayName("Created By")]
         [ScaffoldColumn(false)]
         [JsonProperty(PropertyName = "authUser")]
         public string AuthUser { get; set; }
@@ -56,6 +56,7 @@ namespace AzureB2BInvite.Models
         /// RecordID for the email body template to use for pre-auth invitations handled by this record.
         /// </summary>
         [ScaffoldColumn(false)]
+        [DisplayName("Invitation Template")]
         [JsonProperty(PropertyName = "inviteTemplateId")]
         public string InviteTemplateId { get; set; }
 
@@ -67,16 +68,25 @@ namespace AzureB2BInvite.Models
         public RedemptionSettings DomainRedemptionSettings { get; set; }
 
         /// <summary>
+        /// Settable by Global Admin only, "Member" or "Guest" (for non-GA, "Guest" is RO default)
+        /// </summary>
+        [DisplayName("Member Type")]
+        [JsonProperty(PropertyName = "memberType")]
+        public MemberType MemberType { get; set; }
+
+        /// <summary>
+        /// If domain is validated as an AAD tenant, profile may be set to auto-approve invitation requests
+        /// </summary>
+        [DisplayName("Auto Approve?")]
+        [JsonProperty(PropertyName = "autoApprove")]
+        public bool AutoApprove { get; set; }
+
+        /// <summary>
         /// Optional - Users matching the domain name will be automatically added to each group in this list
         /// </summary>
         [JsonProperty(PropertyName = "groups")]
-        [DisplayName("Auto-Assigned Groups")]
+        [DisplayName("Group Assignments")]
         public List<string> Groups { get; set; }
-
-        [DisplayName("Groups List")]
-        [JsonIgnore]
-        [ScaffoldColumn(false)]
-        public string GroupsList { get; set; }
 
         [JsonIgnore]
         [ScaffoldColumn(false)]
@@ -115,5 +125,10 @@ namespace AzureB2BInvite.Models
         {
             return (await DocDBRepo.DB<PreAuthDomain>.DeleteItemAsync(domain));
         }
+    }
+    public enum MemberType
+    {
+        Guest,
+        Member
     }
 }

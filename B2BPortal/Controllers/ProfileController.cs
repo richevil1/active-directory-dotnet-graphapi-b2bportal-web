@@ -14,9 +14,8 @@ namespace B2BPortal.Controllers
         // GET: Profile
         public async Task<ActionResult> Index()
         {
-            var user = ProfileManager.GetUserProfile(User.Identity.Name);
+            var user = ProfileManager.GetUserProfile(User.Identity.GetClaim(CustomClaimTypes.ObjectIdentifier));
             ViewBag.RedirectLink = await ProfileManager.GetRedirUrl(User.Identity.Name);
-            
             ViewBag.Message = "Edit profile";
             return View("Index", user);
         }
@@ -26,7 +25,7 @@ namespace B2BPortal.Controllers
         public async Task<ActionResult> SignUp(GuestRequest request)
         {
             //sanity check: not trusting the passed-in preauth setting
-            request.PreAuthed = (User.Identity.IsAuthenticated && User.Identity.GetClaim(CustomClaimTypes.TenantId) != AdalUtil.Settings.TenantID);
+            request.PreAuthed = (User.Identity.GetClaim(CustomClaimTypes.AuthType) == AuthTypes.B2EMulti);
 
             var result = await GuestRequestRules.SignUpAsync(request);
 
@@ -51,6 +50,11 @@ namespace B2BPortal.Controllers
             ViewBag.Message = "Edit profile";
 
             return View("Index", user);
+        }
+
+        public ActionResult RemoteProfile()
+        {
+            return View();
         }
     }
 }

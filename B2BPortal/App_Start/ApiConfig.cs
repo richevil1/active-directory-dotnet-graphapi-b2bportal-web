@@ -8,6 +8,8 @@ namespace B2BPortal
     {
         public static void Register(HttpConfiguration config)
         {
+            //config.MapHttpAttributeRoutes();
+
             config.Routes.MapHttpRoute(
                name: "ActionAndIdApi",
                routeTemplate: "api/{controller}/{action}/{id}",

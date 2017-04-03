@@ -32,8 +32,8 @@ namespace B2BPortal
 
                 ControllerBuilder.Current.DefaultNamespaces.Add("B2BPortal.Controllers");
                 AreaRegistration.RegisterAllAreas();
-                FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
                 GlobalConfiguration.Configure(WebApiConfig.Register);
+                FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
                 RouteConfig.RegisterRoutes(RouteTable.Routes);
                 BundleConfig.RegisterBundles(BundleTable.Bundles);
                 AntiForgeryConfig.UniqueClaimTypeIdentifier = "http://schemas.microsoft.com/identity/claims/objectidentifier";
@@ -53,6 +53,8 @@ namespace B2BPortal
 
                 AdalUtil.Settings.AppClientId_Admin = ConfigurationManager.AppSettings["ida:ClientId_Admin"];
                 AdalUtil.Settings.AppClientSecret_Admin = ConfigurationManager.AppSettings["ida:ClientSecret_Admin"];
+                AdalUtil.Settings.AppClientId_Preauth = ConfigurationManager.AppSettings["ida:ClientId_PreAuth"];
+                AdalUtil.Settings.AppClientSecret_Preauth = ConfigurationManager.AppSettings["ida:ClientSecret_PreAuth"];
 
                 AdalUtil.Settings.GraphApiVersion = ConfigurationManager.AppSettings["GraphApiVersion"];
 
@@ -79,7 +81,7 @@ namespace B2BPortal
                  * don't know if this is due to the api call or spinning up this code
                  * see AdalUtil.CallGraph...
                 */
-                AdalUtil.Authenticate();
+                AdalUtil.AuthenticateApp();
             }
             catch (Exception ex)
             {

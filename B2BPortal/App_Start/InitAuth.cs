@@ -69,7 +69,7 @@ namespace B2BPortal
                 }
             }
 
-            var roles = InviteManager.GetDirectoryRoles(ident.GetClaim(ClaimTypes.Name));
+            var roles = InviteManager.GetDirectoryRoles(ident.GetClaim(CustomClaimTypes.ObjectIdentifier));
             foreach (var role in roles)
             {
                 ident.AddClaim(new Claim(ClaimTypes.Role, role.DisplayName));

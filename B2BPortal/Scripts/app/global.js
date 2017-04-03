@@ -4,6 +4,25 @@
 $(document).ajaxStart(function () {
     $(".ui-loader").show();
 });
+$(function () {
+    //initialize help icons
+    $("label.addHelp")
+        .each(function (i, o) {
+            var help = $(this).closest('[class^="col"]').children("div.notes").eq(0).text();
+            $(this)
+                .tooltip({ title: help, placement: "auto", trigger: 'manual' });
+        })
+        .on("mouseenter click", function (e) {
+            if (e.offsetX > (e.target.offsetWidth - 15)) {
+                $(this).tooltip("show");
+                return false;
+            }
+        })
+        .on("mouseleave", function () {
+            $(this).tooltip("hide");
+        });
+});
+
 var localErr = {};
 $(document).ajaxError(function (event, xhr, ajaxOptions, thrownError) {
     if (typeof xhr.responseJSON == "object") {
@@ -30,6 +49,11 @@ var SiteUtil = function () {
         Warning: '/content/images/warning.png',
         Default: '/content/images/info.png'
     };
+
+    function _showHelp(title, body) {
+        _showModal({ title: "Help - " + title, body: body });
+    }
+
     function _showModal(options) {
         options.okHide = (options.okHide == null) ? true : options.okHide;
         options.title = (options.title == null) ? "Message" : options.title;
@@ -41,7 +65,7 @@ var SiteUtil = function () {
                 return false;
             }
         };
-        if (options.callback !== null) {
+        if (typeof(options.callback)!="undefined" && options.callback !== null) {
             if (options.callback.length > 0) {
                 options.body += "<br><textarea rows='3' cols='50' style='margin-top:5px' id='nDialogVal' size='20'></textarea>";
             }
@@ -76,7 +100,7 @@ var SiteUtil = function () {
             d.addClass(opts.modalClass);
         }
         var c = $("<div/>").addClass("modal-content").appendTo(d);
-        var h = $("<div/>").addClass("modal-header").appendTo(c);
+        var h = $("<div/>").addClass("modal-header bg-primary").appendTo(c);
         $("<button/>").attr({ "type": "button", "data-dismiss": "modal", "aria-hidden": "true" }).addClass("close").html("&times;").appendTo(h);
         $("<h4/>").addClass("modal-title").html(opts.title || "Alert").appendTo(h);
 
@@ -231,6 +255,7 @@ var SiteUtil = function () {
         DeTC: _deTc,
         ShowModal: _showModal,
         GetModal: _getModal,
+        ShowHelp: _showHelp,
         AlertImages: alertImages,
         AjaxCall: _ajaxCall,
         ErrorImages: ErrorImages,

@@ -2,110 +2,209 @@
 @model AzureB2BInvite.Models.PreAuthDomain
 
 @{
-    ViewBag.Title = "Pre-Auth Domains";
+    ViewBag.Title = "Pre-Approved Domains";
     ViewBag.RedemptionPropertyName = "DomainRedemptionSettings";
 
     var _templates = new List<SelectListItem>();
+    var _groups = new List<SelectListItem>();
 
     if (ViewBag.Templates != null)
     {
         _templates = (List<SelectListItem>)ViewBag.Templates;
-
-        var templates = _templates.Select(t => new SelectListItem
-        {
-            Selected = (t.Value == Model.InviteTemplateId),
-            Text = t.Text,
-            Value = t.Value
-        });
     }
-}
+    if (ViewBag.Groups != null)
+    {
+        _groups = (List<SelectListItem>)ViewBag.Groups;
+    }
 
-<h2>@ViewBag.Title</h2>
+    var MemberTypeRO = (!User.IsInRole(B2BPortal.Infrastructure.Roles.CompanyAdministrator)) ? "readonly" : "";
+    var isEditing = (Model != null && Model.Id != null);
+    var domainName = (isEditing) ? Model.DomainName : "";
+}
 
 @using (Html.BeginForm("Edit", "PreApproval", FormMethod.Post))
 {
     @Html.AntiForgeryToken()
 
-    <div class="form-horizontal">
-        <h4>@ViewBag.Operation</h4>
-        <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        @Html.HiddenFor(model => model.Id)
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.DomainName, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-3">
-                @Html.EditorFor(model => model.DomainName, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.DomainName, "", new { @class = "text-danger" })
-            </div>
-            <div class="col-md-7">
-                Enter a domain name, like "microsoft.com". Any potential guests that register with a login matching that domain name
-                will be automatically pre-registered. Any other registrations will be pended in the approval queue. If you selected
-                "Require Preauth" in your Site Config, then ONLY users with matching logins will be accepted.
-            </div>
+    <div class="panel panel-primary" style="margin-top:20px;">
+        <div class="panel-title panel-heading">
+            @ViewBag.Title - @ViewBag.Operation
         </div>
-        <hr />
-        <div class="form-group">
-            @Html.LabelFor(model => model.InviteTemplateId, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-3">
-                @Html.DropDownListFor(model => model.InviteTemplateId, _templates, new { @class = "form-control input-sm" })
-                @Html.ValidationMessageFor(model => model.InviteTemplateId, "", new { @class = "text-danger" })
-            </div>
-            <div class="col-md-7">
-                (optional) - Select an invitation template.
-                @if (Settings.UseSMTP)
-                {
-                    <div>
-                        This template will be used to create the invitation message that is emailed.
-                        Use the "Manage Mail Templates" admin tool to create and manage templates.
+        <div class="panel-body">
+            <div class="form-horizontal">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                @Html.HiddenFor(model => model.Id)
+                <div class="form-group control">
+                    <div class="col-md-12">
+                        <button type="submit" class="btn btn-default control"><span class="glyphicon glyphicon-floppy-disk"></span> Save</button>
+                        @if (isEditing)
+                        {
+                            <button id="btnDelete" type="button" class="btn btn-default control"><span class="glyphicon glyphicon-trash"></span> Delete</button>
+                        }
+                        <button id="btnCancel" type="button" class="btn btn-default control"><span class="glyphicon glyphicon-remove"></span> Cancel</button>
                     </div>
-                }
-                else
-                {
-                    <div>
-                        This text will be added to the default B2B invitation email sent by Azure Active
-                        Directory to your approved invitees. Use the "Manage Mail Templates" admin tool
-                        to create and manage templates.
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-4">
+                        @Html.LabelFor(model => model.DomainName, "Guest Company Email Domain", htmlAttributes: new { @class = "control-label addHelp" })
+                        <div class="input-group">
+                            <span class="input-group-addon" style="padding:6px 9px;">
+                                <span id="spIsAADTenant" class="glyphicon glyphicon-aad-false"></span>
+                            </span>
+                            <span class="input-group-addon" style="padding:6px 9px;">
+                                emailname@@
+                            </span>
+                            @Html.EditorFor(model => model.DomainName, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                        <span id="AADMessage"></span>
+                        @Html.ValidationMessageFor(model => model.DomainName, "", new { @class = "text-danger" })
+                        <div class="input-group" style="margin-top:6px;">
+                            <span class="input-group-addon">
+                                @Html.EditorFor(model => model.AutoApprove)
+                            </span>
+                            @Html.LabelFor(model => model.AutoApprove, htmlAttributes: new { @class = "form-control", @id = "lblAutoApprove" })
+                        </div>
+                        @Html.ValidationMessageFor(model => model.AutoApprove, "", new { @class = "text-danger" })
+                        <div class="notes">
+                            Enter a domain name, like "microsoft.com". We will check to confirm if the domain is part of an existing Azure
+                            Active Directory tenant. If verified, you may set "Auto Approve" to true.
+                            If the domain is from a verified Azure Active Directory, checking this box will auto-invite anyone that requests access
+                            from this domain (not available if the domain isn't a verified tenant). If unchecked, registrations will be pended in
+                            the approval queue.
+                        </div>
                     </div>
-                }
-            </div>
-        </div>
-        <hr />
-        <div class="form-group">
-            @Html.LabelFor(model => model.GroupsList, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-3">
-                @Html.EditorFor(model => model.GroupsList, new { htmlAttributes = new { @class = "form-control tokenfield" } })
-                @Html.ValidationMessageFor(model => model.GroupsList, "", new { @class = "text-danger" })
-            </div>
-            <div class="col-md-7">
-                (coming soon) - For all group names entered here, users that are automatically pre-authenticated from this domain
-                will also automatically be added to these groups in your Azure Active Directory tenant.
-            </div>
-        </div>
-        <hr />
 
-        <h4>Redemption Settings - This Domain</h4>
-
-        @Html.Partial("_editRedemptionSettings", Model.DomainRedemptionSettings)
-
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Save" class="btn btn-primary" />
-                @if (Model != null)
-                {
-                    @Html.ActionLink("Delete", "Delete", new { area = "admin" }, new { @class = "btn btn-warning", id = Model.Id })
-                }
-                @Html.ActionLink("Back to List", "Index", new { area = "admin" }, new { @class = "btn btn-default" })
+                    <div class="col-md-4">
+                        @Html.LabelFor(model => model.Groups, htmlAttributes: new { @class = "control-label addHelp" })
+                        @Html.DropDownListFor(model => model.Groups, _groups, new { @multiple = "multiple", @size = "5", @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Groups, "", new { @class = "text-danger" })
+                        <div class="notes">
+                            Ctrl-click to select automatic group assignment(s) for users that are granted access via this domain profile.
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label>Miscellaneous</label>
+                        <table class="table">
+                            <tr>
+                                <td>@Html.DisplayNameFor(model => model.AuthUser)</td>
+                                <td>@Html.ValueFor(model => model.AuthUser)</td>
+                            </tr>
+                            <tr>
+                                <td>@Html.DisplayNameFor(model => model.CreateDate)</td>
+                                <td>@Html.ValueFor(model => model.CreateDate)</td>
+                            </tr>
+                            <tr>
+                                <td>@Html.DisplayNameFor(model => model.LastUpdated)</td>
+                                <td>@Html.ValueFor(model => model.LastUpdated)</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-6">
+                        @Html.LabelFor(model => model.MemberType, htmlAttributes: new { @class = "control-label addHelp" })
+                        @Html.EnumDropDownListFor(model => model.MemberType, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.MemberType, "", new { @class = "text-danger" })
+                        <div class="notes">
+                            By default, invited guests are added as "Guest", with limited options for elevating permissions.
+                            A Company Administrator can optionally create a profile granting invited guests "Member" access,
+                            allowing the ability to assign elevated permissions (if required).
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        @Html.LabelFor(model => model.InviteTemplateId, htmlAttributes: new { @class = "control-label addHelp" })
+                        @Html.DropDownListFor(model => model.InviteTemplateId, _templates, new { @class = "form-control input-sm" })
+                        @Html.ValidationMessageFor(model => model.InviteTemplateId, "", new { @class = "text-danger" })
+                        <div class="notes">
+                            (optional) - Select an invitation template.
+                            @if (Settings.UseSMTP)
+                            {
+                                <div>
+                                    This template will be used to create the invitation message that is emailed.
+                                    Use the "Manage Mail Templates" admin tool to create and manage templates.
+                                </div>
+                            }
+                            else
+                            {
+                                <div>
+                                    This text will be added to the default B2B invitation email sent by Azure Active
+                                    Directory to your approved invitees. Use the "Manage Mail Templates" admin tool
+                                    to create and manage templates.
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+    @Html.Partial("_editRedemptionSettings", Model.DomainRedemptionSettings)
 }
-
 @section scripts {
     <script type="text/javascript">
         $(function () {
-            $('.tokenfield').tokenfield();
+            var isEditing = @isEditing.ToString().ToLower();
+            var domain = "@domainName";
+            if (domain!="") checkTenant(domain);
 
+            $("#btnCancel").on("click", function() {
+                location.href="/admin/preapproval/";
+            });
+
+            $("#btnDelete").on("click", function() {
+                if (!confirm("Are you sure you want to delete this profile?")) return;
+                location.href="/admin/preapproval/delete/@Model.Id";
+            });
+            $("#DomainName").on("change", function () {
+                checkTenant($(this).val());
+            }).focus();
+
+            function checkTenant(domain) {
+                var data = { DomainName: domain }
+                SiteUtil.AjaxCall("/api/Preauth/GetPublicTenant/" + domain + "/", null, function (isAAD) {
+                    if (isAAD) {
+                        $("#spIsAADTenant").removeClass().addClass("glyphicon glyphicon-aad-true");
+                        $("#AutoApprove").removeAttr("disabled");
+                        if (!isEditing)
+                        {
+                            $("#AutoApprove").prop("checked", true);
+                        }
+                        $("#lblAutoApprove").css("background-color", "white");
+                        $("#AADMessage").html("Azure Active Directory validated").css("color","green");
+                    } else {
+                        $("#spIsAADTenant").removeClass().addClass("glyphicon glyphicon-aad-false");
+                        $("#AutoApprove").attr("disabled", "disabled")
+                        if (!isEditing)
+                        {
+                            $("#AutoApprove").prop("checked", false);
+                        }
+                        $("#lblAutoApprove").css("background-color", "#efefef");
+                        $("#AADMessage").html("Not an Azure Active Directory").css("color", "darkgoldenrod");
+                    }
+                });
+            }
         });
     </script>
+}
+
+@section styles {
+    <style type="text/css">
+        div.col-md-6 input,
+        div.col-md-6 select,
+        div.col-md-6 span {
+            max-width: 320px;
+        }
+
+        div.col-md-6 label {
+            max-width: 280px;
+        }
+
+        #AADMessage {
+            text-align: right;
+            font-size: .8em;
+            display: block;
+            height:11px;
+        }
+    </style>
 }

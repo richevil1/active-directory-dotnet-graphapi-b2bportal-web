@@ -15,7 +15,7 @@ namespace AzureB2BInvite
 
         public GraphUtil()
         {
-            AuthenticationResult authResult = AdalUtil.Authenticate().Result;
+            AuthenticationResult authResult = AdalUtil.AuthenticateApp().Result;
             string accessToken = authResult.AccessToken;
 
             _client = new GraphServiceClient(
@@ -30,6 +30,10 @@ namespace AzureB2BInvite
         public async Task<User> GetUser(string upn)
         {
            return await (_client.Users[upn]).Request().GetAsync();
+        }
+        public async Task<IEnumerable<Group>> GetGroups()
+        {
+            return await (_client.Groups).Request().GetAsync();
         }
 
         public async Task<User> SetUser(User user)

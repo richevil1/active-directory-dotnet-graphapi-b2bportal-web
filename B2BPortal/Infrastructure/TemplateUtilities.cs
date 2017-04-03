@@ -46,6 +46,11 @@ namespace B2BPortal.Infrastructure
             return res;
         }
 
+        public static async Task<dynamic> DeleteTemplate(InviteTemplate template)
+        {
+            return (await DocDBRepo.DB<InviteTemplate>.DeleteItemAsync(template));
+        }
+
         public static async Task<InviteTemplate> UpdateTemplate(InviteTemplate template)
         {
             template.LastUpdated = DateTime.UtcNow;

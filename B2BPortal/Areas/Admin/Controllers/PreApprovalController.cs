@@ -8,6 +8,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using AzureB2BInvite;
 
 namespace B2BPortal.Areas.Admin.Controllers
 {
@@ -15,6 +16,7 @@ namespace B2BPortal.Areas.Admin.Controllers
     public class PreApprovalController : AsyncController
     {
         private List<SelectListItem> _templates;
+        private List<SelectListItem> _groups;
 
         public PreApprovalController()
         {
@@ -23,6 +25,10 @@ namespace B2BPortal.Areas.Admin.Controllers
                 _templates = new List<SelectListItem>();
                 _templates.Add(new SelectListItem { Selected = true, Text = "Select optional email template", Value = "" });
                 _templates.AddRange(templates.Select(t => new SelectListItem { Selected = false, Text = t.TemplateName, Value = t.Id }));
+
+                var groups = (await new GraphUtil().GetGroups());
+                _groups = new List<SelectListItem>();
+                _groups.AddRange(groups.Select(g => new SelectListItem { Selected = false, Text = g.DisplayName, Value = g.Id }));
             });
             task.Wait();
         }
@@ -36,6 +42,8 @@ namespace B2BPortal.Areas.Admin.Controllers
         public async Task<ActionResult> Create(PreAuthDomain domain)
         {
             ViewBag.Templates = _templates;
+            ViewBag.Groups = _groups;
+
             if (ModelState.IsValid)
             {
                 try
@@ -55,6 +63,8 @@ namespace B2BPortal.Areas.Admin.Controllers
         public async Task<ActionResult> Edit(string id)
         {
             ViewBag.Templates = _templates;
+            ViewBag.Groups = _groups;
+
             PreAuthDomain domain;
             if (id == null)
             {
@@ -91,11 +101,6 @@ namespace B2BPortal.Areas.Admin.Controllers
             {
                 try
                 {
-                    if (!string.IsNullOrEmpty(preAuthDomain.GroupsList) && preAuthDomain.GroupsList.Length > 0)
-                    {
-                        preAuthDomain.Groups = new List<string>(preAuthDomain.GroupsList.Split(','));
-                    }
-
                     preAuthDomain.AuthUser = User.Identity.GetEmail();
 
                     if (preAuthDomain.Id == null)

@@ -1,0 +1,66 @@
+﻿@using AzureB2BInvite;
+@using B2BPortal.Infrastructure;
+@using System.Security.Claims;
+@{
+    ViewBag.Title = "test";
+    var domain = User.Identity.GetClaim(ClaimTypes.Name).Split('@')[1];
+    var endpoint = string.Format("{0}/v1.0/me", AdalUtil.Settings.GraphResource);
+}
+
+<h2>Retrieving Work Profile...</h2>
+<div>
+    <p id="loginMessage"></p>
+</div>
+@section scripts {
+<script src="/Scripts/adal.js"></script>
+<script type="text/javascript">
+    $(function () {
+        //authorization context
+        var resource = '@AdalUtil.Settings.GraphResource';
+        var endpoint = '@endpoint';
+
+        var authContext = new AuthenticationContext({
+            instance: 'https://login.microsoftonline.com/',
+            tenant: '@domain',
+            clientId: '@AdalUtil.Settings.AppClientId_Preauth',
+            postLogoutRedirectUri: window.location.origin,
+            cacheLocation: 'localStorage'
+        });
+
+        //save tokens if this is a return from AAD
+        authContext.handleWindowCallback();
+
+        var user = authContext.getCachedUser();
+        if (user) {  //successfully logged in
+            //call rest endpoint
+            authContext.acquireToken(resource, function (error, token) {
+                if (error || !token) {
+                    $("#loginMessage").text('ADAL Error Occurred: ' + error);
+                    return;
+                }
+                $.ajax({
+                    type: 'GET',
+                    url: endpoint,
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': 'Bearer ' + token,
+                    },
+                }).done(function (data) {
+                    window.opener.LoadRemoteProfile(data);
+                    window.close();
+                }).fail(function (err) {
+                    jQuery("#loginMessage").text('Error calling REST endpoint: ' + err.statusText);
+                }).always(function () {
+                    });
+            });
+        }
+        else if (authContext.getLoginError()) { //error logging in
+            $("#loginMessage").text(authContext.getLoginError());
+        }
+        else {
+            authContext.login();
+        }
+    });
+    </script>    
+}
+

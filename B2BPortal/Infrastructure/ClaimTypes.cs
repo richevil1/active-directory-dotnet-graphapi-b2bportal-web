@@ -25,5 +25,6 @@ namespace B2BPortal.Infrastructure
     public static class Roles
     {
         public const string B2BAdmins = "B2BAdmins";
+        public const string CompanyAdministrator = "Company Administrator";
     }
 }
