@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using AzureB2BInvite;
 using Microsoft.Graph;
+using System.IdentityModel.Claims;
 
 namespace B2BPortal.Areas.Admin.Controllers
 {
@@ -79,6 +80,7 @@ namespace B2BPortal.Areas.Admin.Controllers
                 domain = new PreAuthDomain();
                 //set default redirect URL
                 domain.DomainRedemptionSettings.InviteRedirectUrl = string.Format("https://myapps.microsoft.com/{0}", AdalUtil.Settings.Tenant);
+                domain.DomainRedemptionSettings.InviterResponseEmailAddr = User.Identity.GetClaim(ClaimTypes.Email);
             }
             else
             {

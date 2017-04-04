@@ -40,10 +40,18 @@ namespace B2BPortal.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<bool> Delete(InviteTemplate template)
+        public async Task<ActionResult> Delete(InviteTemplate template)
         {
-            var res = await TemplateUtilities.DeleteTemplate(template);
-            return true;
+            try
+            {
+                await TemplateUtilities.DeleteTemplate(template);
+                return RedirectToAction("Index");
+            }
+            catch
+            {
+                ViewBag.Operation = "Delete";
+                return RedirectToAction("Index");
+            }
         }
 
         [HttpPost]
