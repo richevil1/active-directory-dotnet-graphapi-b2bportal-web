@@ -151,8 +151,11 @@
 
             $("#btnDelete").on("click", function() {
                 if (!confirm("Are you sure you want to delete this profile?")) return;
-                location.href="/admin/preapproval/delete/@Model.Id";
+
+                document.forms[0].action = "/admin/preapproval/Delete";
+                document.forms[0].submit();
             });
+
             $("#DomainName").on("change", function () {
                 checkTenant($(this).val());
             }).focus();

@@ -136,7 +136,7 @@
             });
 
             $("#btnDelete").on("click", function () {
-                if (!confirm("Are you sure you want to delete this profile?")) return;
+                if (!confirm("Are you sure you want to delete this template?")) return;
 
                 document.forms[0].action = "/admin/InviteTemplate/Delete";
                 document.forms[0].submit();
