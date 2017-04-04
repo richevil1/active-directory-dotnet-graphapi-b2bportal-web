@@ -1,0 +1,16 @@
+﻿@model List<string>
+@{ 
+    var _groups = new List<SelectListItem>();
+
+    if (ViewBag.Groups != null)
+    {
+        _groups = (List<SelectListItem>)ViewBag.Groups;
+    }
+}
+
+<select name="Groups" id="Groups" multiple size="5" class="form-control">
+    @foreach(var o in _groups)
+    {
+        <option @((o.Selected) ? "selected" : "") value="@o.Value">@o.Text</option>
+    }
+</select>

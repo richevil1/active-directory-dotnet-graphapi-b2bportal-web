@@ -14,24 +14,16 @@ namespace AzureB2BInvite.Models
         /// Are guests only allowed to request access when their login credential matches a domain preauth, and 
         /// pre-authentication to their home domain is completed?
         /// </summary>
-        [DisplayName("Require Preauth")]
+        [DisplayName("Require Sign-In")]
         [JsonProperty(PropertyName = "requirePreauth")]
         public bool RequirePreauth { get; set; }
-
-        /// <summary>
-        /// After a guest redeems their invitation, bring them back to the site to edit their profile, or return them to the
-        /// default redirect link?
-        /// </summary>
-        [DisplayName("Edit Profile After Redeem")]
-        [JsonProperty(PropertyName = "editProfileAfterRedeem")]
-        public bool EditProfileAfterRedeem { get; set; }
 
         /// <summary>
         /// URL the guest is returned to after an invitation is redeemed.
         /// In the UX, a selector is presented offering to return to the Profile editor, the org "MyApps" page, or a custom URL.
         /// (custom domain pre-auth records also define this URL - if they exist, they will override this setting)
         /// </summary>
-        [DisplayName("Return URL after an invite is redeemed")]
+        [DisplayName("Return URL After Profile Edit")]
         [JsonProperty(PropertyName = "inviteRedirectUrl")]
         public string InviteRedirectUrl { get; set; }
 

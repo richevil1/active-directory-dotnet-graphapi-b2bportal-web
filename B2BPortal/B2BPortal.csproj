@@ -307,7 +307,6 @@
     <Content Include="Areas\Admin\Views\Shared\_Layout.cshtml" />
     <Content Include="Areas\Admin\Views\PreApproval\Index.cshtml" />
     <Content Include="Areas\Admin\Views\PreApproval\Edit.cshtml" />
-    <Content Include="Areas\Admin\Views\PreApproval\Details.cshtml" />
     <Content Include="Areas\Admin\Views\SiteConfig\List.cshtml" />
     <Content Include="Areas\Admin\Views\SiteConfig\Index.cshtml" />
     <Content Include="Areas\Admin\Views\SiteConfig\Edit.cshtml" />
@@ -319,6 +318,7 @@
     <Content Include="Areas\Admin\Views\Shared\TestView.cshtml" />
     <Content Include="Areas\Admin\Views\Shared\DisplayTemplates\NullNA.cshtml" />
     <Content Include="Areas\Admin\Views\Shared\DisplayTemplates\TruncateLong.cshtml" />
+    <Content Include="Areas\Admin\Views\Shared\EditorTemplates\GroupsMultiSel.cshtml" />
     <None Include="Properties\PublishProfiles\b2bdeploytest3-webom47k4qd7z5e2 - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\B2BPortal20170316124654 - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-3.1.1.intellisense.js" />

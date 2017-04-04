@@ -1,4 +1,5 @@
 ﻿using AzureB2BInvite.Models;
+using B2BPortal.Data;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -15,7 +16,7 @@ namespace AzureB2BInvite
     /// </summary>
     public static class InviteManager
     {
-        public static async Task<string> SendInvitation(GuestRequest request, PreAuthDomain domainSettings = null)
+        public static async Task<string> SendInvitation(GuestRequest request, string profileUrl, PreAuthDomain domainSettings = null)
         {
             var displayName = string.Format("{0} {1}", request.FirstName, request.LastName);
 
@@ -42,10 +43,10 @@ namespace AzureB2BInvite
                 GraphInvitation invitation = new GraphInvitation();
                 invitation.InvitedUserDisplayName = displayName;
                 invitation.InvitedUserEmailAddress = request.EmailAddress;
-                invitation.InviteRedirectUrl = redemptionSettings.InviteRedirectUrl;
+                invitation.InviteRedirectUrl = profileUrl;
                 invitation.SendInvitationMessage = (!Settings.UseSMTP);
 
-                if (useCustomEmailTemplate && invitation.SendInvitationMessage)
+                if (useCustomEmailTemplate && invitation.SendInvitationMessage && domainSettings.InviteTemplateContent.TemplateContent!=null)
                 {
                     invitation.InvitedUserMessageInfo = new InvitedUserMessageInfo
                     {
@@ -65,7 +66,7 @@ namespace AzureB2BInvite
                 {
                     var emailSubject = Settings.InvitationEmailSubject.Replace("{{orgname}}", Settings.InvitingOrganization);
 
-                    string body = FormatEmailBody(responseData, redemptionSettings);
+                    string body = FormatEmailBody(responseData, redemptionSettings, domainSettings.InviteTemplateContent);
                     SendViaSMTP(emailSubject, body, invitation.InvitedUserEmailAddress);
                 }
 
@@ -79,16 +80,13 @@ namespace AzureB2BInvite
             }
         }
 
-        private static string FormatEmailBody(GraphInvitation data, RedemptionSettings redemption)
+        private static string FormatEmailBody(GraphInvitation data, RedemptionSettings redemption, InviteTemplate content)
         {
-            
-            var body = new StringBuilder();
-            body.AppendFormat("You've been invited to access applications in the {0} organization<br>", Settings.InvitingOrganization);
-            body.AppendFormat("by {0}<br>", redemption.InviterResponseEmailAddr);
-            body.AppendFormat("<a href='{0}'>Get Started</a><br>", data.InviteRedeemUrl);
-            body.AppendFormat("Return to the above link at any time for access.<br><hr>");
-            body.AppendFormat("Questions? Contact {0} at <a href='mailto:{1}'>{1}</a>", Settings.InvitingOrganization, redemption.InviterResponseEmailAddr);
-            return body.ToString();
+            var body = content.TemplateContent;
+            body = body.Replace("{{InvitingOrgName}}", Settings.InvitingOrganization);
+            body = body.Replace("{{InvitationLink}}", data.InviteRedeemUrl);
+            body = body.Replace("{{OrgContactEmail}}", redemption.InviterResponseEmailAddr);
+            return body;
         }
 
         private static void SendViaSMTP(string subject, string mailBody, string email)

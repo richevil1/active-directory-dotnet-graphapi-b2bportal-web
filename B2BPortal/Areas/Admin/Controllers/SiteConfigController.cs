@@ -18,7 +18,7 @@ namespace B2BPortal.Areas.Admin.Controllers
             var config = await SiteConfig.GetCurrConfig();
             if (config == null)
             {
-                config = new SiteConfig(Request.Url);
+                config = new SiteConfig();
             }
             return View("Edit", config);
             //return View(config);

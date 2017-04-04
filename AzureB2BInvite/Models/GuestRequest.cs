@@ -89,7 +89,7 @@ namespace AzureB2BInvite.Models
         public Disposition Disposition { get; set; }
 
         /// <summary>
-        /// For a new request, generate a unique record ID and pre-populate all the defaults.
+        /// For a new request, pre-populate all the defaults.
         /// </summary>
         public void Init()
         {

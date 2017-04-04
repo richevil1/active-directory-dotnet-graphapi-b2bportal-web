@@ -89,7 +89,7 @@ namespace AzureB2BInvite.Models
 
         [ScaffoldColumn(false)]
         [JsonProperty(PropertyName = "passwordProfile")]
-        public string PasswordProfile { get; set; }
+        public dynamic PasswordProfile { get; set; }
 
         [DisplayName("Office Location")]
         [JsonProperty(PropertyName = "officeLocation")]

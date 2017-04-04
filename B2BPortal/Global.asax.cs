@@ -50,6 +50,7 @@ namespace B2BPortal
                 AdalUtil.Settings.AADInstanceLocal = ConfigurationManager.AppSettings["ida:AADInstanceLocal"];
                 AdalUtil.Settings.AADInstanceMulti = ConfigurationManager.AppSettings["ida:AADInstanceMulti"];
                 AdalUtil.Settings.TenantID = ConfigurationManager.AppSettings["ida:TenantId"];
+                AdalUtil.Settings.Tenant = ConfigurationManager.AppSettings["ida:Tenant"];
 
                 AdalUtil.Settings.AppClientId_Admin = ConfigurationManager.AppSettings["ida:ClientId_Admin"];
                 AdalUtil.Settings.AppClientSecret_Admin = ConfigurationManager.AppSettings["ida:ClientSecret_Admin"];

@@ -17,16 +17,11 @@ namespace B2BPortal.Models
 {
     public class SiteConfig : DocModelBase, IDocModelBase
     {
-        public SiteConfig() : this(null)
-        {
-
-        }
-        public SiteConfig(Uri SiteUri = null)
+        public SiteConfig()
         {
             SiteRedemptionSettings = new RedemptionSettings();
-            SiteRedemptionSettings.EditProfileAfterRedeem = true;
-            if (SiteUri!=null)
-                SiteRedemptionSettings.InviteRedirectUrl = string.Format("{0}://{1}/profile", SiteUri.Scheme, SiteUri.DnsSafeHost);
+            SiteRedemptionSettings.InviteRedirectUrl = string.Format("https://myapps.microsoft.com/{0}", AdalUtil.Settings.Tenant);
+
         }
 
         /// <summary>
@@ -49,13 +44,6 @@ namespace B2BPortal.Models
         [DisplayName("Welcome Message")]
         [JsonProperty(PropertyName = "welcomeMessage")]
         public string WelcomeMessage { get; set; }
-
-        /// <summary>
-        /// TODO: Should users be informed via email when their request was denied? (Requires SMTP)
-        /// </summary>
-        [DisplayName("Send Denial Notification")]
-        [JsonProperty(PropertyName = "sendDenial")]
-        public bool SendDenial { get; set; }
 
         /// <summary>
         /// Is clicking the TOS checkbox required before allowing the guest request to be submitted?

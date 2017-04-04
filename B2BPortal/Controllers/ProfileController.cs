@@ -27,7 +27,7 @@ namespace B2BPortal.Controllers
             //sanity check: not trusting the passed-in preauth setting
             request.PreAuthed = (User.Identity.GetClaim(CustomClaimTypes.AuthType) == AuthTypes.B2EMulti);
 
-            var result = await GuestRequestRules.SignUpAsync(request);
+            var result = await GuestRequestRules.SignUpAsync(request, Utils.GetProfileUrl(Request));
 
             return View(result);
         }
@@ -38,12 +38,14 @@ namespace B2BPortal.Controllers
         {
             if (ModelState.IsValid)
             {
+                var oid = User.Identity.GetClaim(CustomClaimTypes.ObjectIdentifier);
                 var redirectLink = await ProfileManager.GetRedirUrl(User.Identity.Name);
+                if (redirectLink == null) redirectLink = "/Profile";
 
-                var orgUser = ProfileManager.GetUserProfile(User.Identity.Name);
+                var orgUser = ProfileManager.GetUserProfile(oid);
                 var data = AADUserProfile.GetDeltaChanges(orgUser, user);
 
-                ProfileManager.UpdateProfile(data, orgUser.UserPrincipalName);
+                ProfileManager.UpdateProfile(data, oid);
                 return Redirect(redirectLink);
             }
 

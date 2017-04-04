@@ -1,20 +1,16 @@
 ﻿@using B2BPortal.Infrastructure
+@using Microsoft.Graph
 @model AzureB2BInvite.Models.PreAuthDomain
 
 @{
-    ViewBag.Title = "Pre-Approved Domains";
+    ViewBag.Title = "Approved Partner Organizations";
     ViewBag.RedemptionPropertyName = "DomainRedemptionSettings";
 
     var _templates = new List<SelectListItem>();
-    var _groups = new List<SelectListItem>();
 
     if (ViewBag.Templates != null)
     {
         _templates = (List<SelectListItem>)ViewBag.Templates;
-    }
-    if (ViewBag.Groups != null)
-    {
-        _groups = (List<SelectListItem>)ViewBag.Groups;
     }
 
     var MemberTypeRO = (!User.IsInRole(B2BPortal.Infrastructure.Roles.CompanyAdministrator)) ? "readonly" : "";
@@ -47,13 +43,13 @@
 
                 <div class="form-group">
                     <div class="col-md-4">
-                        @Html.LabelFor(model => model.DomainName, "Guest Company Email Domain", htmlAttributes: new { @class = "control-label addHelp" })
+                        @Html.LabelFor(model => model.DomainName, "Organization Domain", htmlAttributes: new { @class = "control-label addHelp" })
                         <div class="input-group">
                             <span class="input-group-addon" style="padding:6px 9px;">
                                 <span id="spIsAADTenant" class="glyphicon glyphicon-aad-false"></span>
                             </span>
                             <span class="input-group-addon" style="padding:6px 9px;">
-                                emailname@@
+                                email@@
                             </span>
                             @Html.EditorFor(model => model.DomainName, new { htmlAttributes = new { @class = "form-control" } })
                         </div>
@@ -69,7 +65,7 @@
                         <div class="notes">
                             Enter a domain name, like "microsoft.com". We will check to confirm if the domain is part of an existing Azure
                             Active Directory tenant. If verified, you may set "Auto Approve" to true.
-                            If the domain is from a verified Azure Active Directory, checking this box will auto-invite anyone that requests access
+                            If the domain is from a verified Azure Active Directory, checking this box will auto-approve anyone that requests access
                             from this domain (not available if the domain isn't a verified tenant). If unchecked, registrations will be pended in
                             the approval queue.
                         </div>
@@ -77,7 +73,7 @@
 
                     <div class="col-md-4">
                         @Html.LabelFor(model => model.Groups, htmlAttributes: new { @class = "control-label addHelp" })
-                        @Html.DropDownListFor(model => model.Groups, _groups, new { @multiple = "multiple", @size = "5", @class = "form-control" })
+                        @Html.EditorFor(model => model.Groups, "GroupsMultiSel")
                         @Html.ValidationMessageFor(model => model.Groups, "", new { @class = "text-danger" })
                         <div class="notes">
                             Ctrl-click to select automatic group assignment(s) for users that are granted access via this domain profile.
@@ -107,14 +103,14 @@
                         @Html.EnumDropDownListFor(model => model.MemberType, new { @class = "form-control" })
                         @Html.ValidationMessageFor(model => model.MemberType, "", new { @class = "text-danger" })
                         <div class="notes">
-                            By default, invited guests are added as "Guest", with limited options for elevating permissions.
-                            A Company Administrator can optionally create a profile granting invited guests "Member" access,
+                            By default, approved guests are added as "Guest", with limited options for elevating permissions.
+                            A Company Administrator can optionally create a profile granting approved guests "Member" access,
                             allowing the ability to assign elevated permissions (if required).
                         </div>
                     </div>
                     <div class="col-md-6">
                         @Html.LabelFor(model => model.InviteTemplateId, htmlAttributes: new { @class = "control-label addHelp" })
-                        @Html.DropDownListFor(model => model.InviteTemplateId, _templates, new { @class = "form-control input-sm" })
+                        @Html.DropDownListFor(model => model.InviteTemplateId, _templates, "Select email template...", new { @class = "form-control input-sm" })
                         @Html.ValidationMessageFor(model => model.InviteTemplateId, "", new { @class = "text-danger" })
                         <div class="notes">
                             (optional) - Select an invitation template.
@@ -129,7 +125,7 @@
                             {
                                 <div>
                                     This text will be added to the default B2B invitation email sent by Azure Active
-                                    Directory to your approved invitees. Use the "Manage Mail Templates" admin tool
+                                    Directory to your approved guests. Use the "Manage Mail Templates" admin tool
                                     to create and manage templates.
                                 </div>
                             }
@@ -171,7 +167,7 @@
                             $("#AutoApprove").prop("checked", true);
                         }
                         $("#lblAutoApprove").css("background-color", "white");
-                        $("#AADMessage").html("Azure Active Directory validated").css("color","green");
+                        $("#AADMessage").html("Verified in Azure Active Directory").css("color","green");
                     } else {
                         $("#spIsAADTenant").removeClass().addClass("glyphicon glyphicon-aad-false");
                         $("#AutoApprove").attr("disabled", "disabled")
@@ -180,7 +176,7 @@
                             $("#AutoApprove").prop("checked", false);
                         }
                         $("#lblAutoApprove").css("background-color", "#efefef");
-                        $("#AADMessage").html("Not an Azure Active Directory").css("color", "darkgoldenrod");
+                        $("#AADMessage").html("Not in Azure Active Directory").css("color", "darkgoldenrod");
                     }
                 });
             }
@@ -205,6 +201,10 @@
             font-size: .8em;
             display: block;
             height:11px;
+        }
+        div.redemption input,
+        div.redemption label {
+            max-width:none;
         }
     </style>
 }

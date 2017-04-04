@@ -20,9 +20,11 @@ namespace AzureB2BInvite
             public static string GraphResource = "https://graph.microsoft.com";
             public static string AADInstanceLocal { get; set; }
             public static string TenantID { get; set; }
+            public static string Tenant { get; set; }
             public static string AADInstanceMulti { get; set; }
             public static string GraphApiVersion { get; set; }
             public static string AppClientId_Admin { get; set; }
+            public static string WebAppUrl { get; set; }
             public static string AppClientSecret_Admin { get; set; }
             public static string AppClientId_Preauth { get; set; }
             public static string AppClientSecret_Preauth { get; set; }

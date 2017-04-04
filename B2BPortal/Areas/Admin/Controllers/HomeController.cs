@@ -51,10 +51,10 @@ namespace B2BPortal.Areas.Admin.Controllers
                         break;
                 }
                 request.Disposition = disposition;
+                
                 request.InternalComment = Request.Form[string.Format("InternalComment.{0}", request.Id)];
-
-                //TODO: Upn vs. Email...
-                var res = await GuestRequestRules.ExecuteDispositionAsync(request, User.Identity.Name);
+                var domain = await GuestRequestRules.GetMatchedDomain(request.EmailAddress);
+                var res = await GuestRequestRules.ExecuteDispositionAsync(request, User.Identity.Name, Utils.GetProfileUrl(Request), domain);
             }
 
             requestList = await GuestRequestRules.GetPendingRequestsAsync();

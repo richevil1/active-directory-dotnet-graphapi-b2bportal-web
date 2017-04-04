@@ -136,6 +136,12 @@ namespace B2BPortal.Infrastructure
             return Regex.Replace(s, "([a-z](?=[A-Z0-9])|[A-Z](?=[A-Z][a-z]))", "$1 ");
         }
 
+        public static string GetProfileUrl(HttpRequestBase request)
+        {
+            var port = (request.Url.Port != 443 || request.Url.Port != 80) ? request.Url.Port.ToString() : "";
+            return string.Format("{0}://{1}{2}/profile", request.Url.Scheme, request.Url.Host, port);
+        }
+
         public static string GetTempPassword()
         {
             var g = Guid.NewGuid().ToString();

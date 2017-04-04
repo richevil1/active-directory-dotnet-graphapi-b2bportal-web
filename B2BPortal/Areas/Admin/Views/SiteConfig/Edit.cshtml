@@ -57,8 +57,8 @@
                         @Html.LabelFor(model => model.WelcomeMessage, htmlAttributes: new { @class = "control-label addHelp" })
                         @Html.TextAreaFor(model => model.WelcomeMessage, htmlAttributes: new { @rows = "7", @class = "form-control" })
                         <div class="notes">
-                            Brief text narrative explaining the purpose of the site, those invited,
-                            apps that might be made available, instructions, rules, etc. Optional. Plain text only.
+                            Brief text narrative explaining the purpose of the site, apps that might be made available,
+                            instructions, rules, etc. Optional. Plain text only.
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -91,4 +91,12 @@
             });
         });
     </script>
+}
+@section styles {
+    <style type="text/css">
+        div.redemption input,
+        div.redemption label {
+            max-width:none;
+        }
+    </style>    
 }

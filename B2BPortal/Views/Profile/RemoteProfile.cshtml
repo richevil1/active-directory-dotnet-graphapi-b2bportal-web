@@ -4,7 +4,7 @@
 @{
     ViewBag.Title = "test";
     var domain = User.Identity.GetClaim(ClaimTypes.Name).Split('@')[1];
-    var endpoint = string.Format("{0}/v1.0/me", AdalUtil.Settings.GraphResource);
+    var endpoint = string.Format("{0}/v1.0/me?$select=city,department,displayName,givenName,surname,jobTitle,postalCode,country,jobTitle,mobilePhone,state,streetAddress", AdalUtil.Settings.GraphResource);
 }
 
 <h2>Retrieving Work Profile...</h2>
