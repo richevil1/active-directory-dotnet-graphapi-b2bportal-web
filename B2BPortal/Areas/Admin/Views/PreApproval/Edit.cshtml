@@ -30,6 +30,7 @@
             <div class="form-horizontal">
                 @Html.ValidationSummary(true, "", new { @class = "text-danger" })
                 @Html.HiddenFor(model => model.Id)
+                @Html.HiddenFor(model => model.CreateDate)
                 <div class="form-group control">
                     <div class="col-md-12">
                         <button type="submit" class="btn btn-default control"><span class="glyphicon glyphicon-floppy-disk"></span> Save</button>

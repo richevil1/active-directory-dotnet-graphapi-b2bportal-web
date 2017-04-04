@@ -17,6 +17,7 @@ namespace AzureB2BInvite.Models
         {
             DomainRedemptionSettings = new RedemptionSettings();
             InviteTemplateContent = new InviteTemplate();
+            Groups = new List<string>();
         }
         /// <summary>
         /// The UPN of the user creating this PreAuth record
