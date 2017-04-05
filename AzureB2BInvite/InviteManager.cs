@@ -22,13 +22,15 @@ namespace AzureB2BInvite
 
             var useCustomEmailTemplate = false;
             var redemptionSettings = Settings.SiteRedemptionSettings;
+            var memberType = MemberType.Guest;
 
             //use domain custom setting if exists, else use global site config setting
             if (domainSettings != null)
             {
                 redemptionSettings = domainSettings.DomainRedemptionSettings;
                 //domainSettings.InviteTemplateContent;
-                
+                memberType = domainSettings.MemberType;
+
                 if (!string.IsNullOrEmpty(domainSettings.InviteTemplateId))
                 {
                     useCustomEmailTemplate = true;
@@ -45,6 +47,7 @@ namespace AzureB2BInvite
                 invitation.InvitedUserEmailAddress = request.EmailAddress;
                 invitation.InviteRedirectUrl = profileUrl;
                 invitation.SendInvitationMessage = (!Settings.UseSMTP);
+                invitation.InvitedUserType = memberType.ToString();
 
                 if (useCustomEmailTemplate && invitation.SendInvitationMessage && domainSettings.InviteTemplateContent.TemplateContent!=null)
                 {
@@ -60,6 +63,15 @@ namespace AzureB2BInvite
                 if (responseData.id == null)
                 {
                     return string.Format("Error: Invite not sent - API error: {0}", serverResponse.Message);
+                }
+
+                if (domainSettings != null)
+                {
+                    if (domainSettings.Groups !=null && domainSettings.Groups.Count > 0)
+                    {
+                        var groupsAdded = AddUserToGroup(responseData.InvitedUser.Id, domainSettings.Groups);
+                        //todo: log or notify re the negative
+                    }
                 }
 
                 if (Settings.UseSMTP)
@@ -78,6 +90,24 @@ namespace AzureB2BInvite
 
                 return string.Format("Error: {0}<br>Server response: {1}", ex.Message, reason);
             }
+        }
+
+        private static bool AddUserToGroup(string userId, List<string> groups)
+        {
+            var res = true;
+            var body = new GraphGroupAdd(userId);
+
+            foreach (string groupId in groups)
+            {
+                AdalResponse serverResponse = null;
+                var uri = string.Format("https://graph.microsoft.com/v1.0/groups/{0}/members/$ref", groupId);
+                serverResponse = CallGraph(uri, body);
+                if (!serverResponse.Successful)
+                {
+                    res = false;
+                }
+            }
+            return res;
         }
 
         private static string FormatEmailBody(GraphInvitation data, RedemptionSettings redemption, InviteTemplate content)

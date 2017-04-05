@@ -86,6 +86,7 @@
     <Compile Include="MailSender.cs" />
     <Compile Include="Models\AADUserProfile.cs" />
     <Compile Include="Models\GraphEmail.cs" />
+    <Compile Include="Models\GraphGroupAdd.cs" />
     <Compile Include="Models\GraphMemberRole.cs" />
     <Compile Include="Models\GraphRoleUser.cs" />
     <Compile Include="Models\GuestRequest.cs" />

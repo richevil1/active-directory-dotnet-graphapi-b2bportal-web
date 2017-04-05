@@ -24,6 +24,18 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DocImages", "DocImages", "{EDF300F8-9691-461E-A7E2-D376335D3257}"
 	ProjectSection(SolutionItems) = preProject
 		DocImages\App1.png = DocImages\App1.png
+		DocImages\App1a.png = DocImages\App1a.png
+		DocImages\App2.png = DocImages\App2.png
+		DocImages\App3.png = DocImages\App3.png
+		DocImages\App3a.png = DocImages\App3a.png
+		DocImages\App4.png = DocImages\App4.png
+		DocImages\App5.png = DocImages\App5.png
+		DocImages\App6.png = DocImages\App6.png
+		DocImages\ARMDeploy.png = DocImages\ARMDeploy.png
+		DocImages\Manifest.png = DocImages\Manifest.png
+		DocImages\Url.png = DocImages\Url.png
+		DocImages\Url2.png = DocImages\Url2.png
+		DocImages\Url3.png = DocImages\Url3.png
 	EndProjectSection
 EndProject
 Global

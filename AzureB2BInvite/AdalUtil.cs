@@ -107,7 +107,15 @@ namespace AzureB2BInvite
                         res.ResponseContent = response.Content.ReadAsStringAsync().Result;
                         res.StatusCode = response.StatusCode;
                         res.Message = response.ReasonPhrase;
-                        response.EnsureSuccessStatusCode();
+                        if (!response.IsSuccessStatusCode)
+                        {
+                            res.Successful = false;
+                            var serverError = JsonConvert.DeserializeObject<GraphError>(res.ResponseContent);
+                            var reason = (response == null ? "N/A" : response.ReasonPhrase);
+                            var serverErrorMessage = (serverError.Error == null) ? "N/A" : serverError.Error.Message;
+                            res.Message = string.Format("Server response: {0}. Server detail: {1})", reason, serverErrorMessage);
+                            return res;
+                        }
                     }
                 }
                 else
@@ -122,18 +130,10 @@ namespace AzureB2BInvite
                 }
                 return res;
             }
-            catch (WebException ex)
+            catch (Exception ex)
             {
                 res.Successful = false;
-                using (var reader = new StreamReader(ex.Response.GetResponseStream()))
-                {
-                    res.ResponseContent = reader.ReadToEnd();
-                }
-
-                var serverError = JsonConvert.DeserializeObject<GraphError>(res.ResponseContent);
-                var reason = (response == null ? "N/A" : response.ReasonPhrase);
-                var serverErrorMessage = (serverError.Error == null) ? "N/A" : serverError.Error.Message;
-                res.Message = string.Format("{0} (Server response: {1}. Server detail: {2})", ex.Message, reason, serverErrorMessage);
+                res.Message = ex.Message;
                 return res;
             }
         }
