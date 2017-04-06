@@ -2,6 +2,10 @@
 
 @{
     ViewBag.Title = "Edit Profile";
+    var isMSA = (User.Identity.Name.IndexOf("live.com#") > -1);
+    var remoteLink = "/profile/RemoteProfile";
+    var disableSync = (isMSA) ? "disabled" : "";
+    var syncTitle = (isMSA) ? "Profile sync is disabled for B2B accounts associated with a Microsoft Account (LiveID)" : "Copy your primary work profile into this guest profile";
 }
 
 @using (Html.BeginForm("Update", "Profile", new { area = "" }, FormMethod.Post, null))
@@ -26,7 +30,7 @@
                     <div class="col-md-12">
                         <button type="submit" class="btn btn-default control"><span class="glyphicon glyphicon-floppy-disk"></span> Save</button>
                         <button id="btnContinue" title="Continue to @ViewBag.RedirectLink" type="button" class="btn btn-default control"><span class="glyphicon glyphicon-list-alt"></span> Continue...</button>
-                        <button id="btnGetWorkProfile" type="button" title="Copy your primary work profile into this guest profile" class="btn btn-default control"><span class="glyphicon glyphicon-retweet"></span> Sync Profile</button>
+                        <button @disableSync id="btnGetWorkProfile" type="button" title="@syncTitle" class="btn btn-default control"><span class="glyphicon glyphicon-retweet"></span> Sync Profile</button>
                     </div>
                 </div>
 
@@ -129,7 +133,7 @@
                 location.href = '@ViewBag.RedirectLink';
             });
             $("#btnGetWorkProfile").on("click", function () {
-                var win = window.open("/profile/remoteprofile");
+                var win = window.open("@remoteLink");
             });
         });
         function LoadRemoteProfile(data) {
