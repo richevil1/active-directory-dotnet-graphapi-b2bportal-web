@@ -20,7 +20,7 @@ namespace AzureB2BInvite.Rules
             {
                 //check to see if this domain has been approved for pre-authentication
                 var approvedDomainSettings = await GetMatchedDomain(request.EmailAddress);
-                if (approvedDomainSettings != null)
+                if (approvedDomainSettings != null && approvedDomainSettings.AutoApprove)
                 {
                     request.Disposition = Disposition.AutoApproved;
                     request = await ExecuteDispositionAsync(request, approvedDomainSettings.AuthUser, profileUrl, approvedDomainSettings);
