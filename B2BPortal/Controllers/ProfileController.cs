@@ -5,6 +5,8 @@ using System.Linq;
 using B2BPortal.Infrastructure;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using System.Web;
+using Microsoft.Owin.Security.Cookies;
 
 namespace B2BPortal.Controllers
 {
@@ -14,7 +16,21 @@ namespace B2BPortal.Controllers
         // GET: Profile
         public async Task<ActionResult> Index()
         {
-            var user = ProfileManager.GetUserProfile(User.Identity.GetClaim(CustomClaimTypes.ObjectIdentifier));
+            if (User.Identity.GetClaim("aud") != AdalUtil.Settings.AppClientId_Admin)
+            {
+                //the user is accessing the profile editor but they aren't using the correct application - they may 
+                //have a cached token from the previous pre-auth call. Bouncing them out to re-auth.
+                HttpContext.GetOwinContext().Authentication.SignOut(CookieAuthenticationDefaults.AuthenticationType);
+                return Redirect("/account/signin?redir=/profile");
+            }
+
+            var oid = User.Identity.GetClaim(CustomClaimTypes.ObjectIdentifier);
+            var user = ProfileManager.GetUserProfile(oid);
+            if (user == null)
+            {
+                ViewBag.ErrorMessage = string.Format("User profile not found - please contact your administrator. (oid: {0})", oid);
+                return View("Error");
+            }
             ViewBag.RedirectLink = await ProfileManager.GetRedirUrl(User.Identity.Name);
             ViewBag.Message = "Edit profile";
             return View("Index", user);

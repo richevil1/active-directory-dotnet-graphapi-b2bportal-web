@@ -32,7 +32,8 @@ namespace AzureB2BInvite.Rules
         public static async Task<PreAuthDomain> GetMatchedDomain(string email)
         {
             var domain = email.Split('@')[1];
-            return (await DocDBRepo.DB<PreAuthDomain>.GetItemsAsync(d => d.DomainName == domain)).SingleOrDefault();
+            var res = await PreAuthDomain.GetDomainByName(domain);
+            return res;
         }
 
         public static async Task<GuestRequest> ExecuteDispositionAsync(GuestRequest request, string approver, string profileUrl, PreAuthDomain domainSettings = null)

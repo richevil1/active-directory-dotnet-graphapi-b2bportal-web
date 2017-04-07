@@ -108,6 +108,17 @@ namespace AzureB2BInvite.Models
             }
             return res;
         }
+        public static async Task<PreAuthDomain> GetDomainByName(string domainName)
+        {
+            var res = (await DocDBRepo.DB<PreAuthDomain>.GetItemsAsync(d => d.DomainName == domainName)).SingleOrDefault();
+            if (res == null) return null;
+
+            if (res.InviteTemplateId != null)
+            {
+                res.InviteTemplateContent = (await DocDBRepo.DB<InviteTemplate>.GetItemAsync(res.InviteTemplateId));
+            }
+            return res;
+        }
 
         public static async Task<PreAuthDomain> AddDomain(PreAuthDomain domain)
         {

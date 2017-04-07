@@ -47,10 +47,6 @@ namespace B2BPortal.Controllers
 
         public void SignOut()
         {
-            //// Send an OpenID Connect sign-out request.
-            //HttpContext.GetOwinContext().Authentication.SignOut(
-            //    OpenIdConnectAuthenticationDefaults.AuthenticationType, CookieAuthenticationDefaults.AuthenticationType);
-
             if (ClaimsPrincipal.Current.FindFirst(Startup.AcrClaimType) != null)
             {
                 // To sign out the user, you should issue an OpenIDConnect sign out request

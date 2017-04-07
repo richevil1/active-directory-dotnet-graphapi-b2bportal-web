@@ -27,8 +27,8 @@ namespace B2BPortal
         {
             try
             {
-                //if this is a multi-tenant visitor, we don't need to do anything here
-                if (ident.GetClaim(CustomClaimTypes.TenantId) != AdalUtil.Settings.TenantID)
+                //if this is a multi-tenant visitor, we don't need to do anything else here
+                if (ident.GetClaim("aud") == AdalUtil.Settings.AppClientId_Preauth)
                 {
                     ident.AddClaim(new Claim(CustomClaimTypes.AuthType, AuthTypes.B2EMulti));
                     return ident;

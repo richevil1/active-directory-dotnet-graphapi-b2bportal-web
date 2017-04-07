@@ -19,10 +19,13 @@ namespace AzureB2BInvite
     {
         public static AADUserProfile GetUserProfile(string upn)
         {
+            AADUserProfile res = null;
             var userUri = string.Format("{0}/{1}/users/{2}", Settings.GraphResource, Settings.GraphApiVersion, upn);
             var serverResponse = CallGraph(userUri);
-
-            AADUserProfile res = JsonConvert.DeserializeObject<AADUserProfile>(serverResponse.ResponseContent);
+            if (serverResponse.ResponseContent != null)
+            {
+                res = JsonConvert.DeserializeObject<AADUserProfile>(serverResponse.ResponseContent);
+            }
             return res;
         }
 
