@@ -109,7 +109,10 @@ namespace B2BPortal.Models
             config.ConfigVersion++;
 
             //TOSDocument is decorated with [AllowHtml], so clearing out dangerous tags
-            config.TOSDocument = HtmlSanitizer.SanitizeHtml(config.TOSDocument);
+            if (!string.IsNullOrEmpty(config.TOSDocument))
+            {
+                config.TOSDocument = HtmlSanitizer.SanitizeHtml(config.TOSDocument);
+            }
 
             config = (await DocDBRepo.DB<SiteConfig>.CreateItemAsync(config));
             Settings.SiteConfigReady = true;
