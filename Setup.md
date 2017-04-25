@@ -11,7 +11,7 @@ Two Azure Active Directory apps must be created in your tenant. The first is the
 
   ![alt text][App1]
 
-* Click "+ Add" and enter the name of your app (like "B2B Admin App"). This title will be seen when users are prompted for their credentials.
+* Click "+ New application registration" and enter the name of your app (like "B2B Admin App"). This title will be seen when users are prompted for their credentials.
 * Select "Web app / API", and enter the Sign-on URL. If you're setting this up before you deploy the app to Azure, you can enter https://loopback as a placeholder. Click "Create".
 
   ![alt text][App2]
@@ -49,7 +49,7 @@ Two Azure Active Directory apps must be created in your tenant. The first is the
 
   * Under "Required permissions", you will again add the Microsoft Graph API. This time you only need to check one item:
     * DELEGATED PERMISSIONS
-      * Sign in and read users' profile
+      * Sign in and read user profile
   * Click "Select"
   * Follow the same steps to generate an app secret, as above. Again remember to copy the key and save it for the web app setup.
   * Follow the same steps to copy the "Application ID" and save this one too.
