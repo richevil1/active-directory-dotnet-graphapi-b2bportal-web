@@ -1,10 +1,13 @@
 ﻿@model string
 
-@if (Model.Length>80)
+@if (Model != null)
 {
-    <span>@Model.Substring(0, 80) ...</span>
-}
-else
-{
-    @Model
+    if (Model.Length > 80)
+    {
+        <span>@Model.Substring(0, 80) ...</span>
+    }
+    else
+    {
+        @Model
+    }
 }
