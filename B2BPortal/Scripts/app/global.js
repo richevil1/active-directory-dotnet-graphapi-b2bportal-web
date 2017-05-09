@@ -8,7 +8,7 @@ $(function () {
     //initialize help icons
     $("label.addHelp")
         .each(function (i, o) {
-            var help = $(this).closest('[class^="col"]').children("div.notes").eq(0).text();
+            var help = $(this).closest("div").children("div.notes").eq(0).text();
             $(this)
                 .tooltip({ title: help, placement: "auto", trigger: 'manual' });
         })

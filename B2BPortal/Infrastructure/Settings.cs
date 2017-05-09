@@ -51,6 +51,14 @@ namespace B2BPortal.Infrastructure
             try
             {
                 CurrSiteConfig = DocDBRepo.DB<SiteConfig>.GetItemsAsync(c => c.DocType == DocTypes.SiteConfig).Result.LastOrDefault();
+                if (CurrSiteConfig != null)
+                {
+                    if (CurrSiteConfig.InviteTemplateId != null)
+                    {
+                        CurrSiteConfig.InviteTemplateContent = InviteTemplate.GetTemplate(CurrSiteConfig.InviteTemplateId).GetAwaiter().GetResult();
+                    }
+                }
+
                 SiteConfigReady = (CurrSiteConfig != null);
                 return SiteConfigReady;
             }

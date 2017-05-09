@@ -69,10 +69,17 @@ namespace B2BPortal
                 }
             }
 
-            var roles = InviteManager.GetDirectoryRoles(ident.GetClaim(CustomClaimTypes.ObjectIdentifier));
-            foreach (var role in roles)
+            var response = InviteManager.GetDirectoryRoles(ident.GetClaim(CustomClaimTypes.ObjectIdentifier));
+            if (response.Successful)
             {
-                ident.AddClaim(new Claim(ClaimTypes.Role, role.DisplayName));
+                foreach (var role in response.Roles)
+                {
+                    ident.AddClaim(new Claim(ClaimTypes.Role, role.DisplayName));
+                }
+            }
+            else
+            {
+                Logging.WriteToAppLog("Error retrieving app roles", EventLogEntryType.Error, new Exception(response.ErrorMessage));
             }
 
             var fullName = ident.Claims.FirstOrDefault(c => c.Type == "name").Value;

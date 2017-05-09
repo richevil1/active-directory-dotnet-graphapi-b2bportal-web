@@ -31,9 +31,21 @@ namespace AzureB2BInvite
         {
            return await (_client.Users[upn]).Request().GetAsync();
         }
+
         public async Task<IEnumerable<Group>> GetGroups()
         {
-            return await (_client.Groups).Request().GetAsync();
+            return await (_client.Groups).Request().OrderBy("displayName").GetAsync();
+        }
+
+        public async Task<IEnumerable<Group>> GetGroups(string filter)
+        {
+            if (filter == null)
+            {
+                return await GetGroups();
+            }
+            var s = string.Format("startswith(displayName,'{0}')", filter);
+            var res = await (_client.Groups).Request().Filter(s).GetAsync();
+            return res;
         }
 
         public async Task<User> SetUser(User user)

@@ -4,6 +4,7 @@ using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 
 namespace B2BPortal.Data
@@ -50,5 +51,11 @@ namespace B2BPortal.Data
         [DisplayName("Template Author")]
         [JsonProperty(PropertyName = "templateAuthor")]
         public string TemplateAuthor { get; set; }
+
+        public static async Task<InviteTemplate> GetTemplate(string inviteTemplateId)
+        {
+            var res = await DocDBRepo.DB<InviteTemplate>.GetItemAsync(inviteTemplateId);
+            return res;
+        }
     }
 }

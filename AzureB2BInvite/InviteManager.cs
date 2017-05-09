@@ -22,13 +22,15 @@ namespace AzureB2BInvite
 
             var useCustomEmailTemplate = false;
             var redemptionSettings = Settings.SiteRedemptionSettings;
+            var inviteTemplate = Settings.SiteInviteTemplateContent;
+
             var memberType = MemberType.Guest;
 
             //use domain custom setting if exists, else use global site config setting
             if (domainSettings != null)
             {
                 redemptionSettings = domainSettings.DomainRedemptionSettings;
-                //domainSettings.InviteTemplateContent;
+                inviteTemplate = domainSettings.InviteTemplateContent;
                 memberType = domainSettings.MemberType;
 
                 if (!string.IsNullOrEmpty(domainSettings.InviteTemplateId))
@@ -78,7 +80,7 @@ namespace AzureB2BInvite
                 {
                     var emailSubject = Settings.InvitationEmailSubject.Replace("{{orgname}}", Settings.InvitingOrganization);
 
-                    string body = FormatEmailBody(responseData, redemptionSettings, domainSettings.InviteTemplateContent);
+                    string body = FormatEmailBody(responseData, redemptionSettings, inviteTemplate);
                     SendViaSMTP(emailSubject, body, invitation.InvitedUserEmailAddress);
                 }
 
@@ -124,16 +126,21 @@ namespace AzureB2BInvite
             MailSender.SendMessage(email, subject, mailBody);
         }
         
-        public static IEnumerable<GraphMemberRole> GetDirectoryRoles(string upn)
+        public static RoleResponse GetDirectoryRoles(string upn)
         {
+            var res = new RoleResponse();
+
             AdalResponse serverResponse = null;
             var rolesUri = string.Format("{0}/{1}/users/{2}/memberOf", Settings.GraphResource, Settings.GraphApiVersion, upn);
             serverResponse = CallGraph(rolesUri);
+            res.Successful = serverResponse.Successful;
+            res.ErrorMessage = serverResponse.Message;
+
             var list = new List<GraphMemberRole>();
             if (serverResponse.Successful)
             {
-                JObject res = JObject.Parse(serverResponse.ResponseContent);
-                IList<JToken> roles = res["value"].ToList();
+                JObject data = JObject.Parse(serverResponse.ResponseContent);
+                IList<JToken> roles = data["value"].ToList();
                 foreach (var role in roles)
                 {
                     var item = JsonConvert.DeserializeObject<GraphMemberRole>(role.ToString());
@@ -141,7 +148,15 @@ namespace AzureB2BInvite
                 }
             }
 
-            return list;
+            res.Roles = list;
+            return res;
         }
+    }
+
+    public class RoleResponse
+    {
+        public IEnumerable<GraphMemberRole> Roles { get; set; }
+        public bool Successful { get; set; }
+        public string ErrorMessage { get; set; }
     }
 }

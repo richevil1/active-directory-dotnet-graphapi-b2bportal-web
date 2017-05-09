@@ -31,14 +31,20 @@ namespace B2BPortal.Areas.Admin.Controllers
         private IEnumerable<SelectListItem> GetTemplates(string templateId)
         {
             var res = new List<SelectListItem>();
-            res.AddRange(_templates.Select(t => new SelectListItem { Selected = (t.Id==templateId), Text = t.TemplateName, Value = t.Id }));
+            if (templateId != null)
+            {
+                res.AddRange(_templates.Select(t => new SelectListItem { Selected = (t.Id == templateId), Text = t.TemplateName, Value = t.Id }));
+            }
             return res;
         }
 
         private IEnumerable<SelectListItem> GetGroups(IEnumerable<string> groupIds)
         {
             var res = new List<SelectListItem>();
-            res.AddRange(_groups.Select(g => new SelectListItem { Selected = (groupIds.Any(i => i == g.Id)), Text = g.DisplayName, Value = g.Id }));
+            if (groupIds != null)
+            {
+                res.AddRange(_groups.Select(g => new SelectListItem { Selected = (groupIds.Any(i => i == g.Id)), Text = g.DisplayName, Value = g.Id }));
+            }
             return res;
         }
 

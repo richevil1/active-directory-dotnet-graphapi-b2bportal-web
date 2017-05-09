@@ -36,9 +36,16 @@ namespace B2BPortal.Infrastructure
                 TemplateName = "Default",
                 TemplateVersion = 1
             };
-
             template.SubjectTemplate = AdalUtil.Settings.InvitationEmailSubject;
-            template.TemplateContent = Settings.GetMailTemplate(AdalUtil.Settings.DefaultBodyTemplateName);
+
+            if (Settings.UseSMTP)
+            {
+                template.TemplateContent = Settings.GetMailTemplate(AdalUtil.Settings.DefaultBodyTemplateName);
+            }
+            else
+            {
+                template.TemplateContent = "";
+            }
 
             template = (await DocDBRepo.DB<InviteTemplate>.CreateItemAsync(template));
             var res = new List<InviteTemplate>();

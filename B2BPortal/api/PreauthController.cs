@@ -1,5 +1,8 @@
 ﻿using AzureB2BInvite;
 using AzureB2BInvite.Rules;
+using Microsoft.Graph;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
 
@@ -21,6 +24,14 @@ namespace B2BPortal.api
             var res = AdalUtil.FindPublicAADTenant(id);
             return (res.Error == null);
         }
+
+        [HttpGet]
+        public async Task<IEnumerable<dynamic>> GetAADGroupList(string filter)
+        {
+            var groups = await new GraphUtil().GetGroups(filter);
+            return groups.Select(g => new { g.DisplayName, g.Id });
+        }
+
     }
     public class PreAuthReq
     {

@@ -1,4 +1,5 @@
 ﻿using AzureB2BInvite.Models;
+using B2BPortal.Data;
 using Microsoft.Graph;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Newtonsoft.Json;
@@ -30,6 +31,7 @@ namespace AzureB2BInvite
             public static string AppClientSecret_Preauth { get; set; }
             public static string InvitingOrganization { get; set; }
             public static RedemptionSettings SiteRedemptionSettings { get; set; }
+            public static InviteTemplate SiteInviteTemplateContent { get; set; }
             public static string InvitationEmailSubject { get; set; }
             public static string DefaultBodyTemplateName { get; set; }
             public static string[] InviterRoleNames { get; set; }

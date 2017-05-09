@@ -1,8 +1,17 @@
-﻿@model B2BPortal.Models.SiteConfig
+﻿@using B2BPortal.Infrastructure
+@model B2BPortal.Models.SiteConfig
 
 @{
     ViewBag.Title = "Site Configuration";
     ViewBag.RedemptionPropertyName = "SiteRedemptionSettings";
+
+    var _templates = new List<SelectListItem>();
+
+    if (ViewBag.Templates != null)
+    {
+        _templates = (List<SelectListItem>)ViewBag.Templates;
+    }
+
 }
 
 @using (Html.BeginForm("Save", "SiteConfig", FormMethod.Post))
@@ -78,6 +87,31 @@
                         </div>
                     </div>
                 </div>
+                <div class="form-group">
+                    <div class="col-md-6">
+                        @Html.LabelFor(model => model.InviteTemplateId, htmlAttributes: new { @class = "control-label addHelp" })
+                        @Html.DropDownListFor(model => model.InviteTemplateId, _templates, "Select email template...", new { @class = "form-control input-sm" })
+                        @Html.ValidationMessageFor(model => model.InviteTemplateId, "", new { @class = "text-danger" })
+                        <div class="notes">
+                            (optional) - Select an invitation template.
+                            @if (Settings.UseSMTP)
+                            {
+                                <div id="divUseSmtp">
+                                    This template will be used to create the invitation message that is emailed.
+                                    Use the "Manage Mail Templates" admin tool to create and manage templates.
+                                </div>
+                            }
+                            else
+                            {
+                                <div id="divUseApi">
+                                    This text will be added to the default B2B invitation email sent by Azure Active
+                                    Directory to your approved guests. Use the "Manage Mail Templates" admin tool
+                                    to create and manage templates.
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -86,6 +120,10 @@
 @section scripts {
     <script type="text/javascript">
         $(function () {
+            $("#").on("change", function () {
+
+            });
+
             $("#btnCancel").on("click", function () {
                 location.href = "/admin/";
             });

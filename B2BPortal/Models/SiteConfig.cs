@@ -21,7 +21,7 @@ namespace B2BPortal.Models
         {
             SiteRedemptionSettings = new RedemptionSettings();
             SiteRedemptionSettings.InviteRedirectUrl = string.Format("https://myapps.microsoft.com/{0}", AdalUtil.Settings.Tenant);
-
+            InviteTemplateContent = new InviteTemplate();
         }
 
         /// <summary>
@@ -68,6 +68,14 @@ namespace B2BPortal.Models
         public RedemptionSettings SiteRedemptionSettings { get; set; }
 
         /// <summary>
+        /// RecordID for the email body template to use for default pre-auth invitations not handled by a pre-auth domain record
+        /// </summary>
+        [ScaffoldColumn(false)]
+        [DisplayName("Invitation Template")]
+        [JsonProperty(PropertyName = "inviteTemplateId")]
+        public string InviteTemplateId { get; set; }
+
+        /// <summary>
         /// Date this version of settings was committed
         /// </summary>
         [ScaffoldColumn(false)]
@@ -87,6 +95,10 @@ namespace B2BPortal.Models
         [DisplayName("Config Author")]
         public string ConfigAuthor { get; set; }
 
+        [JsonIgnore]
+        [ScaffoldColumn(false)]
+        public InviteTemplate InviteTemplateContent { get; set; }
+
         public static async Task<IEnumerable<SiteConfig>> GetAllConfigs()
         {
             return (await DocDBRepo.DB<SiteConfig>.GetItemsAsync()).OrderByDescending(c => c.ConfigDate);
@@ -95,12 +107,22 @@ namespace B2BPortal.Models
         public static async Task<SiteConfig> GetCurrConfig()
         {
             var items = await DocDBRepo.DB<SiteConfig>.GetItemsAsync();
-            return items.OrderBy(c => c.ConfigDate).LastOrDefault();
+            var res = items.OrderBy(c => c.ConfigDate).LastOrDefault();
+            if (res!=null && res.InviteTemplateId != null)
+            {
+                res.InviteTemplateContent = (await DocDBRepo.DB<InviteTemplate>.GetItemAsync(res.InviteTemplateId));
+            }
+            return res;
         }
 
         public static async Task<SiteConfig> GetConfig(string id)
         {
-            return (await DocDBRepo.DB<SiteConfig>.GetItemAsync(id));
+            var res = (await DocDBRepo.DB<SiteConfig>.GetItemAsync(id));
+            if (res.InviteTemplateId != null)
+            {
+                res.InviteTemplateContent = (await DocDBRepo.DB<InviteTemplate>.GetItemAsync(res.InviteTemplateId));
+            }
+            return res;
         }
 
         public static async Task<SiteConfig> SetNewConfig(SiteConfig config)

@@ -11,6 +11,7 @@ using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 using AzureB2BInvite;
+using System.Security.Cryptography.X509Certificates;
 
 namespace B2BPortal
 {

@@ -10,6 +10,7 @@
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">@User.Identity.Name <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                     <li><a href="@Url.Action("Index", "Profile", new { area = "" })"><span class='glyphicon glyphicon-user pull-left'></span> Edit Profile</a></li>
+                    <li><a href="@Url.Action("Index", "Invite", new { area = "" })"><span class='glyphicon glyphicon-user pull-left'></span> Invitations</a></li>
                 </ul>
             </li>
             <li>

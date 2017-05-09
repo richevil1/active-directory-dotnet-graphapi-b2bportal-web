@@ -17,14 +17,19 @@ namespace B2BPortal.Interfaces
     }
 
     /// <summary>
-    /// List of possible guest request approval choices
+    /// List of possible guest request approval choices:
+    ///     Approved     - request has been manually approved
+    ///     AutoApproved - request approved via preauth match OR webjob batch processing
+    ///     Denied       - request manually denied
+    ///     Pending      - request has been queued for manual review
+    ///     QueuePending - request(s) were uploaded by a guest inviter in the admin portal for webjob batch processing
     /// </summary>
     public enum Disposition
     {
         Approved,
         AutoApproved,
         Denied,
-        Pending
+        Pending,
+        QueuePending
     }
-
 }

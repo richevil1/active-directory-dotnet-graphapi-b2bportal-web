@@ -27,20 +27,6 @@ namespace AzureB2BInvite
                 EnableSsl = (MailServerPort == 465 || MailServerPort == 587)
             })
             {
-                if (smtpclient.EnableSsl)
-                {
-                    //smtpclient.ClientCertificates.Add(MailCert);
-                    
-                    //Add this line to bypass the certificate validation
-                    //ServicePointManager.ServerCertificateValidationCallback = 
-                    //    delegate (object s,X509Certificate certificate,X509Chain chain,System.Net.Security.SslPolicyErrors sslPolicyErrors)
-                    //    {
-                    //        chain.ChainPolicy.ExtraStore.Add(MailCert);
-                    //        var c = new X509Certificate2(certificate);
-                    //        var isOk = chain.Build(c);
-                    //        return isOk;
-                    //    };
-                }
                 if (SMTPLogin != "")
                 {
                     smtpclient.Credentials = new NetworkCredential(SMTPLogin, SMTPPassword);
