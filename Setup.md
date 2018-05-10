@@ -24,6 +24,7 @@ Two Azure Active Directory apps must be created in your tenant. The first is the
     * Read and write all users' full profiles
   * DELEGATED PERMISSIONS
     * Sign in and read user profile
+    * Access the directory as the signed-in user
 * Click "Select"
 
   ![alt text][App3]
@@ -33,7 +34,7 @@ Two Azure Active Directory apps must be created in your tenant. The first is the
   ![alt text][App3a]
 
 * Back on the Settings panel, click "Keys". Under Description, enter a name for the application key, like "Key 1". Under Expires, select 1 or 2 years. (NOTE: you or someone in your organization will need to make a note to come back and refresh this key before it expires.)
-* Click "Save". An application secret will be generated and displayed. COPY this key and record it - you'll need it in an minute when setting up the web application. NOTE: this key will not be displayed again and cannot be retrieved. If you lose it, you'll have to come back, delete it, and create another one.
+* Click "Save". An application secret will be generated and displayed. COPY this key and record it - you'll need it in a minute when setting up the web application. NOTE: this key will not be displayed again and cannot be retrieved. If you lose it, you'll have to come back, delete it, and create another one.
 
   ![alt text][App4]
 
@@ -87,7 +88,7 @@ That's it. Click "Purchase" (there's no charge for this software - you are agree
 __Cleanup__
 
 Now that the app is deployed, there's a final step. We need to go back into our Azure Active Directory apps and update the URLs to match the URL of our new web app.
-  * Navigate to your new web application - it's under "App Services". Click to copy the URL.
+  * Navigate to your new web application - it's under "App Services". Click to copy the URL. __NOTE: this URL will not be using the HTTPS protocol - you will need to add the "s" to the protocol after you paste it in.__
 
     ![alt text][Url]
   

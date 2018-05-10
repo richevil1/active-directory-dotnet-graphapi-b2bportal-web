@@ -1,4 +1,4 @@
-﻿@using B2BPortal.Infrastructure
+﻿@using AzureB2BInvite
 @model B2BPortal.Data.InviteTemplate
 
 @{
@@ -70,6 +70,11 @@
                                     <li>{{InvitingOrgName}}</li>
                                     <li>{{InvitationLink}}</li>
                                     <li>{{OrgContactEmail}}</li>
+                                    <li>{{InvitationStatus}}</li>
+                                </ul>
+                                <span>Optional for bulk invitation templates</span>
+                                <ul>
+                                    <li>{{CustomMessage}}</li>
                                 </ul>
                             </div>
                         }
@@ -109,7 +114,7 @@
             </li>
             <li>
                 This self-service sign-up tool optionally supports directly sending invitation emails via a custom mail service (SMTP).
-                Your site currently is @((useSMTP) ? "" : "not") configured to deliver messages this way. If SMTP is configured, this template will define
+                Your site currently is @((useSMTP) ? "" : "not ")configured to deliver messages this way. If SMTP is configured, this template will define
                 the entire email message. Custom field strings are available to place the desired content (invitation link, business name, etc.) 
             </li>
         </ul>
@@ -183,8 +188,8 @@
         }
         div.fields {
             position: relative;
-            top: 330px;
-            margin-left: 20px;
+            top: 200px;
+            margin-left: 10px;
         }
 
             div.fields span {
@@ -197,7 +202,7 @@
             }
 
                 div.fields ul li {
-                    margin-left: -20px;
+                    margin-left: -25px;
                 }
     </style>
 }

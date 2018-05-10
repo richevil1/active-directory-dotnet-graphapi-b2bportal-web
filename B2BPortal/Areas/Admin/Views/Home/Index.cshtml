@@ -3,7 +3,7 @@
 @{
     var pendingColor = "#fbffc9";
     ViewBag.Title = "Pending Guest Requests";
-    bool hasRecords = (Model.Count() > 0);
+    bool hasRecords = ((Model as ICollection<GuestRequest>).Count > 0);
     var disableButton = (hasRecords) ? "" : "disabled";
 }
 
@@ -20,6 +20,7 @@
                     <div class="col-md-12">
                         <button type="submit" @disableButton class="btn btn-default control"><span class="glyphicon glyphicon-floppy-disk"></span> Save</button>
                         <button id="btnRefresh" type="button" class="btn btn-default control"><span class="glyphicon glyphicon-refresh"></span> Refresh</button>
+                        <button id="btnHistory" type="button" class="btn btn-default control"><span class="glyphicon glyphicon-time"></span> History</button>
                     </div>
                 </div>
 
@@ -41,7 +42,7 @@
                                 </select>
                                 <button type="button" id="btnApplyGlobal" class="btn btn-default"><span class="glyphicon glyphicon-ok-sign"></span></button>
                             </th>
-                            <th>RequestID</th>
+                            <th>Request Date</th>
                             <th>Email Address</th>
                             <th>Request Comment</th>
                             <th>Status</th>
@@ -69,7 +70,7 @@
                                     </div>
                                 </td>
                                 <td>
-                                    @request.Id
+                                    @request.RequestDate
                                     <input type="hidden" name="Id" value="@request.Id" />
                                     <input type="hidden" name="EmailAddress.@request.Id" value="@request.EmailAddress" />
                                 </td>
@@ -143,6 +144,9 @@
                     });
                     $("#btnRefresh").on("click", function () {
                         location.href = "/admin";
+                    });
+                    $("#btnHistory").on("click", function () {
+                        location.href = "/admin/history";
                     });
                     $("input:radio").parent("label").on("click", function () {
                         var o = $(this);

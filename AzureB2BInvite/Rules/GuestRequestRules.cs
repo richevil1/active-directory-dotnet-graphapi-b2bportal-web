@@ -1,9 +1,11 @@
 ﻿using AzureB2BInvite.Models;
+using B2BPortal.Common.Enums;
+using B2BPortal.Common.Helpers;
 using B2BPortal.Data;
-using B2BPortal.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using System.Web;
 
@@ -31,8 +33,13 @@ namespace AzureB2BInvite.Rules
         }
         public static async Task<PreAuthDomain> GetMatchedDomain(string email)
         {
-            var domain = email.Split('@')[1];
-            var res = await PreAuthDomain.GetDomainByName(domain);
+            var d = email.Split('@');
+            PreAuthDomain res = null;
+            if (d.Length == 2)
+            {
+                var domain = d[1];
+                res = await PreAuthDomain.GetDomainByName(domain);
+            }
             return res;
         }
 
@@ -44,11 +51,14 @@ namespace AzureB2BInvite.Rules
             if (request.Disposition == Disposition.Approved || request.Disposition == Disposition.AutoApproved)
             {
                 //INVITE
-                request.Status = await InviteManager.SendInvitation(request, profileUrl, domainSettings);
+                var mgr = new InviteManager(profileUrl, null);
+                var res = await mgr.ProcessInvitationAsync(request, domainSettings);
+                request.Status = res.Status;
                 if (request.Status.Substring(0, 5) == "Error")
                 {
                     request.Disposition = Disposition.Pending;
                 }
+                request.InvitationResult = res;
             }
 
             //UPDATE
@@ -66,9 +76,53 @@ namespace AzureB2BInvite.Rules
             return (await DocDBRepo.DB<GuestRequest>.GetItemsAsync(r => r.EmailAddress == email)).SingleOrDefault();
         }
 
+        public static async Task<GuestRequest> UpdateAsync(GuestRequest Request)
+        {
+            return (await DocDBRepo.DB<GuestRequest>.UpdateItemAsync(Request));
+        }
+
+        public static async Task<dynamic> DeleteAsync(GuestRequest Request)
+        {
+            return (await DocDBRepo.DB<GuestRequest>.DeleteItemAsync(Request));
+        }
+
+        public static async Task<IEnumerable<GuestRequest>> GetBatchRequest(string submissionId)
+        {
+            return (await DocDBRepo.DB<GuestRequest>.GetItemsAsync(b => b.BatchProcessId == submissionId));
+        }
+
         public static async Task<IEnumerable<GuestRequest>> GetPendingRequestsAsync()
         {
             return await DocDBRepo.DB<GuestRequest>.GetItemsAsync(r => r.Disposition == Disposition.Pending);
+        }
+
+        public static async Task<IEnumerable<GuestRequest>> GetHistory(HistoryFilter filter = null)
+        {
+            List<Expression<Func<GuestRequest, bool>>> parms = new List<Expression<Func<GuestRequest, bool>>>
+            {
+                q => q.Disposition != Disposition.Pending && q.Disposition != Disposition.QueuePending
+            };
+
+            if (filter != null)
+            {
+                if (filter.AuthUser != null)
+                {
+                    parms.Add(q => q.AuthUser == filter.AuthUser);
+                }
+                if (filter.RequestDateFrom != null)
+                {
+                    parms.Add(q => q.RequestDate >= filter.RequestDateFrom && q.RequestDate <= filter.RequestDateTo);
+                }
+            }
+
+            return await DocDBRepo.DB<GuestRequest>.GetItemsAsync(parms.CombineAnd());
+        }
+
+        public class HistoryFilter
+        {
+            public string AuthUser { get; set; }
+            public DateTime RequestDateFrom { get; set; }
+            public DateTime RequestDateTo { get; set; }
         }
     }
 }
