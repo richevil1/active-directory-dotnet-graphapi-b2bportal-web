@@ -78,8 +78,8 @@
         }
 
         $("#inviteDetails h4.modal-title").html("Detail - " + data.emailAddress);
-        $("#request").html(requestH.html());
-        $("#response").html(response);
+        $("#request").append(requestH.children());
+        $("#response").append(response.children());
         $("#inviteDetails").modal();
         $('#inviteDetails a:first').tab('show');
     }
@@ -148,8 +148,7 @@
     function resetFilter() {
         $("#datepickerfrom").data("DateTimePicker").date(moment().utc().startOf('year').format('MM/DD/YYYY'));
         $("#datepickerto").data("DateTimePicker").date(moment().utc().add(1, 'd').format('MM/DD/YYYY'));
-        $("#AreaFilter").val("all");
-        $("#OwnerFilter").val("my");
+        $("#AuthUser").val("");
         ProcessFilter();
     }
     resetFilter();

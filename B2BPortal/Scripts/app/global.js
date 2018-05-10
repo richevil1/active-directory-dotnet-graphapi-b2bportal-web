@@ -235,6 +235,10 @@ var SiteUtil = function () {
                 return "th";
         }
     }
+    function _pluralize(label, count) {
+        return count.toString() + " " + ((count == 1) ? label : label + "s");
+    }
+
     function addCommas(nStr) {
         nStr += '';
         x = nStr.split('.');
@@ -282,6 +286,7 @@ var SiteUtil = function () {
         DeTC: _deTc,
         ShowModal: _showModal,
         GetModal: _getModal,
+        Pluralize: _pluralize,
         UtcToLocal: _utcToLocal,
         ShowHelp: _showHelp,
         AlertImages: alertImages,

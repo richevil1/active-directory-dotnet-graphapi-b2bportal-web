@@ -65,6 +65,11 @@ namespace B2BPortal.api
 
             return res;
         }
+        public async Task<IEnumerable<BulkInviteResults>> GetBatchProcessingHistory(string id)
+        {
+            IEnumerable<BulkInviteResults> history = (await GuestRequestRules.GetBatchSubmissionHistory(id));
+            return history;
+        }
 
         [HttpGet]
         public async Task<BatchDTO> GetBatchItem(string id)

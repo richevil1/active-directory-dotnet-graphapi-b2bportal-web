@@ -118,6 +118,12 @@ namespace AzureB2BInvite.Rules
             return await DocDBRepo.DB<GuestRequest>.GetItemsAsync(parms.CombineAnd());
         }
 
+        public static async Task<IEnumerable<BulkInviteResults>> GetBatchSubmissionHistory(string submissionId)
+        {
+            var res = await DocDBRepo.DB<BulkInviteResults>.GetItemsAsync(r => r.SubmissionId == submissionId);
+            return res.OrderByDescending(r => r.ProcessingDate).ToList();
+        }
+
         public class HistoryFilter
         {
             public string AuthUser { get; set; }

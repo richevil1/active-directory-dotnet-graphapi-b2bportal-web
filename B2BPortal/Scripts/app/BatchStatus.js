@@ -14,7 +14,7 @@
         if (!confirm("This will remove the batch from the queue and prevent further processing. Are you sure you want to continue?"))
             return;
         var data = $("#BatchDetails").data("data");
-        var d = { id: data.id };
+        var d = { id: data.Submission.id };
         var url = "/api/Admin/KillQueuedRequest";
         SiteUtil.AjaxCall(url, d, function (res) {
             location.reload();
@@ -24,18 +24,21 @@
         if (!confirm("This will delete the batch, all associated guest requests, and history. Are you sure you want to continue?"))
             return;
         var data = $("#BatchDetails").data("data");
-        var d = { id: data.id };
+        var d = { id: data.Submission.id };
         var url = "/api/Admin/DeleteQueuedRequest";
         SiteUtil.AjaxCall(url, d, function (res) {
             location.reload();
         }, "POST");
+    });
+    $("#btnSubmissionHistory").on("click", function () {
+        showSubmissionHistory();
     });
     $("#btnHelp").on("click", function () {
         SiteUtil.ShowHelp("Bulk Invitations", $("#HelpContent").html());
     });
     $("#invitees").on("click", function () {
         var data = $("#BatchDetails").data("data");
-        getItemDetail(data.id, this.value);
+        getItemDetail(data.Submission.id, this.value);
     });
     $("#btnInvite").on("click", function () {
         location.href = "/Admin/BulkInvite";
@@ -81,8 +84,8 @@
             var bg = (i % 2 == 0) ? "#fafafa;" : "";
             if (request[col] != null) {
                 switch (col) {
-                    case "id":
-                        break;
+                    case "docType":
+                        continue;
                     case "invitationResult":
                         ds = GetInvitationResult(request[col]);
                         break;
@@ -112,7 +115,6 @@
             if (response[col] != null) {
                 switch (col) {
                     case "@odata.context":
-                    case "inviteRedeemUrl":
                     case "invitedUserMessageInfo":
                     case "invitedUser":
                         break;
@@ -129,24 +131,21 @@
                         ds = response[col].toString().replace(/\r\n/g, "<br/>");
                 }
                 if (ds.length > 0) {
-                    var d = $("<div/>").css({ "backgroundColor": bg }).appendTo(responseH);
+                    var d = $("<div/>").css("backgroundColor", bg).appendTo(responseH);
                     d.html("<span class='label'>" + SiteUtil.DeTC(col) + "</span><span class='data'>" + ds + "</span>");
                 }
             }
         }
         $("#inviteDetails h4.modal-title").html("Detail - " + request.emailAddress);
-        $("#request").html(requestH.html());
-        $("#response").html(responseH.html());
+        $("#request").html("").append(requestH.children());
+        $("#response").html("").append(responseH.children());
         $("#inviteDetails").modal();
         $('#inviteDetails a:first').tab('show');
      }
     function GetInvitationResults(data) {
         var res = $("<div/>");
-        var i = 0;
         for (col in data) {
-            i++;
             var ds = "";
-            var bg = (i % 2 == 0) ? "#fafafa;" : "";
             if (data[col] != null) {
                 var d = $("<div/>").css("backgroundColor", bg).appendTo(res);
                 switch (col) {
@@ -231,7 +230,39 @@
                 .appendTo("#BatchList");
         });
     }
+    function showSubmissionHistory() {
+        $("#resultDetails div.modal-body").html("");
+
+        var data = $("#BatchDetails").data("history");
+        $("#resultDetails h4.modal-title").html("Process History");
+        var d = $("<div/>").css("overflow","hidden");
+        $(data).each(function (i, o) {
+            var r = $("<div/>");
+            $("<span/>")
+                .addClass("hist")
+                .html((new Date(o.processingDate)).toLocaleString())
+                .appendTo(r);
+            $("<span/>")
+                .on("click", function () {
+                    var detail = $("<div/>").addClass("showCode").html(o.errorMessage);
+                    SiteUtil.GetModal({title:"Error Details", body: detail, modalClass:"errorDetail"});
+                })
+                .html(o.errorMessage!=null ? "[click for error]" : "No Errors")
+                .addClass("hist histB")
+                .appendTo(r);
+            r.css("clear", "both").appendTo(d);
+        });
+
+        $("#resultDetails div.modal-body").html("").append(d);
+        $("#resultDetails").modal();
+    }
     function loadItem(data) {
+        var url = "/api/Admin/GetBatchProcessingHistory/" + data.Submission.id;
+        SiteUtil.AjaxCall(url, null, function (res) {
+            $("#BatchDetails").data("history", res);
+            $("#batchAttempts").html(SiteUtil.Pluralize("attempt", res.length));
+        }, "GET");
+
         var batch = data.Submission;
         var results = data.BatchResults;
 

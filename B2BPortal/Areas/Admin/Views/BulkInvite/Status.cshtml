@@ -48,7 +48,20 @@
                             <td colspan="3" id="batchId"></td>
                         </tr>
                         <tr>
-                            <td>Items Processed</td>
+                            <td>
+                                Batch History
+                            </td>
+                            <td id="batchAttempts">
+                                N/A
+                            </td>
+                            <td colspan="2">
+                                <button class="btn btn-info btn-xs" id="btnSubmissionHistory">History</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Items Processed
+                            </td>
                             <td id="itemsProcessed"></td>
                             <td>Items Submitted</td>
                             <td id="itemsSubmitted"></td>
@@ -189,6 +202,28 @@
         span.hint {
             font-size: .9em;
             font-style: italic;
+        }
+        #btnSubmissionHistory {
+            width:75px;
+            margin-left:4px;
+        }
+        span.hist {
+            display: inline-block;
+            float: left;
+        }
+        span.histB {
+            cursor:pointer;
+            margin-left:6px;
+        }
+        div.showCode {
+            white-space: pre-wrap;
+            height:300px;
+            overflow:auto;
+            padding:3px;
+            font-family:Consolas, Courier New, Courier, monospace;
+        }
+        .errorDetail {
+            width:80%;
         }
     </style>
 }
