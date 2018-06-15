@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using B2BPortal.Common.Utils;
 using AzureB2BInvite;
 using AzureB2BInvite.AuthCache;
+using B2BPortal.Data;
 
 namespace BatchInviteProcessor
 {
@@ -17,7 +18,7 @@ namespace BatchInviteProcessor
     {
         // This function will get triggered/executed when a new message is written 
         // on an Azure Queue called invitations.
-        public static void ProcessUserQueue([QueueTrigger("invitations")] BatchQueueItem batch, IBinder binder)
+        public static void ProcessUserQueue([QueueTrigger("%queueName%")] BatchQueueItem batch, IBinder binder)
         {
             try
             {               
@@ -31,7 +32,7 @@ namespace BatchInviteProcessor
             }
             catch (Exception ex)
             {
-                Logging.WriteToAppLog("Error processing queue 'invitations'", System.Diagnostics.EventLogEntryType.Error, ex);
+                Logging.WriteToAppLog(String.Format("Error processing queue '{0}'", StorageRepo.QueueName), System.Diagnostics.EventLogEntryType.Error, ex);
                 throw;
             }
         }

@@ -411,6 +411,7 @@
     <Content Include="Content\bootstrap\alerts.less" />
     <Content Include="Content\_bootstrap-datetimepicker.less" />
     <Content Include="Content\bootstrap-datetimepicker-build.less" />
+    <Content Include="Areas\Admin\Views\BulkInvite\_statusHelp.cshtml" />
     <None Include="Properties\PublishProfiles\b2bdeploytest5-web6q5d5bzof2xrs - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\B2BPortal20170316124654 - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />

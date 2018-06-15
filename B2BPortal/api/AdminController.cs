@@ -95,7 +95,7 @@ namespace B2BPortal.api
                 UserSourceHostName = Utils.GetFQDN(Request)
             };
 
-            StorageRepo.AddQueueItem(queue, "invitations");
+            StorageRepo.AddQueueItem(queue);
             return new HttpResponseMessage(HttpStatusCode.Accepted);
         }
         
@@ -141,7 +141,7 @@ namespace B2BPortal.api
                 UserSourceHostName = Utils.GetFQDN(Request)
             };
 
-            StorageRepo.AddQueueItem(queue, "invitations");
+            StorageRepo.AddQueueItem(queue);
             
             return bulkRequest;
         }

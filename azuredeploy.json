@@ -123,9 +123,9 @@
     "docDbName": "B2BRequests",
     "docDbCollection": "GuestRequests",
     "mailEnabled": "1",
-    "QueueName": "[concat('Queue', uniqueString(resourceGroup().id))]",
+    "QueueAccountName": "[concat('queue', tolower(resourceGroup().name))]",
     "QueueType": "Standard_LRS",
-    "QueueAccountId": "[concat(resourceGroup().id,'/providers/Microsoft.Storage/storageAccounts/', variables('QueueName'))]"
+    "QueueAccountId": "[concat(resourceGroup().id,'/providers/Microsoft.Storage/storageAccounts/', variables('QueueAccountName'))]"
   },
   "resources": [
     {
@@ -150,7 +150,7 @@
     },
 
     {
-      "name": "[variables('QueueName')]",
+      "name": "[variables('QueueAccountName')]",
       "type": "Microsoft.Storage/storageAccounts",
       "location": "[resourceGroup().location]",
       "apiVersion": "2016-01-01",
@@ -159,7 +159,7 @@
       },
       "dependsOn": [],
       "tags": {
-        "displayName": "Queue"
+        "displayName": "StorageQueue"
       },
       "kind": "Storage"
     },
@@ -191,20 +191,13 @@
       "dependsOn": [
         "[resourceId('Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
         "[variables('docDbHost')]",
-        "[variables('QueueName')]"
+        "[variables('QueueAccountName')]"
       ],
       "properties": {
         "name": "[variables('webSiteName')]",
         "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('hostingPlanName'))]",
         "siteConfig": {
           "phpVersion": "off",
-          "connectionStrings": [
-            {
-              "name": "AzureWebJobsDashboard",
-              "type": "Custom",
-              "connectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('QueueName'),';AccountKey=',concat(listKeys(variables('QueueAccountId'),'2015-05-01-preview').key1))]"
-            }
-          ],
           "appSettings": [
             {
               "Name": "ida:ClientId_Admin",
@@ -231,16 +224,20 @@
               "Value": "[parameters('clientSecret_preAuth')]"
             },
             {
+              "Name": "StorageConnectionString",
+              "Value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('QueueAccountName'),';AccountKey=',concat(listKeys(variables('QueueAccountId'),'2015-05-01-preview').key1))]"
+            },
+            {
+              "Name": "QueueName",
+              "Value": "invitations"
+            },
+            {
               "Name": "DocDBUri",
               "Value": "[reference(concat('Microsoft.DocumentDb/databaseAccounts/', variables('docDbHost'))).documentEndpoint]"
             },
             {
               "Name": "DocDBAuthKey",
               "Value": "[listKeys(resourceId('Microsoft.DocumentDb/databaseAccounts', variables('docDbHost')), '2015-04-08').primaryMasterKey]"
-            },
-            {
-              "Name": "StorageConnectionString",
-              "Value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('QueueName'),';AccountKey=',concat(listKeys(variables('QueueAccountId'),'2015-05-01-preview').key1))]"
             },
             {
               "Name": "DocDBName",

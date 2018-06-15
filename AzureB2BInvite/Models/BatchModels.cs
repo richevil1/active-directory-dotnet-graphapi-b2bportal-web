@@ -49,7 +49,8 @@ namespace AzureB2BInvite.Models
         }
         public static async Task<BulkInviteResults> DeleteItem(BulkInviteResults results)
         {
-            return await DocDBRepo.DB<BulkInviteResults>.DeleteItemAsync(results);
+            var res = await DocDBRepo.DB<BulkInviteResults>.DeleteItemAsync(results);
+            return (BulkInviteResults)res;
         }
     }
 

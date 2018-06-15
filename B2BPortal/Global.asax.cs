@@ -89,6 +89,7 @@ namespace B2BPortal
 
                 Settings.UseSMTP = (!string.IsNullOrEmpty(MailSender.MailServer));
                 StorageRepo.StorageConnectionString = ConfigurationManager.AppSettings["StorageConnectionString"];
+                StorageRepo.QueueName = ConfigurationManager.AppSettings["QueueName"];
 
                 /*
                  * TODO: Prefetching the app token here because initializing this library during admin

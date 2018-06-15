@@ -27,17 +27,19 @@ namespace B2BPortal.Data
         public static int QueueRetryDelayMinutes = 1;
 
         public static string StorageConnectionString { get; set; }
+        public static string QueueName { get; set; }
+
         public static CloudStorageAccount GetStorageAccount()
         {
             return CloudStorageAccount.Parse(StorageConnectionString);
         }
 
         //Queue calls
-        public static CloudQueue GetQueueReference(string queueName)
+        public static CloudQueue GetQueueReference()
         {
             var storageAccount = CloudStorageAccount.Parse(StorageConnectionString);
             CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
-            CloudQueue queue = queueClient.GetQueueReference(queueName);
+            CloudQueue queue = queueClient.GetQueueReference(QueueName);
             queue.CreateIfNotExists();
             
             return queue;
@@ -54,16 +56,16 @@ namespace B2BPortal.Data
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="data"></param>
-        public static void AddQueueItem<T>(T data, string queueName)
+        public static void AddQueueItem<T>(T data)
         {
             //var queueName = typeof(T).Name;
-            var queue = GetQueueReference(queueName);
+            var queue = GetQueueReference();
 
             var dataString = JsonConvert.SerializeObject(data);
 
             if (dataString.Length > 65535)
             {
-                var blobContainer = GetContainer(queueName);
+                var blobContainer = GetContainer(QueueName);
                 var filename = Guid.NewGuid().ToString() + ".json";
                 dataString = AddBlobText(blobContainer, filename, dataString);
             }
@@ -74,9 +76,9 @@ namespace B2BPortal.Data
             var options = new QueueRequestOptions { RetryPolicy = linearRetryPolicy };
             queue.AddMessage(message, null, new TimeSpan(0, 1, 0), options, null);
         }
-        public static void RemoveQueueItem(string queueName, string messageId, string popReceipt)
+        public static void RemoveQueueItem(string messageId, string popReceipt)
         {
-            var queue = GetQueueReference(queueName);
+            var queue = GetQueueReference();
             queue.DeleteMessage(messageId, popReceipt);
         }
         public static void DeQueueWorkAndCommit<T>(Func<string,bool> DoWork)
@@ -87,10 +89,8 @@ namespace B2BPortal.Data
             // Create the queue client
             CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
 
-            var queueName = typeof(T).Name;
-
             // Retrieve a reference to a queue
-            CloudQueue queue = queueClient.GetQueueReference(queueName);
+            CloudQueue queue = queueClient.GetQueueReference(QueueName);
 
             // Get the next message
             CloudQueueMessage retrievedMessage = queue.GetMessage();

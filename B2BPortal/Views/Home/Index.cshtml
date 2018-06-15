@@ -41,6 +41,7 @@
                             Email Address
                         </label>
                         <input class="form-control" type="text" value="@Email" id="EmailAddress" name="EmailAddress" placeholder="email@example.com">
+                        <div id="LookupNotify"></div>
                     </div>
                     <div class="form-group">
                         <label for="FirstName">
@@ -124,6 +125,13 @@
         #TOSAgreed {
             margin: 12px;
         }
+        #LookupNotify {
+            text-align: right; 
+            font-size: 0.8em; 
+            font-style: italic; 
+            margin-bottom: -16px; 
+            display: none;
+        }
     </style>
 }
 @section scripts {
@@ -158,15 +166,25 @@ $(function () {
         }
 
     });
-    $("#EmailAddress").on("blur", function () {
+    $("#EmailAddress").on("blur", function (e) {
         var email = $("#EmailAddress").val();
-        if (!SiteUtil.IsValidEmailAddress(email)) return;
+        $("#LookupNotify").html("Validating...").css({ display: "block" });
+        if (!SiteUtil.IsValidEmailAddress(email)) {
+            alert("The email address doesn't appear valid. Please confirm.");
+            $("#LookupNotify").html("").css({ display: "none" });
+            e.preventDefault();
+            return false;
+        }
 
         var data = { Email: email }
         SiteUtil.AjaxCall("/api/PreAuth/CheckDomain", data, function (redirect) {
             if (redirect) {
-                location.href = '/Account/SignInWorkMulti?user=' + $("#EmailAddress").val();
+                $("#LookupNotify").html("Authenticating...");
+                setTimeout(function () {
+                    location.href = '/Account/SignInWorkMulti?user=' + $("#EmailAddress").val();
+                }, 10);
             } else {
+                $("#LookupNotify").html("").css({ display: "none" });
                 @{
                     if (requirePreauth)
                     {

@@ -7,7 +7,8 @@
         var d = { id: data.Submission.id };
         var url = "/api/Admin/RequeueRequest";
         SiteUtil.AjaxCall(url, d, function (res) {
-            location.reload();
+            refreshStatus(d.id);
+            SiteUtil.ShowModal({ title: "Retry Submitted", body: "The batch has been re-queued for processing. It may take a few minutes for the batch processor to begin - click the item in the list to refresh." });
         }, "POST");
     });
     $("#btnKill").on("click", function () {
@@ -34,7 +35,7 @@
         showSubmissionHistory();
     });
     $("#btnHelp").on("click", function () {
-        SiteUtil.ShowHelp("Bulk Invitations", $("#HelpContent").html());
+        SiteUtil.ShowHelp("Batch Processing Status", $("#HelpContent").html());
     });
     $("#invitees").on("click", function () {
         var data = $("#BatchDetails").data("data");
@@ -70,6 +71,9 @@
 
         var url = "/api/Admin/GetBulkItemStatus";
         SiteUtil.AjaxCall(url, data, function (res) {
+            if (res == null)
+                return;
+
             showDetail(res);
         });
     }
@@ -231,11 +235,16 @@
         });
     }
     function showSubmissionHistory() {
-        $("#resultDetails div.modal-body").html("");
+        $("#resultDetails div.modal-body").html("No history yet.");
 
         var data = $("#BatchDetails").data("history");
         $("#resultDetails h4.modal-title").html("Process History");
-        var d = $("<div/>").css("overflow","hidden");
+        var d = $("<div/>").css("overflow", "hidden");
+        if (data.length == 0) {
+            $("#resultDetails").modal();
+            return;
+        }
+
         $(data).each(function (i, o) {
             var r = $("<div/>");
             $("<span/>")

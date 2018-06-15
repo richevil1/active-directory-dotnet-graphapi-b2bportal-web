@@ -33,12 +33,15 @@ namespace BatchInviteProcessor
                 StorageConnectionString = connStr
             };
 
+
             if (config.IsDevelopment)
             {
                 config.UseDevelopmentSettings();
             }
 
             Setup();
+
+            config.NameResolver = new QueueNameResolver();
 
             var host = new JobHost(config);
 
@@ -106,6 +109,7 @@ namespace BatchInviteProcessor
                 MailSender.SMTPPassword = ConfigurationManager.AppSettings["SMTPPassword"];
 
                 StorageRepo.StorageConnectionString = ConfigurationManager.AppSettings["StorageConnectionString"];
+                StorageRepo.QueueName = ConfigurationManager.AppSettings["QueueName"];
                 Settings.UseSMTP = (!string.IsNullOrEmpty(MailSender.MailServer));
 
                 /*
