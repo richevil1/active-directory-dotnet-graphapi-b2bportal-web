@@ -11,6 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		azuredeploy.json = azuredeploy.json
 		azuredeploy.parameters.json = azuredeploy.parameters.json
 		CustomDeploy.ps1 = CustomDeploy.ps1
+		Readme-DevBranch.md = Readme-DevBranch.md
 		README.md = README.md
 		Setup.md = Setup.md
 	EndProjectSection
@@ -77,5 +78,8 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{EDF300F8-9691-461E-A7E2-D376335D3257} = {9AFBD835-1D40-4F5A-A575-65A4FB0D2D63}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {AB6865AA-ABDA-43DE-A0C6-0B9BE582AAD2}
 	EndGlobalSection
 EndGlobal
