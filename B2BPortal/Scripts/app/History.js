@@ -25,7 +25,7 @@
         }
 
         for (var x = 0; x < res.length; x++) {
-
+            
             var desc = (res[x].status != null && res[x].status.length > 80) ? res[x].status.substring(0, 80) + "..." : res[x].status;
 
             var tr = $("<tr>")
@@ -35,6 +35,9 @@
                 .css({ "cursor": "pointer" })
                 .on("click", ShowDetail)
                 .appendTo("table.table");
+            if (res[x].postProcessingStatus != null) {
+                tr.addClass("bg-warning");
+            }
             $("<td>").html(res[x].emailAddress).appendTo(tr);
             $("<td>").html(res[x].firstName).appendTo(tr);
             $("<td>").html(res[x].lastName).appendTo(tr);
@@ -66,6 +69,9 @@
                     case "disposition":
                         ds = getDis(data[col]);
                         break;
+                    case "postProcessingStatus":
+                        ds = "<span class='bg-warning'>" + data[col] + "</span>";
+                        break;
                     default:
                         ds = data[col].toString().replace(/\r\n/g, "<br/>");
                 }
@@ -79,7 +85,7 @@
 
         $("#inviteDetails h4.modal-title").html("Detail - " + data.emailAddress);
         $("#request").append(requestH.children());
-        $("#response").append(response.children());
+        $("#response").append(response);
         $("#inviteDetails").modal();
         $('#inviteDetails a:first').tab('show');
     }

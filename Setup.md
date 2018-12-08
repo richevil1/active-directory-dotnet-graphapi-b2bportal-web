@@ -99,6 +99,9 @@ Now that the app is deployed, there's a final step. We need to go back into our 
   * Now edit the reply URL:
 
     ![alt text][Url2]
+    IMPORTANT: for the reply URL for the "pre-auth" app, add an asterisk (&#42;) after the URL to account for a redirect when updating the user profile via remote sync, like 
+
+       https://<span></span>[myapp].azurewebapps.net/&#42;
   
 All done!
 

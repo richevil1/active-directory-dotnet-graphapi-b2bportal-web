@@ -21,11 +21,11 @@ namespace B2BPortal.Common.Enums
 
     /// <summary>
     /// List of possible guest request approval choices:
-    ///     Approved     - request has been manually approved
-    ///     AutoApproved - request approved via preauth match OR batch processing
-    ///     Denied       - request manually denied
-    ///     Pending      - request has been queued for manual review
-    ///     QueuePending - request(s) were uploaded by a guest inviter in the admin portal for batch processing
+    ///     Approved     (manually approved),
+    ///     AutoApproved (approved via preauth match OR batch processing),
+    ///     Denied       (manually denied),
+    ///     Pending      (queued for manual review),
+    ///     QueuePending (uploaded by an admin/inviter for batch processing)
     /// </summary>
     public enum Disposition
     {

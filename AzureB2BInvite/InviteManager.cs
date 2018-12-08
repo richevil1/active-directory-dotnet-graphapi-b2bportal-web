@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -189,27 +190,26 @@ namespace AzureB2BInvite
         {
             var res = new BulkInviteResults(submission.Id);
 
-            GraphInvitation itemRes;
+            GuestRequest itemRes;
             var mailTemplate = await TemplateUtilities.GetTemplate(submission.InviteTemplateId);
 
             try
             {
                 foreach (var item in batch.Requests)
                 {
-                    itemRes = await SendGraphInvitationAsync(item.Body, submission.GroupList.ToList(), null, mailTemplate, _accessToken);
+                    itemRes = await SendGraphInvitationAsync(item.Body, submission.GroupList.ToList(), item.Request, null, mailTemplate, _accessToken);
                     if (itemRes.Status != "Error")
                     {
                         submission.ItemsProcessed += 1;
                         submission = await BulkInviteSubmission.UpdateItem(submission);
                     }
-                    item.Request.Status = itemRes.Status;
-                    await GuestRequestRules.UpdateAsync(item.Request);
 
+                    //update batch results
                     res.InvitationResults.Responses.Add(new BulkResponse
                     {
                         Status = itemRes.Status,
-                        Body = itemRes,
-                        Id = itemRes.id
+                        Body = itemRes.InvitationResult,
+                        Id = itemRes.InvitationResult.id
                     });
                 }
 
@@ -224,7 +224,7 @@ namespace AzureB2BInvite
             }
         }
 
-        public async Task<GraphInvitation> ProcessInvitationAsync(GuestRequest request, PreAuthDomain domainSettings = null)
+        public async Task<GuestRequest> ProcessInvitationAsync(GuestRequest request, PreAuthDomain domainSettings = null)
         {
             var displayName = string.Format("{0} {1}", request.FirstName, request.LastName);
 
@@ -275,19 +275,30 @@ namespace AzureB2BInvite
                     }
                 }
 
-                return await SendGraphInvitationAsync(invitation, groups, redemptionSettings.InviterResponseEmailAddr, inviteTemplate);
-
+                return await SendGraphInvitationAsync(invitation, groups, request, redemptionSettings.InviterResponseEmailAddr, inviteTemplate);
             }
             catch (Exception ex)
             {
-                return new GraphInvitation
+                Logging.WriteToAppLog("", EventLogEntryType.Error, ex);
+                request.InvitationResult = new GraphInvitation
                 {
-                    ErrorInfo = string.Format("Error: {0}", ex.Message)
+                    ErrorInfo = string.Format("Error: {0}", ex.Message),
+                    Status = "Error"
                 };
+                return request;
             }
         }
-
-        private async Task<GraphInvitation> SendGraphInvitationAsync(GraphInvitation invitation, List<GroupObject> groups, string inviterResponseEmailAddr = null, InviteTemplate mailTemplate = null, string accessToken = null)
+        /// <summary>
+        /// GraphInvitation is a model from https://developer.microsoft.com/en-us/graph/docs/api-reference/v1.0/resources/invitation
+        /// Do not alter
+        /// </summary>
+        /// <param name="invitation">The GraphInvitation object transmitted to the B2B Guest API</param>
+        /// <param name="groups">Azure AD groups to assign the guest user to</param>
+        /// <param name="inviterResponseEmailAddr"></param>
+        /// <param name="mailTemplate"></param>
+        /// <param name="accessToken"></param>
+        /// <returns></returns>
+        private async Task<GuestRequest> SendGraphInvitationAsync(GraphInvitation invitation, List<GroupObject> groups, GuestRequest request, string inviterResponseEmailAddr = null, InviteTemplate mailTemplate = null, string accessToken = null)
         {
             AdalResponse serverResponse = null;
             GraphInvitation responseData = new GraphInvitation();
@@ -298,44 +309,86 @@ namespace AzureB2BInvite
 
                 // Invite user. Your app needs to have User.ReadWrite.All or Directory.ReadWrite.All to invite
                 serverResponse = AdalUtil.CallGraph(inviteEndPoint, invitation, false, null, _user, accessToken);
+
                 responseData = JsonConvert.DeserializeObject<GraphInvitation>(serverResponse.ResponseContent);
+                request.InvitationResult = responseData;
+                request.Status = responseData.Status;
+
                 if (responseData.id == null)
                 {
+                    //API call failed - put the request back in the queue
                     responseData.ErrorInfo = string.Format("Error: Invite not sent - API error: {0}", serverResponse.Message);
-                    return responseData;
+                    request.InvitationResult = responseData;
+                    request.Disposition = Disposition.Pending;
                 }
-
-                if (groups.Count > 0)
+                else
                 {
-                    var groupsAdded = AddUserToGroup(responseData.InvitedUser.Id, groups);
-                    if (!groupsAdded.Success)
+                    //invitation API call successful
+                    if (responseData.Status.Substring(0, 5) == "Error")
                     {
-                        var resErrors = string.Join(", ", groupsAdded.Responses.Where(r => !r.Successful).Select(r => r.Message));
-                        responseData.ErrorInfo += string.Format("\n\rOne or more groups failed while assigning to user \"{0}\" ({1})", responseData.InvitedUserEmailAddress, resErrors);
+                        //API call was successful but something failed while trying to process the request - put the request back in the queue
+                        request.Disposition = Disposition.Pending;
+                    }
+                    else
+                    {
+                        //check to see if groups should be assigned
+                        if (groups.Count > 0)
+                        {
+                            try
+                            {
+                                var groupsAdded = AddUserToGroup(responseData.InvitedUser.Id, groups);
+                                if (!groupsAdded.Success)
+                                {
+                                    //group assignment failed
+                                    var resErrors = string.Join(", ", groupsAdded.Responses.Where(r => !r.Successful).Select(r => r.Message));
+                                    var msg = string.Format("\n\rOne or more groups failed while assigning to user \"{0}\" ({1})", responseData.InvitedUserEmailAddress, resErrors);
+                                    request.PostProcessingStatus += msg;
+                                }
+                            }
+                            catch (Exception groupEx)
+                            {
+                                //group assignment errored
+                                var msg = string.Format("\n\rAn error occured while assigning a group to user \"{0}\" ({1})", responseData.InvitedUserEmailAddress, groupEx.Message);
+                                Logging.WriteToAppLog(msg, EventLogEntryType.Warning, groupEx);
+                                request.PostProcessingStatus += msg;
+                            }
+                        }
+
+                        //check to see if custom mail should be sent
+                        if (Settings.UseSMTP)
+                        {
+                            try
+                            {
+                                mailTemplate = mailTemplate ?? Settings.CurrSiteConfig.InviteTemplateContent;
+
+                                var emailSubject = mailTemplate.SubjectTemplate.Replace("{{InvitingOrgName}}", Settings.CurrSiteConfig.InvitingOrg);
+
+                                string body = FormatEmailBody(responseData, inviterResponseEmailAddr, mailTemplate);
+                                SendViaSMTP(emailSubject, body, invitation.InvitedUserEmailAddress);
+                            }
+                            catch (Exception mailEx)
+                            {
+                                var msg = string.Format("\n\rSending invitation failed for user \"{0}\" ({1})", responseData.InvitedUserEmailAddress, mailEx.Message);
+                                Logging.WriteToAppLog(msg, EventLogEntryType.Warning, mailEx);
+                                request.PostProcessingStatus += msg;
+                            }
+                        }
                     }
                 }
 
-                if (Settings.UseSMTP)
-                {
-                    mailTemplate = mailTemplate ?? Settings.CurrSiteConfig.InviteTemplateContent;
-
-                    var emailSubject = mailTemplate.SubjectTemplate.Replace("{{InvitingOrgName}}", Settings.CurrSiteConfig.InvitingOrg);
-
-                    string body = FormatEmailBody(responseData, inviterResponseEmailAddr, mailTemplate);
-                    SendViaSMTP(emailSubject, body, invitation.InvitedUserEmailAddress);
-                }
-
-                
-                var request = await GuestRequestRules.GetUserAsync(invitation.InvitedUserEmailAddress);
-                request.InvitationResult = responseData;
+                //all attempts complete, UPDATE GuestRequest
                 await GuestRequestRules.UpdateAsync(request);
-                return responseData;
+                return request;
             }
             catch (Exception ex)
             {
                 var reason = (serverResponse == null ? "N/A" : serverResponse.ResponseContent);
                 responseData.ErrorInfo = string.Format("Error: {0}<br>Server response: {1}", ex.Message, reason);
-                return responseData;
+                request.InvitationResult = responseData;
+
+                //UPDATE GuestRequest
+                await GuestRequestRules.UpdateAsync(request);
+                return request;
             }
         }
 

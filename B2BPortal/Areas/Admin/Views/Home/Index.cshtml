@@ -70,7 +70,7 @@
                                     </div>
                                 </td>
                                 <td>
-                                    @request.RequestDate
+                                    <span class="utcDate">@request.RequestDate</span>
                                     <input type="hidden" name="Id" value="@request.Id" />
                                     <input type="hidden" name="EmailAddress.@request.Id" value="@request.EmailAddress" />
                                 </td>
@@ -133,40 +133,43 @@
 
 @section scripts {
     <script type="text/javascript">
-                $(function () {
-                    $("#btnApplyGlobal").on("click", function () {
-                        var globalValue = $("#GlobalApproval").val();
-                        $("input:radio").each(function (i, o) {
-                            if (o.value == globalValue) {
-                                $(o).click();
-                            }
-                        });
-                    });
-                    $("#btnRefresh").on("click", function () {
-                        location.href = "/admin";
-                    });
-                    $("#btnHistory").on("click", function () {
-                        location.href = "/admin/history";
-                    });
-                    $("input:radio").parent("label").on("click", function () {
-                        var o = $(this);
-                        var val = o.children("input").val();
-                        o.parentsUntil("tr").last().parent().css("background-color", getColor(val));
-                    });
-
-                    function getColor(d) {
-                        switch (d) {
-                            case "0":
-                                return "#d2ffc9";
-                                break;
-                            case "2":
-                                return "#ffd8c9";
-                                break;
-                            case "3":
-                                return "@pendingColor";
-                                break;
-                        }
+        $(function () {
+            $("span.utcDate").each(function () {
+                $(this).html(SiteUtil.UtcToLocal(this.innerText));
+            });
+            $("#btnApplyGlobal").on("click", function () {
+                var globalValue = $("#GlobalApproval").val();
+                $("input:radio").each(function (i, o) {
+                    if (o.value == globalValue) {
+                        $(o).click();
                     }
                 });
+            });
+            $("#btnRefresh").on("click", function () {
+                location.href = "/admin";
+            });
+            $("#btnHistory").on("click", function () {
+                location.href = "/admin/history";
+            });
+            $("input:radio").parent("label").on("click", function () {
+                var o = $(this);
+                var val = o.children("input").val();
+                o.parentsUntil("tr").last().parent().css("background-color", getColor(val));
+            });
+
+            function getColor(d) {
+                switch (d) {
+                    case "0":
+                        return "#d2ffc9";
+                        break;
+                    case "2":
+                        return "#ffd8c9";
+                        break;
+                    case "3":
+                        return "@pendingColor";
+                        break;
+                }
+            }
+        });
     </script>
 }

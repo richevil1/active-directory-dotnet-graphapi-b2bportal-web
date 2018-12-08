@@ -50,19 +50,16 @@ namespace AzureB2BInvite.Rules
            
             if (request.Disposition == Disposition.Approved || request.Disposition == Disposition.AutoApproved)
             {
-                //INVITE
+                //INVITE (request updated internally)
                 var mgr = new InviteManager(profileUrl, null);
-                var res = await mgr.ProcessInvitationAsync(request, domainSettings);
-                request.Status = res.Status;
-                if (request.Status.Substring(0, 5) == "Error")
-                {
-                    request.Disposition = Disposition.Pending;
-                }
-                request.InvitationResult = res;
+                request = await mgr.ProcessInvitationAsync(request, domainSettings);
+            }
+            else if (request.Disposition == Disposition.Denied)
+            {
+                //UPDATE GuestRequest to set denied status
+                request = await UpdateAsync(request);
             }
 
-            //UPDATE
-            await DocDBRepo.DB<GuestRequest>.UpdateItemAsync(request);
             return request;
         }
 

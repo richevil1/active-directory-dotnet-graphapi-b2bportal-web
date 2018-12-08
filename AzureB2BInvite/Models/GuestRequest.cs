@@ -30,10 +30,16 @@ namespace AzureB2BInvite.Models
         public string LastName { get; set; }
 
         /// <summary>
-        /// The returned status of the B2B invite API request
+        /// The returned status of the B2B invite API request (assigned from GraphInvitation.Status)
         /// </summary>
         [JsonProperty(PropertyName = "status")]
         public string Status { get; set; }
+
+        /// <summary>
+        /// Any errors or warnings occuring in the process other than the B2B invitation (group assignments, custom emails, etc)
+        /// </summary>
+        [JsonProperty(PropertyName = "postProcessingStatus")]
+        public string PostProcessingStatus { get; set; }
 
         /// <summary>
         /// Date the request was made

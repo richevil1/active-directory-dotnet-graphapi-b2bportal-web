@@ -4,12 +4,14 @@
 
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Factive-directory-dotnet-graphapi-b2bportal-web%2Fdev%2Fazuredeploy.json" target="_blank"><img src="http://azuredeploy.net/deploybutton.png"/></a>
 
+(NOTE: deploy link on this page points to the dev branch template. Please ensure that you change "master" to "dev" in the "Branch" field of the ARM template form after you click to deploy.)
+
 [Detailed step-by-step deployment instructions](./Setup.md)
 
 __Update__
 (Notes here will be reflective of any changes made in the most recent update.)
 
-An additional permission is required to facilitate batch processing with automatic directory addition.
+An additional permission is required for the "admin" Azure AD app (NOT the pre-auth app), to facilitate batch processing with automatic directory addition.
   * DELEGATED PERMISSIONS
     * Access the directory as the signed-in user
 

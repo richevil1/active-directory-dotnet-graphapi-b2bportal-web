@@ -9,7 +9,7 @@
 __Update__
 (Notes here will be reflective of any changes made in the most recent update.)
 
-An additional permission is required to facilitate batch processing with automatic directory addition.
+An additional permission is required for the "admin" Azure AD app (NOT the pre-auth app), to facilitate batch processing with automatic directory addition.
   * DELEGATED PERMISSIONS
     * Access the directory as the signed-in user
 

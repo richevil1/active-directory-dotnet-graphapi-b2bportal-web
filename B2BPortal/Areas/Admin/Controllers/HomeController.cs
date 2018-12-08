@@ -11,7 +11,6 @@ using AzureB2BInvite.Rules;
 using B2BPortal.Common.Enums;
 using B2BPortal.Common.Utils;
 using AzureB2BInvite;
-using static AzureB2BInvite.Rules.GuestRequestRules;
 
 namespace B2BPortal.Areas.Admin.Controllers
 {
