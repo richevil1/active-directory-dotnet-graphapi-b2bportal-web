@@ -85,7 +85,7 @@ namespace B2BPortal.Data
                 }
                 catch (Exception ex)
                 {
-                    throw;
+                    throw ex;
                 }
             }
 
@@ -145,7 +145,7 @@ namespace B2BPortal.Data
                 }
                 catch (Exception ex)
                 {
-                    throw;
+                    throw ex;
                 }
             }
         }

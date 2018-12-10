@@ -25,7 +25,7 @@ namespace AzureB2BInvite
     {
         private CacheUser _user;
         private string _profileUrl;
-        private string _accessToken;
+        private readonly string _accessToken;
 
         /// <summary>
         /// If a CacheUser is passed in during initialization, invitations will be sent in the context of that user. 

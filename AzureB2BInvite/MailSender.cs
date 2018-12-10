@@ -89,8 +89,10 @@ namespace AzureB2BInvite
                 {
                     if (Logo !=null && Logo.Length > 0 && formattedBody.IndexOf("cid:") > 0)
                     {
-                        var oRes = new LinkedResource(new MemoryStream(Logo), "image/png");
-                        oRes.ContentId = "logo.png";
+                        var oRes = new LinkedResource(new MemoryStream(Logo), "image/png")
+                        {
+                            ContentId = "logo.png"
+                        };
                         formattedBody = formattedBody.Replace("cid:", "cid:logo.png");
                         var oView = AlternateView.CreateAlternateViewFromString(formattedBody, new System.Net.Mime.ContentType("text/html"));
                         oView.LinkedResources.Add(oRes);

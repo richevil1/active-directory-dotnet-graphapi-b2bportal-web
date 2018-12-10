@@ -33,7 +33,7 @@ namespace AzureB2BInvite
             AuthenticationContext authContext = null;
             try
             {
-                string resource = (graphResource != null) ? graphResource : Settings.GraphResource;
+                string resource = graphResource ?? Settings.GraphResource;
                 var clientCred = new ClientCredential(Settings.AppClientId_Admin, Settings.AppClientSecret_Admin);
 
                 if (user != null)
@@ -52,18 +52,18 @@ namespace AzureB2BInvite
             }
             catch(AdalSilentTokenAcquisitionException ex)
             {
-                throw;
+                throw ex;
             }
             catch (Exception ex)
             {
 
-                throw;
+                throw ex;
             }
         }
 
         public static AdalResponse CallGraph(string uri, dynamic postContent = null, bool isUpdate = false, string graphResource = null, CacheUser user = null, string accessToken = null)
         {
-            string resource = (graphResource != null) ? graphResource : Settings.GraphResource;
+            string resource = graphResource ?? Settings.GraphResource;
 
             var res = new AdalResponse
             {

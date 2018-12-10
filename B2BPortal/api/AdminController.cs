@@ -156,13 +156,16 @@ namespace B2BPortal.api
         [HttpGet]
         public async Task<StatusDTO> GetBulkItemStatus()
         {
+            BulkResponse response = null;
             var submissionId = Request.GetQueryNameValuePairs().Single(s => s.Key == "submissionId").Value;
             var email = Request.GetQueryNameValuePairs().Single(s => s.Key == "email").Value;
 
             var request = await BulkInviteSubmission.GetGuestItemDetail(submissionId, email);
-            var result = (await DocDBRepo.DB<BulkInviteResults>.GetItemsAsync(d => d.SubmissionId == submissionId)).SingleOrDefault();
-
-            var response = result.InvitationResults.Responses.SingleOrDefault(r => r.Body.InvitedUserEmailAddress == email);
+            var result = (await DocDBRepo.DB<BulkInviteResults>.GetItemsAsync(d => d.SubmissionId == submissionId)).LastOrDefault();
+            if (result != null)
+            {
+                response = result.InvitationResults.Responses.SingleOrDefault(r => r.Body.InvitedUserEmailAddress == email);
+            }
 
             return new StatusDTO
             {

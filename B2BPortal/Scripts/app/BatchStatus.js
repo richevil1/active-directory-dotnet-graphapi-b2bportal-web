@@ -79,7 +79,7 @@
     }
     function showDetail(data) {
         var request = data.Request;
-        var response = data.Response.body;
+        var response = (data.Response!=null) ? data.Response.body : null;
         var requestH = $("<div/>");
         var i = 0;
         for (col in request) {
@@ -112,43 +112,52 @@
         var responseH = $("<div/>");
         var i = 0;
         var status = "";
-        for (col in response) {
-            i++;
-            var ds = "";
-            var bg = (i % 2 == 0) ? "#fafafa;" : "";
-            if (response[col] != null) {
-                switch (col) {
-                    case "@odata.context":
-                    case "invitedUserMessageInfo":
-                    case "invitedUser":
-                        break;
-                    case "status":
-                        status = response[col].toString();
-                        ds = response[col].toString().replace(/\r\n/g, "<br/>");
-                        break;
-                    case "errorInfo":
-                        if (status == "Error") {
+        var responseObj = [];
+        var responseTxt = "Not processed yet."
+        if (response != null) {
+            for (col in response) {
+                i++;
+                var ds = "";
+                var bg = (i % 2 == 0) ? "#fafafa;" : "";
+                if (response[col] != null) {
+                    switch (col) {
+                        case "@odata.context":
+                        case "invitedUserMessageInfo":
+                        case "invitedUser":
+                            break;
+                        case "status":
+                            status = response[col].toString();
                             ds = response[col].toString().replace(/\r\n/g, "<br/>");
-                        }
-                        break;
-                    default:
-                        ds = response[col].toString().replace(/\r\n/g, "<br/>");
-                }
-                if (ds.length > 0) {
-                    var d = $("<div/>").css("backgroundColor", bg).appendTo(responseH);
-                    d.html("<span class='label'>" + SiteUtil.DeTC(col) + "</span><span class='data'>" + ds + "</span>");
+                            break;
+                        case "errorInfo":
+                            if (status == "Error") {
+                                ds = response[col].toString().replace(/\r\n/g, "<br/>");
+                            }
+                            break;
+                        default:
+                            ds = response[col].toString().replace(/\r\n/g, "<br/>");
+                    }
+                    if (ds.length > 0) {
+                        var d = $("<div/>").css("backgroundColor", bg).appendTo(responseH);
+                        d.html("<span class='label'>" + SiteUtil.DeTC(col) + "</span><span class='data'>" + ds + "</span>");
+                    }
                 }
             }
+            responseObj = responseH.children();
+            responseTxt = "";
         }
         $("#inviteDetails h4.modal-title").html("Detail - " + request.emailAddress);
         $("#request").html("").append(requestH.children());
-        $("#response").html("").append(responseH.children());
+        $("#response").html(responseTxt).append(responseObj);
         $("#inviteDetails").modal();
         $('#inviteDetails a:first').tab('show');
      }
-    function GetInvitationResults(data) {
+    function GetInvitationResult(data) {
         var res = $("<div/>");
+        var i = 0;
         for (col in data) {
+            i++;
+            var bg = (i % 2 == 0) ? "#fafafa;" : "";
             var ds = "";
             if (data[col] != null) {
                 var d = $("<div/>").css("backgroundColor", bg).appendTo(res);
