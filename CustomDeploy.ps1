@@ -189,7 +189,7 @@ catch {
 $version ++
 $deployment = New-AzureRmResourceGroupDeployment -ResourceGroupName $RGName -TemplateParameterObject $parms -TemplateFile $TemplateFile -Name "B2BDeploy$version" -Force -Verbose
 
-if ($deployment) {
+if ($deployment.ProvisioningState -ne "Failed") {
     #to-do: update URIs and reply URLs for apps, based on output parms from $deployment
     #also to-do: update application permissions and APIs - may need to be done in the portal
     $hostName = $Deployment.Outputs.webSiteObject.Value.enabledHostNames.Item(0).ToString()
