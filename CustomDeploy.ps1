@@ -6,7 +6,7 @@ Import-Module Azure -ErrorAction SilentlyContinue
     $Branch                  = "master"
 
     #optional, defines uniqueness for deployments
-    $TestNo                  = "7"
+    $TestNo                  = "1"
     #region to deploy into - see https://azure.microsoft.com/en-us/regions/
     $DeployRegion            = "West US 2"
     #Name of your company - will be displayed through your site
