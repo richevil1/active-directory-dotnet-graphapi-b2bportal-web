@@ -84,7 +84,7 @@ namespace BatchInviteProcessor
 
                 Settings.AppClientId_Admin = ConfigurationManager.AppSettings["ida:ClientId_Admin"];
                 Settings.AppClientSecret_Admin = ConfigurationManager.AppSettings["ida:ClientSecret_Admin"];
-                //using same client password for token cache encryption
+                //reusing same client password for token cache encryption
                 AESEncryption.Password = Settings.AppClientSecret_Admin;
 
                 Settings.AppClientId_Preauth = ConfigurationManager.AppSettings["ida:ClientId_PreAuth"];
