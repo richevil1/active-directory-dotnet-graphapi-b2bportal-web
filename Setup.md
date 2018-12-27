@@ -1,5 +1,12 @@
 ## Setup
 
+There are two ways to deploy this project:
+
+1. Download  [CustomDeploy.ps1][PshDeploy] to your machine and run it in PowerShell. It will create both application registrations for you, and set the necessary values in the ARM deployment. This will result in a turnkey deployment.
+2. Follow the directions below to manually create the two Azure AD application registrations, and deploy the ARM template by clicking the "Deploy to Azure" button below.
+
+#### Manual Deployment
+
 Two Azure Active Directory apps must be created in your tenant. The first is the administrative app:
 
 * Log into the Azure portal, and click on Azure Active Directory, then click on Properties
@@ -125,3 +132,4 @@ Azure App Services supports creating custom web addresses. The customization of 
 [Url]: ./DocImages/Url.png "Copy web URL"
 [Url2]: ./DocImages/Url2.png "Update reply address"
 [Url3]: ./DocImages/Url3.png "Update home page"
+[PshDeploy]: ./CustomDeploy.ps1

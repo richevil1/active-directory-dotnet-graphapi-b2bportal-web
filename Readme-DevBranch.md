@@ -4,11 +4,14 @@
 
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Factive-directory-dotnet-graphapi-b2bportal-web%2Fdev%2Fazuredeploy.json" target="_blank"><img src="http://azuredeploy.net/deploybutton.png"/></a>
 
-(NOTE: deploy link on this page points to the dev branch template. Please ensure that you change "master" to "dev" in the "Branch" field of the ARM template form after you click to deploy.)
+(NOTE: deploy link on this page points to the dev branch template. __Please ensure that you change "master" to "dev" in the "Branch" field of the ARM template form after you click to deploy.__)
+
+__Deployment__
 
 [Detailed step-by-step deployment instructions](./Setup.md)
 
 __Update__
+
 (Notes here will be reflective of any changes made in the most recent update.)
 
 An additional permission is required for the "admin" Azure AD app (NOT the pre-auth app), to facilitate batch processing with automatic directory addition.
@@ -24,6 +27,7 @@ After adding this permission, because user's previous consents will be invalidat
  ![alt text][Grant1]
 
 __Details__
+
 * Allows self-service provisioning of guest accounts in a tenant. Portal enables this via API calls to the Microsoft Graph
 * Leverages Azure CosmosDB. For development, a downloadable emulator is available: https://aka.ms/documentdb-emulator
 * ARM template deploys the following:

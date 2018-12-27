@@ -248,9 +248,9 @@
       <DependentUpon>App.config</DependentUpon>
     </Content>
     <Content Include="Content\Images\AADB2BTile.png" />
-    <None Include="hdsettings.config">
+    <Content Include="hdsettings.config">
       <SubType>Designer</SubType>
-    </None>
+    </Content>
     <None Include="packages.config" />
     <None Include="Properties\webjob-publish-settings.json" />
   </ItemGroup>

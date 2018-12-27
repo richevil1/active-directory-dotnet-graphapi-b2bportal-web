@@ -175,8 +175,7 @@ $parms=@{
     "branch"                      = $Branch;
 }
 
-#$TemplateFile = "https://raw.githubusercontent.com/Azure/active-directory-dotnet-graphapi-b2bportal-web/master/azuredeploy.json"
-$TemplateFile = "C:\Users\brhacke\OneDrive\Dev\MSFT\active-directory-dotnet-graphapi-b2bportal-web\azuredeploy.json"
+$TemplateFile = "https://raw.githubusercontent.com/Azure/active-directory-dotnet-graphapi-b2bportal-web/$Branch/azuredeploy.json"
 
 try {
     Get-AzureRmResourceGroup -Name $RGName -ErrorAction Stop
