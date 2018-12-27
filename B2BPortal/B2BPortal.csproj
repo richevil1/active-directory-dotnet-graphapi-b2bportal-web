@@ -525,9 +525,9 @@
     <Content Include="Areas\Admin\Views\Shared\DisplayTemplates\TruncateLong.cshtml" />
     <Content Include="Areas\Admin\Views\Shared\EditorTemplates\GroupsMultiSel.cshtml" />
     <Content Include="Areas\Admin\Views\BulkInvite\Index.cshtml" />
-    <Content Include="hdsettings.config">
+    <None Include="hdsettings.config">
       <SubType>Designer</SubType>
-    </Content>
+    </None>
     <Content Include="Areas\Admin\Views\BulkInvite\Status.cshtml" />
     <Content Include="Properties\webjobs-list.json" />
     <Content Include="Scripts\_references.js" />

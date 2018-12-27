@@ -50,10 +50,14 @@ Import-Module Azure -ErrorAction SilentlyContinue
 
 #END DEPLOYMENT OPTIONS
 
+#*** To override settings using a separate variable file, create "B2BPortal.ps1" and copy the DEPLOYMENT OPTIONS
+#*** from above, then set an env var "PSH_Settings_Files" to point to the folder where you place the file
+
 #Dot-sourced variable override (optional, comment out if not using)
 if (Test-Path "$($env:PSH_Settings_Files)B2BPortal.ps1") {
     . "$($env:PSH_Settings_Files)B2BPortal.ps1"
 }
+
 #ensure we're logged in
 try {
     $ctx=Get-AzureRmContext -ErrorAction Stop
@@ -85,7 +89,6 @@ if ($adminApp -eq $null) {
     $ResourceColl = [System.Collections.Generic.List[Microsoft.Open.AzureAD.Model.ResourceAccess]]::new()
 
     #MSGraph
-    
         $MSGraphAppDirRWAll = [Microsoft.Open.AzureAD.Model.ResourceAccess]::new("19dbc75e-c2e2-444c-a770-ec69d8559fc7","Role")       # MSGraph App-Directory.ReadWrite.All
         $ResourceColl.Add($MSGraphAppDirRWAll)
 
@@ -99,6 +102,7 @@ if ($adminApp -eq $null) {
     $adminAppReq.Add($MSGraph)
 
     $ResourceColl.Clear()
+
     #AADGraph
         $AADGraphDelUserRead = [Microsoft.Open.AzureAD.Model.ResourceAccess]::new("311a71cc-e848-46a1-bdf8-97ff7156d8e6","Scope")     # AADGraph Delegated-User.Read
         $ResourceColl.Add($AADGraphDelUserRead)
@@ -112,8 +116,6 @@ if ($adminApp -eq $null) {
         -RequiredResourceAccess $adminAppReq `
         -ErrorAction Stop
 
-    #$adminApp = New-AzureRmADApplication -DisplayName $AdminAppName -HomePage "https://loopback" -IdentifierUris $AdminAppUri
-    
     New-AzureRmADServicePrincipal -ApplicationId $adminApp.AppId
     $newApps = $true
 }
@@ -137,8 +139,6 @@ if ($preauthApp -eq $null) {
         -RequiredResourceAccess $preauthAppReq `
         -ErrorAction Stop
 
-    #$preauthApp = New-AzureRmADApplication -DisplayName $PreauthAppName -HomePage "https://loopback" -IdentifierUris $PreauthAppUri -AvailableToOtherTenants $true
-    
     New-AzureRmADServicePrincipal -ApplicationId $preauthApp.AppId
     $newApps = $true
 }
@@ -147,13 +147,13 @@ if ($newApps) {
     Start-Sleep 15
 }
 
-$adminAppCred = Get-AzureRmADAppCredential -ApplicationId $adminApp.AppId
+$adminAppCred = Get-AzureRmADAppCredential -ApplicationId $adminApp.ApplicationId
 if ($adminAppCred -eq $null) {
-    New-AzureRmADAppCredential -ApplicationId $adminApp.AppId -Password $spSecAdminPassword
+    New-AzureRmADAppCredential -ApplicationId $adminApp.ApplicationId -Password $spSecAdminPassword
 }
-$preauthAppCred = Get-AzureRmADAppCredential -ApplicationId $preauthApp.AppId
+$preauthAppCred = Get-AzureRmADAppCredential -ApplicationId $preauthApp.ApplicationId
 if ($preauthAppCred -eq $null) {
-    New-AzureRmADAppCredential -ApplicationId $preauthApp.AppId -Password $spSecAdminPassword
+    New-AzureRmADAppCredential -ApplicationId $preauthApp.ApplicationId -Password $spSecAdminPassword
 }
 
 #deploy
@@ -165,9 +165,9 @@ $parms=@{
     "skuCapacity"                 = 1;
     "tenantDomainName"            = $TenantName;
     "tenantId"                    = $AADTenantId;
-    "clientId_admin"              = $adminApp.AppId;
+    "clientId_admin"              = $adminApp.ApplicationId;
     "clientSecret_admin"          = $spAdminPassword;
-    "clientId_preAuth"            = $preauthApp.AppId;
+    "clientId_preAuth"            = $preauthApp.ApplicationId;
     "clientSecret_preAuth"        = $spAdminPassword;
     "mailServerFqdn"              = "";
     "smtpLogin"                   = "";
