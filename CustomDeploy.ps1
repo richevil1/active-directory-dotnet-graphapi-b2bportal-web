@@ -162,7 +162,7 @@ $parms=@{
     "branch"                      = $Branch;
 }
 
-$TemplateFile = "https://raw.githubusercontent.com/Azure/active-directory-dotnet-graphapi-b2bportal-web/$Branch/azuredeploy.json"
+$TemplateFile = "https://raw.githubusercontent.com/Azure/active-directory-dotnet-graphapi-b2bportal-web/$Branch/azuredeploy.json?$((get-date).Ticks)"
 
 try {
     Get-AzureRmResourceGroup -Name $RGName -ErrorAction Stop
