@@ -68,12 +68,6 @@
         "description": "Required: the application ID GUID of your user pre-auth auth app (see Readme for details)"
       }
     },
-    "clientSecret_preAuth": {
-      "type": "string",
-      "metadata": {
-        "description": "Required: the application secret for your user pre-auth auth app"
-      }
-    },
     "mailServerFqdn": {
       "type": "string",
       "defaultValue": "",
