@@ -140,12 +140,10 @@ if ($newApps) {
     Start-Sleep 15
 }
 
-$adminAppCred = AzureAD\Get-AzureADApplicationPasswordCredential -ObjectId $adminApp.ObjectId
-if ($adminAppCred -eq $null) {
-    #generating a unique "secret" for your admin app to execute B2B operations on your behalf
-    $adminAppCred = AzureAD\New-AzureADApplicationPasswordCredential -ObjectId $adminApp.ObjectId
-}
-$spAdminPassword = 
+#generating a unique "secret" for your admin app to execute B2B operations on your behalf
+$adminAppCred = AzureAD\New-AzureADApplicationPasswordCredential -ObjectId $adminApp.ObjectId
+$spAdminPassword = $adminAppCred.Value
+
 #deploy
 Set-AzureRmContext -SubscriptionName $AzureSubName -TenantId $AzureTenantId -ErrorAction Stop
 
