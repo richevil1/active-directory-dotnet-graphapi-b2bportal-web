@@ -149,8 +149,6 @@ Set-AzureRmContext -SubscriptionName $AzureSubName -TenantId $AzureTenantId -Err
 
 $parms=@{
     "hostingPlanName"             = $SiteName;
-    "skuName"                     = "F1";
-    "skuCapacity"                 = 1;
     "tenantDomainName"            = $TenantName;
     "tenantId"                    = $AADTenantId;
     "clientId_admin"              = $adminApp.AppId;
