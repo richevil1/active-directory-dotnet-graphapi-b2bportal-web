@@ -5,6 +5,9 @@
         });
     $("#btnFilter").on("click", ProcessFilter);
     $("#btnResetFilter").on("click", resetFilter);
+    $("#btnReturn").on("click", function () {
+        location.href = "/Admin";
+    });
 
     function ProcessFilter() {
         data = SiteUtil.GetDataObject("#filterItems");

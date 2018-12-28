@@ -12,6 +12,7 @@
     @Html.AntiForgeryToken()
     <div class="panel panel-primary" style="margin-top:20px;">
         <div class="panel-title panel-heading">
+            <button id="btnHistory" type="button" class="btn btn-xs btn-default control pull-right"><span class="glyphicon glyphicon-time"></span> History</button>
             @ViewBag.Title
         </div>
         <div class="panel-body">
@@ -20,7 +21,6 @@
                     <div class="col-md-12">
                         <button type="submit" @disableButton class="btn btn-default control"><span class="glyphicon glyphicon-floppy-disk"></span> Save</button>
                         <button id="btnRefresh" type="button" class="btn btn-default control"><span class="glyphicon glyphicon-refresh"></span> Refresh</button>
-                        <button id="btnHistory" type="button" class="btn btn-default control"><span class="glyphicon glyphicon-time"></span> History</button>
                     </div>
                 </div>
 
@@ -128,6 +128,10 @@
                 width: 120px !important;
             }
         }
+        .btn.pull-right {
+            margin-left: 5px;
+            width: 120px !important;
+        }    
     </style>
 }
 

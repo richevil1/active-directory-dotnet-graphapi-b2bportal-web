@@ -1,8 +1,9 @@
 ﻿@{
-    ViewBag.Title = "History";
+    ViewBag.Title = "Request History";
 }
 <div class="panel panel-primary" style="margin-top:20px;">
     <div class="panel-title panel-heading">
+        <button id="btnReturn" type="button" class="btn btn-xs btn-default control pull-right"><span class="glyphicon glyphicon-chevron-left"></span> Return</button>
         @ViewBag.Title
     </div>
     <div class="panel-body">
@@ -92,11 +93,13 @@
         tr.bg-rowEdit:hover {
             background-color: #efefef;
         }
+
         div.tableWrap {
             max-height: 500px;
             overflow: auto;
             clear: both;
         }
+
         div.modal-body div.tab-pane {
             overflow-y: auto;
             height: 480px;
@@ -112,6 +115,7 @@
                 border-bottom: 1px solid #bababa;
                 padding: 5px;
             }
+
         span.label {
             color: #404040 !important;
             display: inline-block;
@@ -132,5 +136,10 @@
             font-family: Consolas, courier new;
             font-size: 10pt;
         }
-    </style>
+        .btn.pull-right {
+            margin-left: 5px;
+            width: 120px !important;
+        }
+     </style>
 }
+
