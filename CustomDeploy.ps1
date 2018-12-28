@@ -31,7 +31,7 @@ Import-Module Azure -ErrorAction SilentlyContinue
 
     #The display name of your Azure AD "pre-auth" auth app. This is the app prospective guests will optionally use to prove their
     #identity via their home account
-    $PreauthAppName          = "$CompanyName - B2B Pre-Authentication Sign-In$TestNo"
+    $PreauthAppName          = "$CompanyName - B2B Self-Serve Pre-Auth Sign-In$TestNo"
     #A unique URI that defines your application. Unlike the admin URI, this one must be unique in the world, as it's a multi-tenant application
     $PreAuthAppUri           = "https://$($SiteName).$TenantName"
 
@@ -39,14 +39,6 @@ Import-Module Azure -ErrorAction SilentlyContinue
     $AdminAppName            = "$CompanyName - B2B Self-Serve Administration$TestNo"
     #A unique URI that defines your application
     $AdminAppUri             = "$($PreAuthAppUri)/b2badmin"
-
-    #generating a unique "secret" for your admin app to execute B2B operations on your behalf
-	$bytes = New-Object Byte[] 32
-	$rand = [System.Security.Cryptography.RandomNumberGenerator]::Create()
-	$rand.GetBytes($bytes)
-	$rand.Dispose()
-	$spAdminPassword = [System.Convert]::ToBase64String($bytes)
-    $spSecAdminPassword = ConvertTo-SecureString $spAdminPassword -AsPlainText -Force -ErrorAction Stop
 
 #END DEPLOYMENT OPTIONS
 
@@ -66,7 +58,7 @@ catch {
     Login-AzureRmAccount -SubscriptionName $AADSubName -TenantId $AADTenantId -ErrorAction Stop
 }
 
-#this will only work if the same account can see the tenant and Azure sub at the same time
+#this will only work if the same login account can see the tenant and Azure sub at the same time
 $ctx = Set-AzureRmContext -TenantId $AADTenantId -SubscriptionName $AADSubName -ErrorAction Stop
 $cacheItems = $ctx.TokenCache.ReadItems()
 $token = ($cacheItems | where { $_.Resource -eq "https://graph.windows.net/" })
@@ -81,14 +73,24 @@ $aad = Connect-AzureAD -AadAccessToken $token.AccessToken -AccountId $ctx.Accoun
 
 $newApps = $false;
 
-$adminApp = Get-AzureRmADApplication -DisplayNameStartWith $AdminAppName -ErrorAction Stop
+$adminApp = AzureAD\Get-AzureADApplication -Filter "DisplayName eq '$AdminAppName'" -ErrorAction Stop
+
 if ($adminApp -eq $null) {
     #generate required AzureAD applications
     #note: setting loopback on apps for now - will update after the ARM deployment is complete (below)...
     $adminAppReq = [System.Collections.Generic.List[Microsoft.Open.AzureAD.Model.RequiredResourceAccess]]::new()
-    $ResourceColl = [System.Collections.Generic.List[Microsoft.Open.AzureAD.Model.ResourceAccess]]::new()
+
+    #AADGraph
+        $ResourceColl = [System.Collections.Generic.List[Microsoft.Open.AzureAD.Model.ResourceAccess]]::new()
+        $AADGraphDelUserRead = [Microsoft.Open.AzureAD.Model.ResourceAccess]::new("311a71cc-e848-46a1-bdf8-97ff7156d8e6","Scope")     # AADGraph Delegated-User.Read
+        $ResourceColl.Add($AADGraphDelUserRead)
+
+    $AADGraph = [Microsoft.Open.AzureAD.Model.RequiredResourceAccess]::new("00000002-0000-0000-c000-000000000000",$ResourceColl)  # AADGraph resources
+    $adminAppReq.Add($AADGraph)
 
     #MSGraph
+        $ResourceColl = [System.Collections.Generic.List[Microsoft.Open.AzureAD.Model.ResourceAccess]]::new()
+
         $MSGraphAppDirRWAll = [Microsoft.Open.AzureAD.Model.ResourceAccess]::new("19dbc75e-c2e2-444c-a770-ec69d8559fc7","Role")       # MSGraph App-Directory.ReadWrite.All
         $ResourceColl.Add($MSGraphAppDirRWAll)
 
@@ -97,18 +99,9 @@ if ($adminApp -eq $null) {
 
         $MSGraphDelUserInviteAll = [Microsoft.Open.AzureAD.Model.ResourceAccess]::new("63dd7cd9-b489-4adf-a28c-ac38b9a0f962","Scope") # MSGraph Delegated-User.Invite.All
         $ResourceColl.Add($MSGraphDelUserInviteAll)
-        $MSGraph = [Microsoft.Open.AzureAD.Model.RequiredResourceAccess]::new("00000003-0000-0000-c000-000000000000",$ResourceColl)   # MSGraph resources
 
+    $MSGraph = [Microsoft.Open.AzureAD.Model.RequiredResourceAccess]::new("00000003-0000-0000-c000-000000000000",$ResourceColl)   # MSGraph resources
     $adminAppReq.Add($MSGraph)
-
-    $ResourceColl.Clear()
-
-    #AADGraph
-        $AADGraphDelUserRead = [Microsoft.Open.AzureAD.Model.ResourceAccess]::new("311a71cc-e848-46a1-bdf8-97ff7156d8e6","Scope")     # AADGraph Delegated-User.Read
-        $ResourceColl.Add($AADGraphDelUserRead)
-        $AADGraph = [Microsoft.Open.AzureAD.Model.RequiredResourceAccess]::new("00000002-0000-0000-c000-000000000000",$ResourceColl)  # AADGraph resources
-
-    $adminAppReq.Add($AADGraph)
 
     $adminApp = AzureAD\New-AzureADApplication `
         -DisplayName $AdminAppName `
@@ -120,18 +113,18 @@ if ($adminApp -eq $null) {
     $newApps = $true
 }
 
-$preauthApp = Get-AzureRmADApplication -DisplayNameStartWith $PreAuthAppName
+$preauthApp = Get-AzureADApplication -Filter "DisplayName eq '$PreAuthAppName'" -ErrorAction Stop
+
 if ($preauthApp -eq $null) {
 
     $preauthAppReq = [System.Collections.Generic.List[Microsoft.Open.AzureAD.Model.RequiredResourceAccess]]::new()
-    $ResourceColl = [System.Collections.Generic.List[Microsoft.Open.AzureAD.Model.ResourceAccess]]::new()
 
     #AADGraph
+        $ResourceColl = [System.Collections.Generic.List[Microsoft.Open.AzureAD.Model.ResourceAccess]]::new()
         $AADGraphDelUserRead = [Microsoft.Open.AzureAD.Model.ResourceAccess]::new("311a71cc-e848-46a1-bdf8-97ff7156d8e6","Scope")     # AADGraph Delegated-User.Read
         $ResourceColl.Add($AADGraphDelUserRead)
         $AADGraph = [Microsoft.Open.AzureAD.Model.RequiredResourceAccess]::new("00000002-0000-0000-c000-000000000000",$ResourceColl)  # AADGraph resources
-
-    $preauthAppReq.Add($AADGraph)
+        $preauthAppReq.Add($AADGraph)
 
     $preauthApp = AzureAD\New-AzureADApplication `
         -DisplayName $PreAuthAppName `
@@ -139,7 +132,7 @@ if ($preauthApp -eq $null) {
         -RequiredResourceAccess $preauthAppReq `
         -ErrorAction Stop
 
-    New-AzureRmADServicePrincipal -ApplicationId $preauthApp.AppId
+    AzureAD\New-AzureADServicePrincipal -AppId $preauthApp.AppId
     $newApps = $true
 }
 
@@ -147,15 +140,12 @@ if ($newApps) {
     Start-Sleep 15
 }
 
-$adminAppCred = Get-AzureRmADAppCredential -ApplicationId $adminApp.ApplicationId
+$adminAppCred = AzureAD\Get-AzureADApplicationPasswordCredential -ObjectId $adminApp.ObjectId
 if ($adminAppCred -eq $null) {
-    New-AzureRmADAppCredential -ApplicationId $adminApp.ApplicationId -Password $spSecAdminPassword
+    #generating a unique "secret" for your admin app to execute B2B operations on your behalf
+    $adminAppCred = AzureAD\New-AzureADApplicationPasswordCredential -ObjectId $adminApp.ObjectId
 }
-$preauthAppCred = Get-AzureRmADAppCredential -ApplicationId $preauthApp.ApplicationId
-if ($preauthAppCred -eq $null) {
-    New-AzureRmADAppCredential -ApplicationId $preauthApp.ApplicationId -Password $spSecAdminPassword
-}
-
+$spAdminPassword = 
 #deploy
 Set-AzureRmContext -SubscriptionName $AzureSubName -TenantId $AzureTenantId -ErrorAction Stop
 
@@ -165,10 +155,9 @@ $parms=@{
     "skuCapacity"                 = 1;
     "tenantDomainName"            = $TenantName;
     "tenantId"                    = $AADTenantId;
-    "clientId_admin"              = $adminApp.ApplicationId;
+    "clientId_admin"              = $adminApp.AppId;
     "clientSecret_admin"          = $spAdminPassword;
-    "clientId_preAuth"            = $preauthApp.ApplicationId;
-    "clientSecret_preAuth"        = $spAdminPassword;
+    "clientId_preAuth"            = $preauthApp.AppId;
     "mailServerFqdn"              = "";
     "smtpLogin"                   = "";
     "smptPassword"                = "";

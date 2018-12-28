@@ -23,7 +23,6 @@ namespace AzureB2BInvite
         public static string WebAppUrl { get; set; }
         public static string AppClientSecret_Admin { get; set; }
         public static string AppClientId_Preauth { get; set; }
-        public static string AppClientSecret_Preauth { get; set; }
         public static string DefaultSubjectTemplateName { get; set; }
         public static string DefaultBodyTemplateName { get; set; }
         public static string[] InviterRoleNames { get; set; }

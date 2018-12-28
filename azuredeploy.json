@@ -220,10 +220,6 @@
               "Value": "[parameters('clientId_preAuth')]"
             },
             {
-              "Name": "ida:ClientSecret_PreAuth",
-              "Value": "[parameters('clientSecret_preAuth')]"
-            },
-            {
               "Name": "StorageConnectionString",
               "Value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('QueueAccountName'),';AccountKey=',concat(listKeys(variables('QueueAccountId'),'2015-05-01-preview').key1))]"
             },

@@ -88,7 +88,6 @@ namespace BatchInviteProcessor
                 AESEncryption.Password = Settings.AppClientSecret_Admin;
 
                 Settings.AppClientId_Preauth = ConfigurationManager.AppSettings["ida:ClientId_PreAuth"];
-                Settings.AppClientSecret_Preauth = ConfigurationManager.AppSettings["ida:ClientSecret_PreAuth"];
 
                 Settings.GraphApiVersion = ConfigurationManager.AppSettings["GraphApiVersion"];
 
