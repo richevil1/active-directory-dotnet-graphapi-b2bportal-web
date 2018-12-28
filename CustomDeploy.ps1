@@ -38,7 +38,7 @@ Import-Module Azure -ErrorAction SilentlyContinue
     #The display name of your Azure AD administrative auth app. This name is displayed when a user logs in to your app from Azure AD
     $AdminAppName            = "$CompanyName - B2B Self-Serve Administration$TestNo"
     #A unique URI that defines your application
-    $AdminAppUri             = "$($PreAuthAppUri)/b2badmin"
+    $AdminAppUri             = "$($PreAuthAppUri)b2badmin"
 
 #END DEPLOYMENT OPTIONS
 

@@ -11,6 +11,7 @@ using B2BPortal.Data.Models;
 using System.Web.Security;
 using B2BPortal.Common.Utils;
 using Encryption;
+using System.Security.Cryptography;
 
 namespace AzureB2BInvite.AuthCache
 {
@@ -86,8 +87,25 @@ namespace AzureB2BInvite.AuthCache
             });
             task.Wait();
 
-            // place the entry in memory
-            this.Deserialize((Cache == null) ? null : B2BPortal.Common.Utils.Utils.Decrypt(new EncryptedObj(Cache.CacheBits, Cache.Salt)));
+            try
+            {
+                // place the entry in memory
+                this.Deserialize((Cache == null) ? null : B2BPortal.Common.Utils.Utils.Decrypt(new EncryptedObj(Cache.CacheBits, Cache.Salt)));
+            }
+            catch(CryptographicException ex)
+            {
+                //error decrypting from token cache - clearing the cached item (encryption key may have changed)
+                task = Task.Run(async () => {
+                    await PerWebUserCache.RemoveEntry(Cache);
+                    this.Deserialize(null);
+                });
+                task.Wait();
+            }
+            catch (Exception ex)
+            {
+                var newEx = new Exception("Error decrypting the cached token. ", ex);
+                throw newEx;
+            }
         }
 
         // clean up the DB

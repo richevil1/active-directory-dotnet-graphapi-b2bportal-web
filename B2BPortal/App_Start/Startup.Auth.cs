@@ -153,8 +153,9 @@ namespace B2BPortal
             }
             catch (Exception ex)
             {
-                Logging.WriteToAppLog("Error caching auth code", System.Diagnostics.EventLogEntryType.Error, ex);
-                throw;
+                var newEx = new Exception("Error processing the retrieved auth code. ", ex);
+                Logging.WriteToAppLog(newEx.Message, System.Diagnostics.EventLogEntryType.Error, newEx);
+                throw newEx;
             }
        }
     }
