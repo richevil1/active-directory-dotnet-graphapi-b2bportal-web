@@ -92,14 +92,14 @@ namespace AzureB2BInvite.AuthCache
                 // place the entry in memory
                 this.Deserialize((Cache == null) ? null : B2BPortal.Common.Utils.Utils.Decrypt(new EncryptedObj(Cache.CacheBits, Cache.Salt)));
             }
-            catch(CryptographicException ex)
+            catch(CryptographicException)
             {
                 //error decrypting from token cache - clearing the cached item (encryption key may have changed)
                 task = Task.Run(async () => {
                     await PerWebUserCache.RemoveEntry(Cache);
-                    this.Deserialize(null);
                 });
                 task.Wait();
+                this.Deserialize(null);
             }
             catch (Exception ex)
             {
