@@ -54,8 +54,7 @@
     function ShowDetail(evt) {
         var data = $(evt.currentTarget).data("data");
         var requestH = $("<div/>");
-        var response = "";
-        var bg = "";
+        var response;
         for (col in data) {
             var ds = "";
             if (data[col] != null) {
@@ -87,8 +86,8 @@
         }
 
         $("#inviteDetails h4.modal-title").html("Detail - " + data.emailAddress);
-        $("#request").append(requestH.children());
-        $("#response").append(response);
+        $("#request").html("").append(requestH.children());
+        $("#response").html("").append(response);
         $("#inviteDetails").modal();
         $('#inviteDetails a:first').tab('show');
     }
@@ -101,6 +100,24 @@
                     case "@odata.context":
                     case "invitedUserMessageInfo":
                     case "invitedUser":
+                        break;
+                    case "inviteRedeemUrl":
+                        var url = data[col].toString();
+                        var d = $("<span/>").addClass("input-group");
+                        $("<input/>")
+                            .addClass("form-control")
+                            .val(url)
+                            .appendTo(d);
+                        $("<span/>")
+                            .attr("title", "Click to copy the invitation link to the clipboard")
+                            .addClass("glyphicon glyphicon-copy input-group-addon")
+                            .on("click", function () {
+                                SiteUtil.Copy(url);
+                                $(this).removeClass("glyphicon-copy").addClass("glyphicon-ok");
+                            })
+                            .appendTo(d);
+
+                        ds = d;
                         break;
                     case "status":
                         status = data[col].toString();
@@ -115,13 +132,14 @@
                         ds = data[col].toString().replace(/\r\n/g, "<br/>");
                 }
                 if (ds.length > 0) {
-                    $("<div />")
-                        .html("<span class='label'>" + SiteUtil.DeTC(col) + "</span><span class='data'>" + ds + "</span>")
-                        .appendTo(res);
+                    var segment = $("<div />");
+                    $("<span/>").addClass("label").html(SiteUtil.DeTC(col)).appendTo(segment);
+                    $("<span/>").addClass("data").append(ds).appendTo(segment);
+                    segment.appendTo(res);
                 }
             }
         }
-        return res.html();
+        return res.children();
     }
 
     function getDis(dis) {

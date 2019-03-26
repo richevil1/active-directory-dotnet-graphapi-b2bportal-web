@@ -58,8 +58,11 @@ namespace B2BPortal.Areas.Admin.Controllers
                 request.InternalComment = Request.Form[string.Format("InternalComment.{0}", request.Id)];
                 var domain = await GuestRequestRules.GetMatchedDomain(request.EmailAddress);
                 var res = await GuestRequestRules.ExecuteDispositionAsync(request, User.Identity.Name, Utils.GetProfileUrl(Request.Url), domain);
-                if (res.Status == "" && res !=null && res.InvitationResult.Status != "Error")
+
+                if (res !=null &&  (res.InvitationResult.SendInvitationMessage || res.MailSent))
+                {
                     sentCount++;
+                }
             }
 
             requestList = await GuestRequestRules.GetPendingRequestsAsync();

@@ -106,6 +106,12 @@ namespace AzureB2BInvite.Models
         public GraphInvitation InvitationResult { get; set; }
 
         /// <summary>
+        /// Was a message successfully sent via the API or via custom message?
+        /// </summary>
+        [JsonProperty(PropertyName = "mailSent")]
+        public bool MailSent { get; set; }
+
+        /// <summary>
         /// For a new request, pre-populate all the defaults.
         /// </summary>
         public void Init()

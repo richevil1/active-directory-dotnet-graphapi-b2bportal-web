@@ -365,6 +365,7 @@ namespace AzureB2BInvite
 
                                 string body = FormatEmailBody(responseData, inviterResponseEmailAddr, mailTemplate);
                                 SendViaSMTP(emailSubject, body, invitation.InvitedUserEmailAddress);
+                                request.MailSent = true;
                             }
                             catch (Exception mailEx)
                             {
