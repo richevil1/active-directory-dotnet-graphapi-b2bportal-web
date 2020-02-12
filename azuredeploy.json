@@ -123,7 +123,7 @@
     "docDbName": "B2BRequests",
     "docDbCollection": "GuestRequests",
     "mailEnabled": "1",
-    "QueueName": "[concat('Queue', uniqueString(resourceGroup().id))]",
+    "QueueName": "[concat('queue', uniqueString(resourceGroup().id))]",
     "QueueType": "Standard_LRS",
     "QueueAccountId": "[concat(resourceGroup().id,'/providers/Microsoft.Storage/storageAccounts/', variables('QueueName'))]"
   },
